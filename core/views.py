@@ -89,7 +89,7 @@ def user_login(request):
         
         if user is not None:
             login(request, user)
-            next_url = request.GET.get('next', 'dashboard')
+            next_url = request.GET.get('next', 'core:dashboard')
             return redirect(next_url)
         else:
             messages.error(request, 'Usuario o contraseña incorrectos.')

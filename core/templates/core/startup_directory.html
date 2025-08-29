@@ -1,300 +1,168 @@
 {% extends 'base.html' %}
 
-{% block title %}Silicon Valley Startup Directory - Innovation Hub{% endblock %}
+{% block title %}Directorio de Startups - StartupConnect{% endblock %}
 
 {% block public_content %}
 {% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <!-- Header -->
+    <div class="mb-6 sm:mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Directorio de Startups</h1>
+        <p class="text-sm sm:text-base text-gray-600">Descubre startups innovadoras del ecosistema con rankings dinámicos</p>
+    </div>
 
-<!-- Hero Section -->
-<div class="relative min-h-[40vh] overflow-hidden">
-    <!-- Dynamic Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/30 to-slate-800"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-violet-600/20 via-transparent to-transparent"></div>
-    
-    <!-- Animated Grid -->
-    <div class="absolute inset-0 opacity-10">
-        <div class="h-full w-full" style="background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.2) 1px, transparent 0); background-size: 40px 40px;"></div>
-    </div>
-    
-    <!-- Floating Elements -->
-    <div class="absolute inset-0">
-        <div class="absolute top-20 left-20 w-2 h-2 bg-blue-400/60 rounded-full animate-pulse"></div>
-        <div class="absolute top-32 right-32 w-1.5 h-1.5 bg-violet-400/60 rounded-full animate-ping" style="animation-delay: 1s;"></div>
-        <div class="absolute bottom-32 left-40 w-2.5 h-2.5 bg-cyan-400/60 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
-    </div>
-    
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div class="text-center space-y-6">
-            <h1 class="text-5xl md:text-6xl font-bold">
-                <span class="block bg-gradient-to-r from-white via-blue-200 to-violet-200 bg-clip-text text-transparent mb-2">
-                    Startup Directory
-                </span>
-                <span class="block text-2xl md:text-3xl bg-gradient-to-r from-blue-400 via-violet-400 to-cyan-400 bg-clip-text text-transparent font-light">
-                    Discover Tomorrow's Unicorns
-                </span>
-            </h1>
-            <p class="text-xl text-slate-300 max-w-3xl mx-auto font-light">
-                Explore cutting-edge startups ranked by growth potential, market heat, and innovation metrics.
-                Connect with the next generation of Silicon Valley disruptors.
-            </p>
-        </div>
-    </div>
-</div>
-
-<!-- Advanced Search & Filters -->
-<div class="relative -mt-20 z-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative">
-            <!-- Glass Morphism Search Container -->
-            <div class="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                <form method="get" class="space-y-6">
-                    <!-- Primary Search Bar -->
-                    <div class="relative">
-                        <div class="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-violet-500/20 rounded-2xl blur-xl"></div>
-                        <div class="relative flex items-center">
-                            <div class="absolute left-6 top-1/2 transform -translate-y-1/2">
-                                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                                </svg>
-                            </div>
-                            <input type="text" name="search" value="{{ search_query }}" 
-                                   placeholder="Search startups, technologies, founders..."
-                                   class="w-full pl-16 pr-6 py-5 bg-white/5 backdrop-blur-sm border border-white/20 rounded-2xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300 text-lg">
-                        </div>
-                    </div>
-                    
-                    <!-- Advanced Filters Grid -->
-                    <div class="grid md:grid-cols-4 gap-4">
-                        <!-- Sort By -->
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-slate-300">Sort By</label>
-                            <select name="sort" class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300">
-                                <option value="growth_score" {% if sort_by == 'growth_score' %}selected{% endif %}>Growth Score</option>
-                                <option value="heat_score" {% if sort_by == 'heat_score' %}selected{% endif %}>Market Heat</option>
-                                <option value="cb_rank" {% if sort_by == 'cb_rank' %}selected{% endif %}>CB Rank</option>
-                                <option value="funding" {% if sort_by == 'funding' %}selected{% endif %}>Total Funding</option>
-                                <option value="monthly_revenue" {% if sort_by == 'monthly_revenue' %}selected{% endif %}>Revenue</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Order -->
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-slate-300">Order</label>
-                            <select name="order" class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300">
-                                <option value="desc" {% if order == 'desc' %}selected{% endif %}>Highest First</option>
-                                <option value="asc" {% if order == 'asc' %}selected{% endif %}>Lowest First</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Stage Filter -->
-                        <div class="space-y-2">
-                            <label class="block text-sm font-medium text-slate-300">Stage</label>
-                            <select name="stage" class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-300">
-                                <option value="">All Stages</option>
-                                <option value="idea">Idea</option>
-                                <option value="mvp">MVP</option>
-                                <option value="growth">Growth</option>
-                                <option value="scale">Scale</option>
-                            </select>
-                        </div>
-                        
-                        <!-- Search Button -->
-                        <div class="flex items-end">
-                            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl hover:shadow-blue-500/25">
-                                Search
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Results Section -->
-<div class="py-20 bg-slate-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Results Header -->
-        <div class="flex justify-between items-center mb-12">
-            <div>
-                <h2 class="text-3xl font-bold text-slate-900">
-                    {% if search_query %}
-                        Search Results for "{{ search_query }}"
-                    {% else %}
-                        Featured Startups
-                    {% endif %}
-                </h2>
-                <p class="text-slate-600 mt-2">{{ startups_with_scores|length }} innovative companies</p>
-            </div>
-            
-            <!-- View Toggle -->
-            <div class="flex bg-white rounded-xl p-1 shadow-lg border border-slate-200">
-                <button class="px-4 py-2 rounded-lg bg-blue-600 text-white font-medium transition-all duration-200">
-                    Grid View
-                </button>
-                <button class="px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-100 font-medium transition-all duration-200">
-                    List View
-                </button>
-            </div>
-        </div>
-        
-        <!-- Startup Cards Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {% for item in startups_with_scores %}
-            <div class="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-slate-200">
-                <!-- Glow Effect -->
-                <div class="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-violet-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                
-                <div class="relative p-8">
-                    <!-- Header -->
-                    <div class="flex items-start justify-between mb-6">
-                        <div class="flex items-center space-x-4">
-                            {% if item.startup.logo %}
-                                <div class="w-16 h-16 rounded-2xl overflow-hidden border-2 border-slate-100 group-hover:border-blue-200 transition-colors duration-300">
-                                    <img src="{{ item.startup.logo.url }}" alt="{{ item.startup.company_name }}" class="w-full h-full object-cover">
-                                </div>
-                            {% else %}
-                                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-violet-500 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                                    <div class="w-8 h-8 bg-white rounded-lg"></div>
-                                </div>
-                            {% endif %}
-                            <div>
-                                <h3 class="font-bold text-xl text-slate-900 group-hover:text-blue-600 transition-colors duration-300">
-                                    {{ item.startup.company_name }}
-                                </h3>
-                                <p class="text-sm text-slate-500 capitalize">{{ item.startup.get_stage_display }}</p>
-                            </div>
-                        </div>
-                        
-                        <!-- CB Rank Badge -->
-                        <div class="bg-gradient-to-r from-amber-100 to-orange-100 border border-amber-200 rounded-xl px-3 py-2 text-center">
-                            <div class="text-xs text-amber-600 font-medium">CB Rank</div>
-                            <div class="font-bold text-amber-700">#{{ item.cb_rank|floatformat:0 }}</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Metrics Dashboard -->
-                    <div class="grid grid-cols-3 gap-3 mb-6">
-                        <div class="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-3 text-center">
-                            <div class="text-xs text-emerald-600 font-medium mb-1">Growth</div>
-                            <div class="font-bold text-lg text-emerald-700">{{ item.growth_score|floatformat:0 }}</div>
-                        </div>
-                        <div class="bg-gradient-to-br from-orange-50 to-red-50 border border-orange-200 rounded-xl p-3 text-center">
-                            <div class="text-xs text-orange-600 font-medium mb-1">Heat</div>
-                            <div class="font-bold text-lg text-orange-700">{{ item.heat_score|floatformat:0 }}</div>
-                        </div>
-                        <div class="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-3 text-center">
-                            <div class="text-xs text-blue-600 font-medium mb-1">Percentile</div>
-                            <div class="font-bold text-lg text-blue-700">{{ item.ranking_percentile|floatformat:1 }}%</div>
-                        </div>
-                    </div>
-                    
-                    <!-- Description -->
-                    <p class="text-slate-600 leading-relaxed mb-6 line-clamp-3">
-                        {{ item.startup.tagline|default:item.startup.description|truncatechars:150 }}
-                    </p>
-                    
-                    <!-- Key Metrics Row -->
-                    <div class="grid grid-cols-3 gap-4 mb-6 text-center">
-                        {% if item.startup.monthly_revenue %}
-                            <div>
-                                <div class="text-xs text-slate-500 mb-1">Monthly Revenue</div>
-                                <div class="font-semibold text-emerald-600">${{ item.startup.monthly_revenue|floatformat:0 }}</div>
-                            </div>
-                        {% endif %}
-                        {% if item.startup.employees_count %}
-                            <div>
-                                <div class="text-xs text-slate-500 mb-1">Team Size</div>
-                                <div class="font-semibold text-blue-600">{{ item.startup.employees_count }}</div>
-                            </div>
-                        {% endif %}
-                        {% if item.startup.total_funding_raised %}
-                            <div>
-                                <div class="text-xs text-slate-500 mb-1">Funding</div>
-                                <div class="font-semibold text-violet-600">${{ item.startup.total_funding_raised|floatformat:0 }}</div>
-                            </div>
-                        {% endif %}
-                    </div>
-                    
-                    <!-- Footer -->
-                    <div class="flex justify-between items-center pt-4 border-t border-slate-100">
-                        <div class="flex flex-wrap gap-2">
-                            {% if item.startup.industry %}
-                                <span class="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full font-medium">
-                                    {{ item.startup.industry.name }}
-                                </span>
-                            {% endif %}
-                            {% if item.startup.is_fundraising %}
-                                <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium">
-                                    Fundraising
-                                </span>
-                            {% endif %}
-                        </div>
-                        
-                        <a href="{% url 'core:startup_profile' item.startup.id %}" 
-                           class="group inline-flex items-center text-blue-600 hover:text-blue-700 font-semibold transition-colors duration-200">
-                            <span>View Profile</span>
-                            <svg class="w-4 h-4 ml-2 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </a>
-                    </div>
+    <!-- Search and Filters -->
+    <div class="mb-6 sm:mb-8">
+        <form method="get" class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <div class="lg:col-span-2">
+                    <input type="text" name="search" value="{{ search_query }}" 
+                           placeholder="Buscar startups..."
+                           class="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm sm:text-base">
                 </div>
+                <select name="sort" class="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm sm:text-base">
+                    <option value="growth_score" {% if sort_by == 'growth_score' %}selected{% endif %}>Growth Score</option>
+                    <option value="heat_score" {% if sort_by == 'heat_score' %}selected{% endif %}>Heat Score</option>
+                    <option value="cb_rank" {% if sort_by == 'cb_rank' %}selected{% endif %}>CB Rank</option>
+                    <option value="funding" {% if sort_by == 'funding' %}selected{% endif %}>Funding</option>
+                </select>
+                <select name="order" class="px-3 sm:px-4 py-2 sm:py-2.5 bg-gray-50 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors text-sm sm:text-base">
+                    <option value="desc" {% if order == 'desc' %}selected{% endif %}>Mayor a Menor</option>
+                    <option value="asc" {% if order == 'asc' %}selected{% endif %}>Menor a Mayor</option>
+                </select>
             </div>
-            {% empty %}
-            <!-- Empty State -->
-            <div class="col-span-full text-center py-20">
-                <div class="max-w-md mx-auto">
-                    <div class="w-24 h-24 bg-gradient-to-br from-slate-100 to-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg class="w-12 h-12 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            <div class="mt-4 flex justify-end">
+                <button type="submit" 
+                        class="px-4 sm:px-6 py-2 sm:py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors text-sm sm:text-base inline-flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Results -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {% for item in startups_with_scores %}
+        <div class="bg-white rounded-xl p-4 sm:p-6 border border-gray-200 hover:border-primary-300 hover:shadow-lg transition-all duration-200">
+            <div class="flex items-center mb-4">
+                {% if item.startup.logo %}
+                    <img src="{{ item.startup.logo.url }}" alt="{{ item.startup.company_name }}" class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg mr-3 sm:mr-4 object-cover">
+                {% else %}
+                    <div class="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-primary-500 to-purple-600 rounded-lg flex items-center justify-center mr-3 sm:mr-4">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
-                    <h3 class="text-2xl font-bold text-slate-900 mb-3">No startups found</h3>
-                    <p class="text-slate-600">
-                        {% if search_query %}
-                            Try adjusting your search terms or filters to find more results.
-                        {% else %}
-                            Be the first to register your startup in our directory.
-                        {% endif %}
-                    </p>
+                {% endif %}
+                <div class="flex-1">
+                    <h3 class="font-bold text-base sm:text-lg text-gray-900">{{ item.startup.company_name }}</h3>
+                    <p class="text-xs sm:text-sm text-gray-600">{{ item.startup.get_stage_display }}</p>
+                </div>
+                <div class="text-right">
+                    <div class="text-xs text-gray-500">CB Rank</div>
+                    <div class="font-bold text-sm text-gray-900">#{{ item.cb_rank|floatformat:0 }}</div>
                 </div>
             </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-<!-- CTA Section -->
-{% if user.is_authenticated and user.profile.user_type == 'founder' %}
-<div class="relative py-20 overflow-hidden">
-    <!-- Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/40 to-slate-800"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent"></div>
-    
-    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <div class="space-y-6">
-            <h2 class="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-violet-200 bg-clip-text text-transparent">
-                Ready to Join the Directory?
-            </h2>
-            <p class="text-xl text-slate-300 font-light max-w-2xl mx-auto">
-                Showcase your startup to investors, partners, and the global innovation community. 
-                Get discovered by the right people at the right time.
+            
+            <!-- Dynamic Scores -->
+            <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+                <div class="bg-green-50 border border-green-200 rounded-lg p-2">
+                    <div class="text-xs text-green-600">Growth</div>
+                    <div class="font-bold text-sm text-green-700">{{ item.growth_score|floatformat:0 }}</div>
+                </div>
+                <div class="bg-orange-50 border border-orange-200 rounded-lg p-2">
+                    <div class="text-xs text-orange-600">Heat</div>
+                    <div class="font-bold text-sm text-orange-700">{{ item.heat_score|floatformat:0 }}</div>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-2">
+                    <div class="text-xs text-blue-600">Percentil</div>
+                    <div class="font-bold text-sm text-blue-700">{{ item.ranking_percentile|floatformat:1 }}%</div>
+                </div>
+            </div>
+            
+            <p class="text-gray-600 text-xs sm:text-sm mb-4 line-clamp-3">
+                {{ item.startup.tagline|default:item.startup.description|truncatechars:120 }}
             </p>
-            <div class="pt-4">
-                <a href="{% url 'core:create_startup' %}" 
-                   class="inline-flex items-center bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/25">
-                    Register Your Startup
-                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+            
+            <!-- Metrics Row -->
+            <div class="flex justify-between items-center text-xs text-gray-500 mb-4">
+                <div>
+                    {% if item.startup.monthly_revenue %}
+                        <span class="text-green-600 font-medium">${{ item.startup.monthly_revenue|floatformat:0 }}/mes</span>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if item.startup.employees_count %}
+                        <span>{{ item.startup.employees_count }} empleados</span>
+                    {% endif %}
+                </div>
+                <div>
+                    {% if item.startup.total_funding_raised %}
+                        <span class="text-primary-600 font-medium">${{ item.startup.total_funding_raised|floatformat:0 }} raised</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center">
+                <div class="flex flex-wrap gap-2">
+                    {% if item.startup.industry %}
+                        <span class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full font-medium">
+                            {{ item.startup.industry.name }}
+                        </span>
+                    {% endif %}
+                    {% if item.startup.is_fundraising %}
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">
+                            Fundraising
+                        </span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'core:startup_profile' item.startup.id %}" 
+                   class="text-primary-600 hover:text-primary-700 text-xs sm:text-sm font-medium inline-flex items-center">
+                    Ver más 
+                    <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
             </div>
         </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <div class="bg-gray-50 rounded-xl p-8 max-w-md mx-auto">
+                <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">No se encontraron startups</h3>
+                <p class="text-gray-600">
+                    {% if search_query %}
+                        Intenta con otros términos de búsqueda
+                    {% else %}
+                        Aún no hay startups registradas
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
     </div>
-</div>
-{% endif %}
 
+    <!-- Call to action -->
+    {% if user.is_authenticated and user.profile.user_type == 'founder' %}
+        <div class="mt-8 sm:mt-12 text-center">
+            <div class="bg-gradient-to-r from-primary-50 to-purple-50 border border-primary-200 rounded-xl p-6 sm:p-8 max-w-md mx-auto">
+                <h3 class="text-lg sm:text-xl font-bold text-gray-900 mb-2">¿Quieres aparecer aquí?</h3>
+                <p class="text-gray-600 mb-4">Registra tu startup y conecta con inversores</p>
+                <a href="{% url 'core:create_startup' %}" 
+                   class="bg-primary-600 hover:bg-primary-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Registrar Startup
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}
 {% endblock %}
