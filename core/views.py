@@ -105,36 +105,57 @@ def user_logout(request):
 @login_required
 def dashboard(request):
     """Dashboard principal estilo Crunchbase con datos dinámicos"""
+    import logging
+    logger = logging.getLogger('core')
+    
+    logger.info(f"Dashboard access attempt by user: {request.user.username}")
+    
     try:
         profile = UserProfile.objects.get(user=request.user)
+        logger.info(f"Profile found for user {request.user.username}: {profile.user_type}")
     except UserProfile.DoesNotExist:
+        logger.info(f"Creating new profile for user: {request.user.username}")
         # Crear perfil si no existe
         profile = UserProfile.objects.create(
             user=request.user,
             user_type='community'  # Default
         )
+        logger.info(f"Profile created successfully for user: {request.user.username}")
     
     try:
+        logger.info("Starting to gather ecosystem statistics...")
         # Estadísticas globales del ecosistema
         total_startups = Startup.objects.filter(is_public=True).count()
+        logger.info(f"Total startups counted: {total_startups}")
+        
         total_investors = InvestorProfile.objects.filter(is_active=True).count()
+        logger.info(f"Total investors counted: {total_investors}")
         total_funding = Startup.objects.filter(is_public=True).aggregate(
             total=Sum('total_funding_raised')
         )['total'] or 0
+        logger.info(f"Total funding calculated: {total_funding}")
+        
         total_seeking = Startup.objects.filter(
             is_fundraising=True, 
             is_public=True
         ).aggregate(total=Sum('seeking_amount'))['total'] or 0
+        logger.info(f"Total seeking calculated: {total_seeking}")
         
         # Actividad reciente
+        logger.info("Gathering recent activity data...")
         recent_startups = Startup.objects.filter(is_public=True).order_by('-created_at')[:6]
+        logger.info(f"Recent startups count: {recent_startups.count()}")
+        
         recent_funding = Startup.objects.filter(
             is_public=True,
             total_funding_raised__gt=0
         ).order_by('-updated_at')[:5]
+        logger.info(f"Recent funding count: {recent_funding.count()}")
+        
         trending_industries = Industry.objects.annotate(
             startup_count=Count('startup')
         ).order_by('-startup_count')[:5]
+        logger.info(f"Trending industries count: {trending_industries.count()}")
         
         context = {
             'profile': profile,
@@ -261,9 +282,11 @@ def dashboard(request):
                 }
             })
         
+        logger.info("Successfully gathered all dashboard data, rendering template...")
         return render(request, 'core/dashboard_new.html', context)
         
     except Exception as e:
+        logger.error(f"Error in dashboard view: {str(e)}", exc_info=True)
         # En caso de error, crear un contexto básico de fallback
         context = {
             'profile': profile,
