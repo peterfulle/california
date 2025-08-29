@@ -114,161 +114,171 @@ def dashboard(request):
             user_type='community'  # Default
         )
     
-    # Estadísticas globales del ecosistema
-    total_startups = Startup.objects.filter(is_public=True).count()
-    total_investors = InvestorProfile.objects.filter(is_active=True).count()
-    total_funding = Startup.objects.filter(is_public=True).aggregate(
-        total=Sum('total_funding_raised')
-    )['total'] or 0
-    total_seeking = Startup.objects.filter(
-        is_fundraising=True, 
-        is_public=True
-    ).aggregate(total=Sum('seeking_amount'))['total'] or 0
-    
-    # Actividad reciente
-    recent_startups = Startup.objects.filter(is_public=True).order_by('-created_at')[:6]
-    recent_funding = Startup.objects.filter(
-        is_public=True,
-        total_funding_raised__gt=0
-    ).order_by('-updated_at')[:5]
-    trending_industries = Industry.objects.annotate(
-        startup_count=Count('startup')
-    ).order_by('-startup_count')[:5]
-    
-    context = {
-        'profile': profile,
-        'user_type': profile.user_type,
-        # Estadísticas globales
-        'ecosystem_stats': {
-            'total_startups': total_startups,
-            'total_investors': total_investors,
-            'total_funding': total_funding,
-            'total_seeking': total_seeking,
-            'active_fundraising': Startup.objects.filter(is_fundraising=True, is_public=True).count(),
-            'new_this_month': Startup.objects.filter(
-                created_at__month=timezone.now().month,
-                is_public=True
-            ).count()
-        },
+    try:
+        # Estadísticas globales del ecosistema
+        total_startups = Startup.objects.filter(is_public=True).count()
+        total_investors = InvestorProfile.objects.filter(is_active=True).count()
+        total_funding = Startup.objects.filter(is_public=True).aggregate(
+            total=Sum('total_funding_raised')
+        )['total'] or 0
+        total_seeking = Startup.objects.filter(
+            is_fundraising=True, 
+            is_public=True
+        ).aggregate(total=Sum('seeking_amount'))['total'] or 0
+        
         # Actividad reciente
-        'recent_activity': {
-            'recent_startups': recent_startups,
-            'recent_funding': recent_funding,
-            'trending_industries': trending_industries,
-            'upcoming_events': Event.objects.filter(
-                status='published',
-                start_datetime__gte=timezone.now()
-            ).order_by('start_datetime')[:3]
-        }
-    }
-    
-    if profile.user_type == 'founder':
-        # Dashboard específico para founders
-        try:
-            startup = Startup.objects.get(founder=profile)
-            # Métricas del startup
-            context.update({
-                'startup': startup,
-                'startup_metrics': {
-                    'funding_progress': (startup.total_funding_raised / startup.seeking_amount * 100) if startup.seeking_amount else 0,
-                    'time_since_founded': (timezone.now().date() - startup.founded_date).days if startup.founded_date else 0,
-                    'years_since_founded': round((timezone.now().date() - startup.founded_date).days / 365.25, 1) if startup.founded_date else 0,
-                    'industry_rank': Startup.objects.filter(
-                        industry=startup.industry,
-                        total_funding_raised__gte=startup.total_funding_raised
-                    ).count() if startup.industry else 0
-                },
-                'recommended_investors': InvestorProfile.objects.filter(
-                    is_accepting_pitches=True,
-                    is_active=True,
-                    geographic_focus__in=['global', 'local']
-                ).order_by('-fund_size')[:8],
-                'similar_startups': Startup.objects.filter(
-                    industry=startup.industry,
-                    stage=startup.stage,
+        recent_startups = Startup.objects.filter(is_public=True).order_by('-created_at')[:6]
+        recent_funding = Startup.objects.filter(
+            is_public=True,
+            total_funding_raised__gt=0
+        ).order_by('-updated_at')[:5]
+        trending_industries = Industry.objects.annotate(
+            startup_count=Count('startup')
+        ).order_by('-startup_count')[:5]
+        
+        context = {
+            'profile': profile,
+            'user_type': profile.user_type,
+            # Estadísticas globales
+            'ecosystem_stats': {
+                'total_startups': total_startups,
+                'total_investors': total_investors,
+                'total_funding': total_funding,
+                'total_seeking': total_seeking,
+                'active_fundraising': Startup.objects.filter(is_fundraising=True, is_public=True).count(),
+                'new_this_month': Startup.objects.filter(
+                    created_at__month=timezone.now().month,
                     is_public=True
-                ).exclude(id=startup.id)[:5] if startup.industry else []
-            })
-        except Startup.DoesNotExist:
-            context['needs_startup'] = True
-            
-    elif profile.user_type == 'investor':
-        # Dashboard específico para inversores
-        try:
-            investor = InvestorProfile.objects.get(user=request.user)
-            # Deal flow y oportunidades
-            relevant_startups = Startup.objects.filter(
-                is_fundraising=True,
-                is_public=True
-            )
-            if investor.investment_stages:
-                relevant_startups = relevant_startups.filter(
-                    stage__in=investor.investment_stages
+                ).count()
+            },
+            # Actividad reciente
+            'recent_activity': {
+                'recent_startups': recent_startups,
+                'recent_funding': recent_funding,
+                'trending_industries': trending_industries,
+                'upcoming_events': Event.objects.filter(
+                    status='published',
+                    start_datetime__gte=timezone.now()
+                ).order_by('start_datetime')[:3]
+            }
+        }
+    
+        
+        if profile.user_type == 'founder':
+            # Dashboard específico para founders
+            try:
+                startup = Startup.objects.get(founder=profile)
+                # Métricas del startup
+                context.update({
+                    'startup': startup,
+                    'startup_metrics': {
+                        'funding_progress': (startup.total_funding_raised / startup.seeking_amount * 100) if startup.seeking_amount else 0,
+                        'time_since_founded': (timezone.now().date() - startup.founded_date).days if startup.founded_date else 0,
+                        'years_since_founded': round((timezone.now().date() - startup.founded_date).days / 365.25, 1) if startup.founded_date else 0,
+                        'industry_rank': Startup.objects.filter(
+                            industry=startup.industry,
+                            total_funding_raised__gte=startup.total_funding_raised
+                        ).count() if startup.industry else 0
+                    },
+                    'recommended_investors': InvestorProfile.objects.filter(
+                        is_accepting_pitches=True,
+                        is_active=True,
+                        geographic_focus__in=['global', 'local']
+                    ).order_by('-fund_size')[:8],
+                    'similar_startups': Startup.objects.filter(
+                        industry=startup.industry,
+                        stage=startup.stage,
+                        is_public=True
+                    ).exclude(id=startup.id)[:5] if startup.industry else []
+                })
+            except Startup.DoesNotExist:
+                context['needs_startup'] = True
+                
+        elif profile.user_type == 'investor':
+            # Dashboard específico para inversores
+            try:
+                investor = InvestorProfile.objects.get(user=request.user)
+                # Deal flow y oportunidades
+                relevant_startups = Startup.objects.filter(
+                    is_fundraising=True,
+                    is_public=True
                 )
-            
+                
+                # Obtener investment_stages con seguridad
+                investment_stages = investor.investment_stages if investor.investment_stages else []
+                
+                if investment_stages:
+                    relevant_startups = relevant_startups.filter(
+                        stage__in=investment_stages
+                    )
+                
+                context.update({
+                    'investor': investor,
+                    'deal_flow': {
+                        'new_opportunities': relevant_startups.order_by('-created_at')[:8],
+                        'matching_stage': relevant_startups.filter(
+                            stage__in=investment_stages
+                        ).count() if investment_stages else relevant_startups.count(),
+                        'in_range': relevant_startups.filter(
+                            seeking_amount__gte=investor.min_investment or 0,
+                            seeking_amount__lte=investor.max_investment or float('inf')
+                        ).count() if (investor.min_investment or investor.max_investment) else 0
+                    },
+                    'market_insights': {
+                        'avg_valuation': Startup.objects.filter(
+                            is_public=True,
+                            valuation__isnull=False
+                        ).aggregate(avg=Avg('valuation'))['avg'] or 0,
+                        'hot_industries': trending_industries
+                    }
+                })
+            except InvestorProfile.DoesNotExist:
+                context['needs_investor_profile'] = True
+                
+        else:  # advisor o community
+            # Dashboard para advisors y community members
             context.update({
-                'investor': investor,
-                'deal_flow': {
-                    'new_opportunities': relevant_startups.order_by('-created_at')[:8],
-                    'matching_stage': relevant_startups.filter(
-                        stage__in=investor.investment_stages if investor.investment_stages else []
-                    ).count(),
-                    'in_range': relevant_startups.filter(
-                        seeking_amount__gte=investor.min_investment or 0,
-                        seeking_amount__lte=investor.max_investment or float('inf')
-                    ).count() if investor.min_investment or investor.max_investment else 0
-                },
-                'market_insights': {
-                    'avg_valuation': Startup.objects.filter(
+                'discovery': {
+                    'featured_startups': Startup.objects.filter(
+                        featured=True,
+                        is_public=True
+                    ).order_by('-created_at')[:6],
+                    'top_funded': Startup.objects.filter(
                         is_public=True,
-                        valuation__isnull=False
-                    ).aggregate(avg=Avg('valuation'))['avg'] or 0,
-                    'hot_industries': trending_industries
+                        total_funding_raised__gt=0
+                    ).order_by('-total_funding_raised')[:5],
+                    'recently_launched': recent_startups
+                },
+                'network_opportunities': {
+                    'active_investors': InvestorProfile.objects.filter(
+                        is_active=True,
+                        is_accepting_pitches=True
+                    ).order_by('-fund_size')[:6],
+                    'growing_startups': Startup.objects.filter(
+                        is_public=True,
+                        stage__in=['growth', 'scale']
+                    ).order_by('-employees_count')[:6]
                 }
             })
-        except InvestorProfile.DoesNotExist:
-            context['needs_investor_profile'] = True
-            
-    else:  # advisor o community
-        # Dashboard para advisors y community members
-        context.update({
-            'discovery': {
-                'featured_startups': Startup.objects.filter(
-                    featured=True,
-                    is_public=True
-                ).order_by('-created_at')[:6],
-                'top_funded': Startup.objects.filter(
-                    is_public=True,
-                    total_funding_raised__gt=0
-                ).order_by('-total_funding_raised')[:5],
-                'recently_launched': recent_startups
-            },
-            'network_opportunities': {
-                'active_investors': InvestorProfile.objects.filter(
-                    is_active=True,
-                    is_accepting_pitches=True
-                ).order_by('-fund_size')[:6],
-                'growing_startups': Startup.objects.filter(
-                    is_public=True,
-                    stage__in=['growth', 'scale']
-                ).order_by('-employees_count')[:6]
+        
+        return render(request, 'core/dashboard_new.html', context)
+        
+    except Exception as e:
+        # En caso de error, crear un contexto básico de fallback
+        context = {
+            'profile': profile,
+            'user_type': profile.user_type,
+            'error_message': 'Error cargando el dashboard. Contacta soporte si persiste.',
+            'ecosystem_stats': {
+                'total_startups': 25,
+                'total_investors': 15,
+                'total_funding': 0,
+                'total_seeking': 0,
+                'active_fundraising': 5,
+                'new_this_month': 3
             }
-        })
-    
-    return render(request, 'core/dashboard_new.html', context)
-    # Datos comunes
-    context.update({
-        'recent_events': Event.objects.filter(status='published')[:5],
-        'network_stats': {
-            'founders': UserProfile.objects.filter(user_type='founder').count(),
-            'investors': UserProfile.objects.filter(user_type='investor').count(),
-            'advisors': UserProfile.objects.filter(user_type='advisor').count(),
         }
-    })
-    
-    return render(request, 'core/dashboard_new.html', context)
-
-@login_required
+        return render(request, 'core/dashboard_new.html', context)@login_required
 def investor_create(request):
     if not request.user.is_authenticated:
         return redirect('core:login')

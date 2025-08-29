@@ -1,0 +1,24 @@
+# Django Core
+Django==4.2.20
+gunicorn==23.0.0
+
+# Database
+psycopg2-binary==2.9.10
+dj-database-url==2.3.0
+
+# Static Files
+whitenoise==6.8.2
+django-compressor==4.5.1
+
+# Web & API
+djangorestframework==3.16.0
+django-htmx==1.23.0
+
+# Environment
+python-dotenv==1.0.1
+
+# Forms & Fields
+django-multiselectfield==0.1.13
+
+# Media Files
+Pillow==11.1.0
