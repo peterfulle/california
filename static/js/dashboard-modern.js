@@ -30,7 +30,6 @@ class DashboardModern {
         this.setupCharts();
         this.setupTooltips();
         this.setupSearch();
-        this.setupNotifications();
         this.restoreUserPreferences();
         
         this.isInitialized = true;
@@ -494,100 +493,7 @@ class DashboardModern {
             resultsContainer.remove();
         }
     }
-    
-    /**
-     * Sistema de notificaciones
-     */
-    setupNotifications() {
-        const notificationBtn = document.querySelector('button svg[viewBox="0 0 24 24"]')?.closest('button');
-        if (!notificationBtn) return;
-        
-        notificationBtn.addEventListener('click', () => {
-            this.showNotifications();
-        });
-    }
-    
-    showNotifications() {
-        const notifications = [
-            {
-                title: 'Nueva startup registrada',
-                message: 'TechVision AI se ha unido al ecosistema',
-                time: 'Hace 5 minutos',
-                type: 'info'
-            },
-            {
-                title: 'Inversión completada',
-                message: 'Capital Ventures invirtió en DataFlow',
-                time: 'Hace 1 hora',
-                type: 'success'
-            },
-            {
-                title: 'Evento próximo',
-                message: 'Demo Day en 2 días',
-                time: 'Hace 2 horas',
-                type: 'warning'
-            }
-        ];
-        
-        // Crear overlay de notificaciones
-        const overlay = document.createElement('div');
-        overlay.className = 'fixed inset-0 bg-black/20 backdrop-blur-sm z-50';
-        overlay.addEventListener('click', () => overlay.remove());
-        
-        const panel = document.createElement('div');
-        panel.className = 'fixed top-20 right-8 w-96 bg-white rounded-xl shadow-2xl border border-gray-200 p-6 z-50';
-        panel.addEventListener('click', (e) => e.stopPropagation());
-        
-        panel.innerHTML = `
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-gray-900">Notificaciones</h3>
-                <button class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
-            </div>
-            <div class="space-y-3">
-                ${notifications.map(notif => `
-                    <div class="p-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
-                        <div class="flex items-start space-x-3">
-                            <div class="w-2 h-2 rounded-full mt-2 ${
-                                notif.type === 'success' ? 'bg-green-500' :
-                                notif.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
-                            }"></div>
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-900 text-sm">${notif.title}</p>
-                                <p class="text-gray-600 text-sm">${notif.message}</p>
-                                <p class="text-gray-400 text-xs mt-1">${notif.time}</p>
-                            </div>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-            <div class="mt-4 pt-4 border-t border-gray-200">
-                <button class="w-full text-center text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors">
-                    Ver todas las notificaciones
-                </button>
-            </div>
-        `;
-        
-        // Cerrar al hacer click en X
-        panel.querySelector('button').addEventListener('click', () => overlay.remove());
-        
-        overlay.appendChild(panel);
-        document.body.appendChild(overlay);
-        
-        // Animación de entrada
-        setTimeout(() => {
-            panel.style.transform = 'translateY(0)';
-            panel.style.opacity = '1';
-        }, 10);
-        
-        panel.style.transform = 'translateY(-20px)';
-        panel.style.opacity = '0';
-        panel.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-    }
-    
+
     /**
      * Restaurar preferencias del usuario
      */
