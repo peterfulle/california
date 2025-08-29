@@ -8,8 +8,9 @@ pip install -r requirements.txt
 # Apply database migrations
 python manage.py migrate
 
+# Create default industries
+echo "Creating default industries..."
+python manage.py create_industries
+
 # Collect static files
 python manage.py collectstatic --no-input
-
-# Run migrations
-python manage.py migrate
