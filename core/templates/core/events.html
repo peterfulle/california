@@ -1,0 +1,915 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Silicon Valley Events Hub - Startup Ecosystem{% endblock %}
+
+{% block public_content %}
+<!-- Public Content for Non-Authenticated Users -->
+<!-- Hero Section -->
+<div class="relative min-h-[50vh] overflow-hidden">
+    <!-- Dynamic Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-800"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-600/20 via-transparent to-transparent"></div>
+    
+    <!-- Floating Elements -->
+    <div class="absolute inset-0">
+        <div class="absolute top-20 left-20 w-2 h-2 bg-purple-400/60 rounded-full animate-pulse"></div>
+        <div class="absolute top-32 right-32 w-1.5 h-1.5 bg-blue-400/60 rounded-full animate-ping" style="animation-delay: 1s;"></div>
+        <div class="absolute bottom-32 left-40 w-2.5 h-2.5 bg-violet-400/60 rounded-full animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div class="text-center space-y-8">
+            <h1 class="text-6xl md:text-7xl font-bold">
+                <span class="block bg-gradient-to-r from-white via-purple-200 to-blue-200 bg-clip-text text-transparent mb-3">
+                    Startup Events
+                </span>
+                <span class="block text-3xl md:text-4xl bg-gradient-to-r from-purple-400 via-blue-400 to-violet-400 bg-clip-text text-transparent font-light">
+                    Connect • Learn • Network
+                </span>
+            </h1>
+            
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-12">
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-purple-300">{{ events|length }}</div>
+                    <div class="text-sm text-slate-400 mt-1">Eventos Activos</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-blue-300">50+</div>
+                    <div class="text-sm text-slate-400 mt-1">Startups</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-violet-300">25+</div>
+                    <div class="text-sm text-slate-400 mt-1">Inversores</div>
+                </div>
+                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-6 text-center">
+                    <div class="text-3xl font-bold text-indigo-300">1000+</div>
+                    <div class="text-sm text-slate-400 mt-1">Conexiones</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Events Grid for Public View -->
+<div class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center mb-12">
+            <div>
+                <h2 class="text-4xl font-bold text-slate-900">Próximos Eventos</h2>
+                <p class="text-slate-600 mt-2">Descubre las oportunidades de networking del ecosistema</p>
+            </div>
+            <div>
+                <a href="{% url 'core:register' %}" class="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Únete para Crear Eventos
+                </a>
+            </div>
+        </div>
+        
+        {% if events %}
+        <div class="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
+            {% for event in events %}
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden transform hover:-translate-y-2">
+                <!-- Event Header -->
+                <div class="p-8">
+                    <div class="flex items-start justify-between mb-6">
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-slate-900 mb-3 leading-tight">{{ event.title }}</h3>
+                            <p class="text-slate-600 leading-relaxed">{{ event.description|truncatewords:20 }}</p>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-100 to-blue-100 text-purple-800 ml-4 whitespace-nowrap">
+                            {{ event.event_type }}
+                        </span>
+                    </div>
+                    
+                    <!-- Event Details -->
+                    <div class="space-y-4">
+                        {% if event.start_datetime %}
+                        <div class="flex items-center text-slate-600">
+                            <div class="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-slate-900">{{ event.start_datetime|date:"d M Y" }}</div>
+                                <div class="text-sm">{{ event.start_datetime|date:"H:i" }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center text-slate-600">
+                            <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                                {% if event.is_virtual %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                                {% else %}
+                                <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <div class="font-semibold text-slate-900">
+                                    {% if event.is_virtual %}Virtual{% else %}Presencial{% endif %}
+                                </div>
+                                <div class="text-sm">
+                                    {% if event.is_virtual %}Evento en línea{% else %}{{ event.location }}{% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center text-slate-600">
+                            <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-slate-900">{{ event.max_attendees }} personas</div>
+                                <div class="text-sm">Capacidad máxima</div>
+                            </div>
+                        </div>
+                        
+                        {% if event.organizer %}
+                        <div class="flex items-center text-slate-600">
+                            <div class="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center mr-4">
+                                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="font-semibold text-slate-900">{{ event.organizer.get_full_name|default:event.organizer.username }}</div>
+                                <div class="text-sm">Organizador</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Event Footer -->
+                <div class="px-8 py-6 bg-slate-50 border-t border-slate-100">
+                    <div class="flex items-center justify-between">
+                        <div class="text-sm text-slate-500">
+                            Creado {{ event.created_at|timesince }} ago
+                        </div>
+                        <a href="{% url 'core:login' %}" class="inline-flex items-center text-purple-600 hover:text-purple-700 font-semibold text-sm transition-colors">
+                            Iniciar sesión para participar
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-20">
+            <div class="max-w-lg mx-auto">
+                <svg class="w-24 h-24 text-slate-300 mx-auto mb-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path>
+                </svg>
+                <h3 class="text-2xl font-bold text-slate-900 mb-4">¡Próximamente eventos increíbles!</h3>
+                <p class="text-slate-600 mb-8 text-lg leading-relaxed">
+                    Nuestra comunidad de founders e inversores está preparando eventos únicos. 
+                    Únete para ser el primero en conocer las oportunidades de networking.
+                </p>
+                <div class="space-y-4">
+                    <a href="{% url 'core:register' %}" class="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                        Únete a la Comunidad
+                    </a>
+                    <p class="text-slate-500 text-sm">
+                        ¿Ya tienes cuenta? <a href="{% url 'core:login' %}" class="text-purple-600 hover:text-purple-700 font-semibold">Inicia sesión aquí</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Call to Action Section -->
+<div class="bg-gradient-to-r from-purple-600 to-blue-600 py-20">
+    <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-bold text-white mb-6">
+            ¿Quieres organizar eventos?
+        </h2>
+        <p class="text-xl text-purple-100 mb-10 leading-relaxed">
+            Forma parte de nuestra comunidad y conecta con founders, inversores y builders del ecosistema startup de Silicon Valley.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'core:register' %}" class="inline-flex items-center bg-white text-purple-600 hover:bg-gray-50 font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                Registrarse Gratis
+            </a>
+            <a href="{% url 'core:login' %}" class="inline-flex items-center border-2 border-white text-white hover:bg-white hover:text-purple-600 font-bold px-8 py-4 rounded-xl text-lg transition-all duration-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                </svg>
+                Iniciar Sesión
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block dashboard_content %}
+<!-- Dashboard Content for Authenticated Users -->
+<div class="space-y-8">
+    <!-- Header with Create Event Button -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900">Eventos del Ecosistema</h1>
+            <p class="text-gray-600 mt-2">Conecta con la comunidad de startups</p>
+        </div>
+        <button onclick="openEventModal()" class="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Crear Evento
+        </button>
+    </div>
+
+    <!-- Events Grid -->
+    <div class="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+        {% for event in events %}
+        <div class="card-modern p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <h3 class="text-xl font-semibold text-gray-900 mb-2">{{ event.title }}</h3>
+                    <p class="text-gray-600 text-sm line-clamp-2">{{ event.description }}</p>
+                </div>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                    {{ event.event_type }}
+                </span>
+            </div>
+            
+            <div class="space-y-3 mb-4">
+                {% if event.start_datetime %}
+                <div class="flex items-center text-sm text-gray-600">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    {{ event.start_datetime|date:"d M Y, H:i" }}
+                </div>
+                {% endif %}
+                
+                <div class="flex items-center text-sm text-gray-600">
+                    {% if event.organizer %}
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    {{ event.organizer.get_full_name|default:event.organizer.username }}
+                    {% endif %}
+                </div>
+                
+                <div class="flex items-center text-sm text-gray-600">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        {% if event.is_virtual %}
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        {% else %}
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        {% endif %}
+                    </svg>
+                    {% if event.is_virtual %}Virtual{% else %}{{ event.location }}{% endif %}
+                </div>
+                
+                <div class="flex items-center text-sm text-gray-600">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    {{ event.max_attendees }} personas máx.
+                </div>
+            </div>
+            
+            <button onclick="viewEventDetails({{ event.id }})" class="w-full bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-gray-700 font-medium py-3 px-4 rounded-lg transition-all duration-200 border border-gray-200">
+                Ver Detalles
+            </button>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-12">
+            <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z"></path>
+            </svg>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No hay eventos programados</h3>
+            <p class="text-gray-500 mb-6">¡Sé el primero en crear un evento para la comunidad!</p>
+            <button onclick="openEventModal()" class="inline-flex items-center bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Crear primer evento
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal para Crear Evento - Diseño Profesional -->
+<div id="eventModal" class="fixed inset-0 z-50 hidden overflow-y-auto">
+    <!-- Backdrop -->
+    <div class="fixed inset-0 bg-gray-900/80 backdrop-blur-md transition-opacity"></div>
+    
+    <!-- Modal Container -->
+    <div class="flex min-h-full items-center justify-center p-6">
+        <div class="relative w-full max-w-5xl bg-white rounded-2xl shadow-2xl transform transition-all">
+            <!-- Modal Header -->
+            <div class="border-b border-gray-100 px-10 py-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-3xl font-semibold text-gray-900">Crear Evento</h2>
+                        <p class="text-gray-600 mt-2">Organiza un evento para la comunidad</p>
+                    </div>
+                    <button onclick="closeEventModal()" class="p-2 rounded-xl hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Professional Step Indicators -->
+                <div class="flex items-center justify-center space-x-8">
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold step-indicator" data-step="1">1</div>
+                        <span class="ml-3 text-sm font-medium text-gray-700">Información Básica</span>
+                    </div>
+                    <div class="h-0.5 w-16 bg-gray-200"></div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold step-indicator" data-step="2">2</div>
+                        <span class="ml-3 text-sm font-medium text-gray-500">Fecha y Capacidad</span>
+                    </div>
+                    <div class="h-0.5 w-16 bg-gray-200"></div>
+                    <div class="flex items-center">
+                        <div class="w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold step-indicator" data-step="3">3</div>
+                        <span class="ml-3 text-sm font-medium text-gray-500">Ubicación y Finalizar</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal Body -->
+            <div class="px-10 py-8">
+                <!-- Error Display -->
+                <div id="errorContainer" class="hidden mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div class="flex">
+                        <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div class="ml-3">
+                            <p id="errorMessage" class="text-sm text-red-700"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form id="eventForm">
+                    {% csrf_token %}
+                    
+                    <!-- Step 1: Información Básica -->
+                    <div id="step1" class="step-content">
+                        <div class="space-y-6">
+                            <div>
+                                <label for="title" class="block text-sm font-semibold text-gray-900 mb-3">Título del Evento</label>
+                                <input type="text" name="title" id="title" required
+                                       class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                                       placeholder="Ej: Demo Day Q1 2025">
+                            </div>
+                            
+                            <div>
+                                <label for="description" class="block text-sm font-semibold text-gray-900 mb-3">Descripción</label>
+                                <textarea name="description" id="description" rows="4" required
+                                          class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                          placeholder="Describe tu evento, agenda, speakers, etc."></textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-900 mb-4">Tipo de Evento</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="event_type" value="Demo Day" class="sr-only peer">
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <div class="text-lg font-semibold text-gray-900">Demo Day</div>
+                                                <div class="text-sm text-gray-600 mt-1">Presentaciones de startups</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="event_type" value="Networking" class="sr-only peer">
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <div class="text-lg font-semibold text-gray-900">Networking</div>
+                                                <div class="text-sm text-gray-600 mt-1">Conexiones y relaciones</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="event_type" value="Workshop" class="sr-only peer">
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <div class="text-lg font-semibold text-gray-900">Workshop</div>
+                                                <div class="text-sm text-gray-600 mt-1">Aprendizaje práctico</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="event_type" value="Panel" class="sr-only peer">
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <div class="text-lg font-semibold text-gray-900">Panel</div>
+                                                <div class="text-sm text-gray-600 mt-1">Discusión de expertos</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="event_type" value="Pitch Competition" class="sr-only peer">
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <div class="text-lg font-semibold text-gray-900">Pitch Competition</div>
+                                                <div class="text-sm text-gray-600 mt-1">Competencia de presentaciones</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="event_type" value="Conference" class="sr-only peer">
+                                        <div class="p-4 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <div class="text-lg font-semibold text-gray-900">Conference</div>
+                                                <div class="text-sm text-gray-600 mt-1">Conferencia formal</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Fecha y Capacidad -->
+                    <div id="step2" class="step-content hidden">
+                        <div class="space-y-6">
+                            <div>
+                                <label for="start_datetime" class="block text-sm font-semibold text-gray-900 mb-3">Fecha y Hora del Evento</label>
+                                <input type="datetime-local" name="start_datetime" id="start_datetime" required
+                                       class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                            </div>
+                            
+                            <div>
+                                <label for="max_attendees" class="block text-sm font-semibold text-gray-900 mb-3">Capacidad Máxima</label>
+                                <div class="relative">
+                                    <input type="number" name="max_attendees" id="max_attendees" min="1" value="50" required
+                                           class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                                    <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                                        <span class="text-gray-500">personas</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-900 mb-4">Modalidad del Evento</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="is_virtual" value="false" class="sr-only peer" checked>
+                                        <div class="p-6 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-600 peer-checked:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                </svg>
+                                                <div class="text-lg font-semibold text-gray-900">Presencial</div>
+                                                <div class="text-sm text-gray-600 mt-1">Ubicación física</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                    
+                                    <label class="relative cursor-pointer">
+                                        <input type="radio" name="is_virtual" value="true" class="sr-only peer">
+                                        <div class="p-6 border-2 border-gray-200 rounded-xl peer-checked:border-blue-500 peer-checked:bg-blue-50 transition-all hover:border-gray-300">
+                                            <div class="text-center">
+                                                <svg class="w-8 h-8 mx-auto mb-2 text-gray-600 peer-checked:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                                </svg>
+                                                <div class="text-lg font-semibold text-gray-900">Virtual</div>
+                                                <div class="text-sm text-gray-600 mt-1">En línea</div>
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Ubicación -->
+                    <div id="step3" class="step-content hidden">
+                        <div class="space-y-6">
+                            <!-- Ubicación Presencial -->
+                            <div id="location-field">
+                                <label for="location" class="block text-sm font-semibold text-gray-900 mb-3">Ubicación</label>
+                                <select name="location" id="location" 
+                                        class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg">
+                                    <option value="">Selecciona una ciudad</option>
+                                    
+                                    <!-- Bay Area North -->
+                                    <optgroup label="Bay Area North">
+                                        <option value="San Francisco, CA">San Francisco, CA</option>
+                                        <option value="Oakland, CA">Oakland, CA</option>
+                                        <option value="Berkeley, CA">Berkeley, CA</option>
+                                        <option value="Emeryville, CA">Emeryville, CA</option>
+                                        <option value="Alameda, CA">Alameda, CA</option>
+                                    </optgroup>
+                                    
+                                    <!-- Peninsula -->
+                                    <optgroup label="Peninsula">
+                                        <option value="Palo Alto, CA">Palo Alto, CA</option>
+                                        <option value="Stanford, CA">Stanford, CA</option>
+                                        <option value="Menlo Park, CA">Menlo Park, CA</option>
+                                        <option value="Redwood City, CA">Redwood City, CA</option>
+                                        <option value="San Mateo, CA">San Mateo, CA</option>
+                                        <option value="Burlingame, CA">Burlingame, CA</option>
+                                        <option value="Foster City, CA">Foster City, CA</option>
+                                    </optgroup>
+                                    
+                                    <!-- South Bay -->
+                                    <optgroup label="South Bay">
+                                        <option value="San Jose, CA">San Jose, CA</option>
+                                        <option value="Santa Clara, CA">Santa Clara, CA</option>
+                                        <option value="Sunnyvale, CA">Sunnyvale, CA</option>
+                                        <option value="Mountain View, CA">Mountain View, CA</option>
+                                        <option value="Cupertino, CA">Cupertino, CA</option>
+                                        <option value="Los Altos, CA">Los Altos, CA</option>
+                                        <option value="Campbell, CA">Campbell, CA</option>
+                                        <option value="Milpitas, CA">Milpitas, CA</option>
+                                    </optgroup>
+                                    
+                                    <!-- East Bay -->
+                                    <optgroup label="East Bay">
+                                        <option value="Fremont, CA">Fremont, CA</option>
+                                        <option value="Hayward, CA">Hayward, CA</option>
+                                        <option value="Union City, CA">Union City, CA</option>
+                                        <option value="Newark, CA">Newark, CA</option>
+                                        <option value="Pleasanton, CA">Pleasanton, CA</option>
+                                        <option value="Dublin, CA">Dublin, CA</option>
+                                        <option value="Livermore, CA">Livermore, CA</option>
+                                    </optgroup>
+                                    
+                                    <!-- North Bay -->
+                                    <optgroup label="North Bay">
+                                        <option value="San Rafael, CA">San Rafael, CA</option>
+                                        <option value="Novato, CA">Novato, CA</option>
+                                        <option value="Petaluma, CA">Petaluma, CA</option>
+                                        <option value="Santa Rosa, CA">Santa Rosa, CA</option>
+                                        <option value="Napa, CA">Napa, CA</option>
+                                    </optgroup>
+                                    
+                                    <!-- Other CA Cities -->
+                                    <optgroup label="Other CA Cities">
+                                        <option value="Los Angeles, CA">Los Angeles, CA</option>
+                                        <option value="San Diego, CA">San Diego, CA</option>
+                                        <option value="Sacramento, CA">Sacramento, CA</option>
+                                        <option value="Fresno, CA">Fresno, CA</option>
+                                        <option value="Long Beach, CA">Long Beach, CA</option>
+                                        <option value="Irvine, CA">Irvine, CA</option>
+                                        <option value="Santa Monica, CA">Santa Monica, CA</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            
+                            <!-- URL Virtual -->
+                            <div id="meeting-url-field" class="hidden">
+                                <label for="meeting_url" class="block text-sm font-semibold text-gray-900 mb-3">URL del Evento Virtual</label>
+                                <input type="url" name="meeting_url" id="meeting_url"
+                                       class="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-lg"
+                                       placeholder="https://zoom.us/j/123456789 o https://meet.google.com/...">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Modal Footer -->
+            <div class="border-t border-gray-100 px-10 py-6">
+                <div class="flex justify-between">
+                    <button type="button" id="prevBtn" onclick="prevStep()" 
+                            class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors hidden">
+                        ← Anterior
+                    </button>
+                    <div class="flex space-x-4">
+                        <button type="button" onclick="closeEventModal()" 
+                                class="px-6 py-3 text-gray-600 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="button" id="nextBtn" onclick="nextStep()" 
+                                class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-xl hover:from-purple-500 hover:to-blue-500 transition-all">
+                            Siguiente →
+                        </button>
+                        <button type="button" id="createBtn" onclick="submitEvent()" 
+                                class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl hover:from-green-500 hover:to-emerald-500 transition-all hidden">
+                            Crear Evento
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentStep = 1;
+const totalSteps = 3;
+
+function openEventModal() {
+    const modal = document.getElementById('eventModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    showStep(1);
+}
+
+function closeEventModal() {
+    const modal = document.getElementById('eventModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    
+    // Reset form
+    document.getElementById('eventForm').reset();
+    hideError();
+    currentStep = 1;
+    showStep(1);
+}
+
+function showStep(step) {
+    // Hide all steps
+    document.querySelectorAll('.step-content').forEach(stepEl => {
+        stepEl.classList.add('hidden');
+    });
+    
+    // Show current step
+    document.getElementById(`step${step}`).classList.remove('hidden');
+    
+    // Update step indicators
+    document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+        const stepNum = index + 1;
+        const nextStepText = indicator.nextElementSibling;
+        
+        if (stepNum < step) {
+            // Completed steps
+            indicator.className = 'w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center text-sm font-semibold step-indicator';
+            indicator.innerHTML = '✓';
+            nextStepText.className = 'ml-3 text-sm font-medium text-green-700';
+        } else if (stepNum === step) {
+            // Current step
+            indicator.className = 'w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-semibold step-indicator';
+            indicator.innerHTML = stepNum;
+            nextStepText.className = 'ml-3 text-sm font-medium text-blue-700';
+        } else {
+            // Future steps
+            indicator.className = 'w-10 h-10 rounded-full bg-gray-300 text-gray-600 flex items-center justify-center text-sm font-semibold step-indicator';
+            indicator.innerHTML = stepNum;
+            nextStepText.className = 'ml-3 text-sm font-medium text-gray-500';
+        }
+    });
+    
+    // Update buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const createBtn = document.getElementById('createBtn');
+    
+    if (step === 1) {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.remove('hidden');
+        createBtn.classList.add('hidden');
+    } else if (step === totalSteps) {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.add('hidden');
+        createBtn.classList.remove('hidden');
+    } else {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+        createBtn.classList.add('hidden');
+    }
+    
+    currentStep = step;
+}
+
+function nextStep() {
+    if (validateStep(currentStep)) {
+        if (currentStep < totalSteps) {
+            showStep(currentStep + 1);
+        }
+    }
+}
+
+function prevStep() {
+    if (currentStep > 1) {
+        showStep(currentStep - 1);
+    }
+}
+
+function validateStep(step) {
+    hideError();
+    
+    if (step === 1) {
+        const title = document.getElementById('title').value.trim();
+        const description = document.getElementById('description').value.trim();
+        const eventType = document.querySelector('input[name="event_type"]:checked');
+        
+        if (!title) {
+            showError('El título es requerido');
+            document.getElementById('title').focus();
+            return false;
+        }
+        if (!description) {
+            showError('La descripción es requerida');
+            document.getElementById('description').focus();
+            return false;
+        }
+        if (!eventType) {
+            showError('Selecciona un tipo de evento');
+            return false;
+        }
+    }
+    
+    if (step === 2) {
+        const startDateTime = document.getElementById('start_datetime').value;
+        const maxAttendees = document.getElementById('max_attendees').value;
+        const isVirtual = document.querySelector('input[name="is_virtual"]:checked');
+        
+        if (!startDateTime) {
+            showError('La fecha y hora son requeridas');
+            document.getElementById('start_datetime').focus();
+            return false;
+        }
+        
+        const selectedDate = new Date(startDateTime);
+        const now = new Date();
+        if (selectedDate <= now) {
+            showError('La fecha debe ser futura');
+            document.getElementById('start_datetime').focus();
+            return false;
+        }
+        
+        if (!maxAttendees || maxAttendees < 1) {
+            showError('La capacidad debe ser al menos 1');
+            document.getElementById('max_attendees').focus();
+            return false;
+        }
+        
+        if (!isVirtual) {
+            showError('Selecciona si el evento es presencial o virtual');
+            return false;
+        }
+    }
+    
+    if (step === 3) {
+        const isVirtual = document.querySelector('input[name="is_virtual"]:checked').value === 'true';
+        
+        if (isVirtual) {
+            const meetingUrl = document.getElementById('meeting_url').value.trim();
+            if (!meetingUrl) {
+                showError('La URL del evento virtual es requerida');
+                document.getElementById('meeting_url').focus();
+                return false;
+            }
+            try {
+                new URL(meetingUrl);
+            } catch {
+                showError('Ingresa una URL válida');
+                document.getElementById('meeting_url').focus();
+                return false;
+            }
+        } else {
+            const location = document.getElementById('location').value;
+            if (!location) {
+                showError('Selecciona una ubicación');
+                document.getElementById('location').focus();
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+function showError(message) {
+    const container = document.getElementById('errorContainer');
+    const messageEl = document.getElementById('errorMessage');
+    messageEl.textContent = message;
+    container.classList.remove('hidden');
+    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function hideError() {
+    document.getElementById('errorContainer').classList.add('hidden');
+}
+
+function submitEvent() {
+    if (!validateStep(3)) {
+        return;
+    }
+    
+    const createBtn = document.getElementById('createBtn');
+    const originalText = createBtn.textContent;
+    createBtn.disabled = true;
+    createBtn.textContent = 'Creando...';
+    
+    const formData = new FormData(document.getElementById('eventForm'));
+    
+    // Debug: Mostrar datos que se están enviando
+    console.log('=== DATOS DEL FORMULARIO ===');
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: "${value}"`);
+    }
+    console.log('===========================');
+    
+    fetch('{% url "core:events_list" %}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Response data:', data);
+        
+        if (data.success) {
+            // Success notification
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            toast.textContent = data.message || '¡Evento creado exitosamente!';
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+                closeEventModal();
+                location.reload();
+            }, 2000);
+        } else {
+            showError(data.error || 'Error al crear el evento');
+            createBtn.disabled = false;
+            createBtn.textContent = originalText;
+        }
+    })
+    .catch(error => {
+        console.error('Error completo:', error);
+        showError(`Error de conexión: ${error.message}. Por favor intenta de nuevo.`);
+        createBtn.disabled = false;
+        createBtn.textContent = originalText;
+    });
+}
+
+function viewEventDetails(eventId) {
+    // This can be implemented to show event details
+    console.log('View event details for:', eventId);
+}
+
+// Handle virtual/presencial toggle
+document.addEventListener('DOMContentLoaded', function() {
+    const virtualRadios = document.querySelectorAll('input[name="is_virtual"]');
+    const locationField = document.getElementById('location-field');
+    const meetingUrlField = document.getElementById('meeting-url-field');
+    
+    virtualRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'true') {
+                locationField.classList.add('hidden');
+                meetingUrlField.classList.remove('hidden');
+                document.getElementById('location').removeAttribute('required');
+                document.getElementById('meeting_url').setAttribute('required', '');
+            } else {
+                locationField.classList.remove('hidden');
+                meetingUrlField.classList.add('hidden');
+                document.getElementById('location').setAttribute('required', '');
+                document.getElementById('meeting_url').removeAttribute('required');
+            }
+        });
+    });
+    
+    // Initialize modal
+    showStep(1);
+});
+</script>
+
+{% endblock %}

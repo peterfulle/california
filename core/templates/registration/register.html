@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+
+{% block title %}Join Silicon Valley Ecosystem{% endblock %}
+
+{% block public_content %}
+<div class="min-h-screen relative overflow-hidden">
+    <!-- Silicon Valley Gradient Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-800"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-blue-600/20 via-transparent to-transparent"></div>
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-violet-600/20 via-transparent to-transparent"></div>
+    
+    <!-- Animated network pattern -->
+    <div class="absolute inset-0 opacity-20">
+        <div class="absolute top-20 left-20 w-px h-32 bg-gradient-to-b from-blue-400 to-transparent"></div>
+        <div class="absolute top-20 left-20 w-32 h-px bg-gradient-to-r from-blue-400 to-transparent"></div>
+        <div class="absolute bottom-20 right-20 w-px h-32 bg-gradient-to-t from-violet-400 to-transparent"></div>
+        <div class="absolute bottom-20 right-20 w-32 h-px bg-gradient-to-l from-violet-400 to-transparent"></div>
+    </div>
+    
+    <div class="relative z-10 flex items-center justify-center min-h-screen py-12 px-4 sm:px-6 lg:px-8">
+        <div class="max-w-lg w-full space-y-8">
+            <!-- Header -->
+            <div class="text-center space-y-6">
+                <div class="relative">
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-white via-blue-200 to-violet-200 bg-clip-text text-transparent mb-2">
+                        Join the Ecosystem
+                    </h1>
+                    <p class="text-lg text-slate-300 font-light">
+                        Connect with Silicon Valley's innovation network
+                    </p>
+                </div>
+                <div class="w-32 h-0.5 bg-gradient-to-r from-blue-500 via-violet-500 to-cyan-500 mx-auto rounded-full"></div>
+            </div>
+            
+            <!-- Glass Morphism Form -->
+            <div class="relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-violet-600/10 rounded-2xl blur-xl"></div>
+                <form method="post" class="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-8 space-y-6 shadow-2xl">
+                    {% csrf_token %}
+                    
+                    {% if form.errors %}
+                        <div class="bg-red-500/10 backdrop-blur-sm border border-red-400/30 text-red-300 px-4 py-3 rounded-xl">
+                            <ul class="space-y-1">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <li class="text-sm">{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Profile Type -->
+                    <div class="space-y-3">
+                        <label class="block text-sm font-medium text-slate-200">
+                            Select Your Role in the Ecosystem
+                        </label>
+                        <select name="user_type" required 
+                                class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300">
+                            <option value="" class="bg-slate-800">Choose your profile</option>
+                            <option value="founder" class="bg-slate-800">Founder / Entrepreneur</option>
+                            <option value="investor" class="bg-slate-800">Investor / VC</option>
+                            <option value="advisor" class="bg-slate-800">Advisor / Mentor</option>
+                            <option value="community" class="bg-slate-800">Community Member</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Personal Information Grid -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label for="first_name" class="block text-sm font-medium text-slate-200">First Name</label>
+                            <input type="text" name="first_name" required 
+                                   class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300"
+                                   placeholder="First name">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="last_name" class="block text-sm font-medium text-slate-200">Last Name</label>
+                            <input type="text" name="last_name" required 
+                                   class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300"
+                                   placeholder="Last name">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="username" class="block text-sm font-medium text-slate-200">Username</label>
+                        <input type="text" name="username" required 
+                               class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300"
+                               placeholder="Choose a unique username">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="email" class="block text-sm font-medium text-slate-200">Email Address</label>
+                        <input type="email" name="email" required 
+                               class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300"
+                               placeholder="your@email.com">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="password1" class="block text-sm font-medium text-slate-200">Password</label>
+                        <input type="password" name="password1" required 
+                               class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300"
+                               placeholder="Create secure password">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="password2" class="block text-sm font-medium text-slate-200">Confirm Password</label>
+                        <input type="password" name="password2" required 
+                               class="w-full px-4 py-3 bg-white/5 backdrop-blur-sm border border-white/20 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-400/50 transition-all duration-300"
+                               placeholder="Confirm your password">
+                    </div>
+                    
+                    <div class="pt-4">
+                        <button type="submit" 
+                                class="w-full bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25">
+                            Create Account
+                        </button>
+                    </div>
+                    
+                    <div class="pt-4 text-center">
+                        <p class="text-slate-300 text-sm">
+                            Already part of the ecosystem? 
+                            <a href="{% url 'core:login' %}" class="text-blue-400 hover:text-blue-300 font-medium transition-colors duration-200">Sign in here</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Bottom accent -->
+            <div class="text-center">
+                <p class="text-xs text-slate-400 font-light">
+                    Join thousands of innovators building the future
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

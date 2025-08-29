@@ -1,0 +1,626 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestión de Equipo - {{ startup.company_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'core:startup_profile' startup.id %}" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Gestión de Equipo</h1>
+                            <p class="text-gray-600">{{ startup.company_name }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if is_founder %}
+                    <div class="flex space-x-3">
+                        <button id="add-team-member" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Agregar Miembro
+                        </button>
+                        <button id="save-people-data" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                            </svg>
+                            Guardar Todo
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if is_founder %}
+        <form id="people-form" method="post">
+            {% csrf_token %}
+        {% endif %}
+
+            <!-- Navigation Tabs -->
+            <div class="mb-8">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <button type="button" class="people-tab active whitespace-nowrap py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-tab="team">
+                            Equipo Principal
+                        </button>
+                        <button type="button" class="people-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="equity">
+                            Equity & Cap Table
+                        </button>
+                        <button type="button" class="people-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="culture">
+                            Cultura & Valores
+                        </button>
+                        <button type="button" class="people-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="hiring">
+                            Plan de Contratación
+                        </button>
+                        <button type="button" class="people-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="org">
+                            Organigrama
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Tab Content: Equipo Principal -->
+            <div id="tab-team" class="tab-panel active">
+                <!-- Team Overview Stats -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                        <div class="text-3xl font-bold text-blue-600" id="total-employees">{{ private_data.total_employees|default:0 }}</div>
+                        <div class="text-sm text-gray-600">Total Empleados</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                        <div class="text-3xl font-bold text-green-600" id="founders-count">{{ private_data.founders_count|default:0 }}</div>
+                        <div class="text-sm text-gray-600">Fundadores</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                        <div class="text-3xl font-bold text-purple-600" id="tech-team-size">{{ private_data.tech_team_size|default:0 }}</div>
+                        <div class="text-sm text-gray-600">Equipo Tech</div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+                        <div class="text-3xl font-bold text-orange-600" id="leadership-team-size">{{ private_data.leadership_team_size|default:0 }}</div>
+                        <div class="text-sm text-gray-600">Leadership</div>
+                    </div>
+                </div>
+
+                <!-- Team Members -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-semibold text-gray-900">Miembros del Equipo</h3>
+                        {% if is_founder %}
+                        <button type="button" class="text-blue-600 hover:text-blue-800 text-sm font-medium" onclick="addTeamMember()">
+                            + Agregar Miembro
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <div id="team-members-container">
+                        <!-- Founder (Auto-populated) -->
+                        <div class="team-member-card border border-gray-200 rounded-lg p-6 mb-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xl font-bold">{{ startup.founder.first_name|first }}{{ startup.founder.last_name|first }}</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                                            <input type="text" value="{{ startup.founder.first_name }} {{ startup.founder.last_name }}" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                                            <input type="text" value="CEO & Founder" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                            <input type="email" value="{{ startup.founder.email }}" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2" readonly>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Equity (%)</label>
+                                            <input type="number" step="0.1" value="70.0" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                                   {% if not is_founder %}readonly{% endif %}>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4">
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Bio / Experiencia</label>
+                                        <textarea rows="2" 
+                                                  class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                                  placeholder="Experiencia previa, logros, background académico..."
+                                                  {% if not is_founder %}readonly{% endif %}>{{ startup.founder.bio|default:"" }}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Additional team members would be dynamically added here -->
+                        <div id="dynamic-team-members">
+                            <!-- Dynamic team members will be inserted here -->
+                        </div>
+                    </div>
+
+                    {% if is_founder %}
+                    <!-- Team Member Template (Hidden) -->
+                    <template id="team-member-template">
+                        <div class="team-member-card border border-gray-200 rounded-lg p-6 mb-4">
+                            <div class="flex items-start space-x-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-blue-600 rounded-full flex items-center justify-center">
+                                        <span class="text-white text-xl font-bold">?</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre Completo</label>
+                                            <input type="text" name="team_member_name[]" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                                   placeholder="John Doe">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Cargo</label>
+                                            <input type="text" name="team_member_position[]" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                                   placeholder="CTO">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                                            <input type="email" name="team_member_email[]" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                                   placeholder="john@startup.com">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Equity (%)</label>
+                                            <input type="number" step="0.1" name="team_member_equity[]" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                                   placeholder="5.0">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">Bio / Experiencia</label>
+                                            <textarea rows="2" name="team_member_bio[]" 
+                                                      class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                                      placeholder="Experiencia previa, logros, background académico..."></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">LinkedIn / Redes</label>
+                                            <input type="url" name="team_member_linkedin[]" 
+                                                   class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                                   placeholder="https://linkedin.com/in/johndoe">
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex justify-end">
+                                        <button type="button" onclick="removeTeamMember(this)" 
+                                                class="text-red-600 hover:text-red-800 text-sm font-medium">
+                                            Eliminar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tab Content: Equity & Cap Table -->
+            <div id="tab-equity" class="tab-panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Equity Distribution -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Distribución de Equity</h3>
+                        
+                        <div class="space-y-4">
+                            <!-- Founders Pool -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Founders Pool</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Founders Equity (%)</label>
+                                        <input type="number" step="0.1" name="founders_equity_total" 
+                                               value="{{ private_data.founders_equity_total|default:'70.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Employee Pool -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Employee Stock Option Pool (ESOP)</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">ESOP Pool (%)</label>
+                                        <input type="number" step="0.1" name="esop_pool_percentage" 
+                                               value="{{ private_data.esop_pool_percentage|default:'15.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">ESOP Allocated (%)</label>
+                                        <input type="number" step="0.1" name="esop_allocated" 
+                                               value="{{ private_data.esop_allocated|default:'5.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Investor Pool -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Investors</h4>
+                                <div class="space-y-3">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Total Investor Equity (%)</label>
+                                        <input type="number" step="0.1" name="investor_equity_total" 
+                                               value="{{ private_data.investor_equity_total|default:'15.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cap Table Visualization -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cap Table Visual</h3>
+                        
+                        <!-- Pie Chart Placeholder -->
+                        <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center mb-6">
+                            <canvas id="equity-chart" width="300" height="300"></canvas>
+                        </div>
+
+                        <!-- Summary Table -->
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center p-2 bg-blue-50 rounded">
+                                <span class="text-sm font-medium text-blue-900">Fundadores</span>
+                                <span class="text-sm font-bold text-blue-900" id="founders-percentage">70%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-green-50 rounded">
+                                <span class="text-sm font-medium text-green-900">ESOP Pool</span>
+                                <span class="text-sm font-bold text-green-900" id="esop-percentage">15%</span>
+                            </div>
+                            <div class="flex justify-between items-center p-2 bg-purple-50 rounded">
+                                <span class="text-sm font-medium text-purple-900">Inversionistas</span>
+                                <span class="text-sm font-bold text-purple-900" id="investor-percentage">15%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vesting Schedules -->
+                <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Vesting Schedules</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Persona</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Equity Total</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vesting Period</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cliff</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vested</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ startup.founder.first_name }} {{ startup.founder.last_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">70.0%</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">4 años</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">1 año</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">100%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Cultura & Valores -->
+            <div id="tab-culture" class="tab-panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Company Culture -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cultura Corporativa</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Misión</label>
+                                <textarea rows="3" name="company_mission" 
+                                          class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                          placeholder="Nuestra misión es..."
+                                          {% if not is_founder %}readonly{% endif %}>{{ private_data.company_mission|default:"" }}</textarea>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Visión</label>
+                                <textarea rows="3" name="company_vision" 
+                                          class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                          placeholder="Nuestra visión es..."
+                                          {% if not is_founder %}readonly{% endif %}>{{ private_data.company_vision|default:"" }}</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Valores Principales</label>
+                                <textarea rows="4" name="core_values" 
+                                          class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                          placeholder="1. Innovación&#10;2. Transparencia&#10;3. Excelencia..."
+                                          {% if not is_founder %}readonly{% endif %}>{{ private_data.core_values|default:"" }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Work Environment -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Ambiente de Trabajo</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Modalidad de Trabajo</label>
+                                <select name="work_mode" class="w-full border border-gray-300 rounded-lg px-3 py-2" {% if not is_founder %}disabled{% endif %}>
+                                    <option value="remote">100% Remoto</option>
+                                    <option value="hybrid" selected>Híbrido</option>
+                                    <option value="onsite">Presencial</option>
+                                </select>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Ubicación Principal</label>
+                                <input type="text" name="main_location" 
+                                       value="{{ private_data.main_location|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="Madrid, España"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Beneficios</label>
+                                <textarea rows="4" name="employee_benefits" 
+                                          class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                          placeholder="- Seguro médico privado&#10;- Stock options&#10;- Flexibilidad horaria..."
+                                          {% if not is_founder %}readonly{% endif %}>{{ private_data.employee_benefits|default:"" }}</textarea>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Diversidad & Inclusión</label>
+                                <textarea rows="3" name="diversity_initiatives" 
+                                          class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                          placeholder="Nuestras iniciativas de D&I..."
+                                          {% if not is_founder %}readonly{% endif %}>{{ private_data.diversity_initiatives|default:"" }}</textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Plan de Contratación -->
+            <div id="tab-hiring" class="tab-panel hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Plan de Contratación 2025</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- Hiring Timeline -->
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-4">Timeline de Contrataciones</h4>
+                            
+                            <div class="space-y-4">
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h5 class="font-medium text-gray-900">Q1 2025</h5>
+                                        <span class="text-sm text-gray-500">3 posiciones</span>
+                                    </div>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Senior Backend Developer</li>
+                                        <li>• Product Manager</li>
+                                        <li>• Marketing Specialist</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="border border-gray-200 rounded-lg p-4">
+                                    <div class="flex justify-between items-center mb-2">
+                                        <h5 class="font-medium text-gray-900">Q2 2025</h5>
+                                        <span class="text-sm text-gray-500">2 posiciones</span>
+                                    </div>
+                                    <ul class="text-sm text-gray-600 space-y-1">
+                                        <li>• Sales Representative</li>
+                                        <li>• UI/UX Designer</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Budget & Priorities -->
+                        <div>
+                            <h4 class="font-medium text-gray-900 mb-4">Presupuesto & Prioridades</h4>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Presupuesto Total Anual</label>
+                                    <div class="relative">
+                                        <span class="absolute left-3 top-3 text-gray-500">€</span>
+                                        <input type="number" name="hiring_budget_annual" 
+                                               value="{{ private_data.hiring_budget_annual|default:'' }}"
+                                               class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               placeholder="300000"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Prioridad #1</label>
+                                    <input type="text" name="hiring_priority_1" 
+                                           value="{{ private_data.hiring_priority_1|default:'' }}"
+                                           class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="Desarrolladores Senior"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Estrategia de Reclutamiento</label>
+                                    <textarea rows="3" name="recruitment_strategy" 
+                                              class="w-full border border-gray-300 rounded-lg px-3 py-2" 
+                                              placeholder="Nuestra estrategia incluye..."
+                                              {% if not is_founder %}readonly{% endif %}>{{ private_data.recruitment_strategy|default:"" }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Organigrama -->
+            <div id="tab-org" class="tab-panel hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Estructura Organizacional</h3>
+                    
+                    <!-- Org Chart Placeholder -->
+                    <div class="h-96 bg-gray-50 rounded-lg flex items-center justify-center">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                            </svg>
+                            <p class="text-gray-500">Organigrama interactivo</p>
+                            <p class="text-sm text-gray-400 mt-2">Próximamente disponible</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% if is_founder %}
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab functionality
+    const tabs = document.querySelectorAll('.people-tab');
+    const panels = document.querySelectorAll('.tab-panel');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Update tab appearance
+            tabs.forEach(t => {
+                t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                t.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            this.classList.remove('border-transparent', 'text-gray-500');
+            this.classList.add('active', 'border-blue-500', 'text-blue-600');
+            
+            // Show/hide panels
+            panels.forEach(panel => {
+                panel.classList.add('hidden');
+                panel.classList.remove('active');
+            });
+            
+            const targetPanel = document.getElementById(`tab-${targetTab}`);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+                targetPanel.classList.add('active');
+            }
+        });
+    });
+
+    // Equity chart initialization
+    updateEquityChart();
+    
+    // Update equity percentages when values change
+    document.querySelectorAll('input[name*="equity"]').forEach(input => {
+        input.addEventListener('input', updateEquityChart);
+    });
+});
+
+function addTeamMember() {
+    const template = document.getElementById('team-member-template');
+    const container = document.getElementById('dynamic-team-members');
+    const clone = template.content.cloneNode(true);
+    container.appendChild(clone);
+}
+
+function removeTeamMember(button) {
+    button.closest('.team-member-card').remove();
+}
+
+function updateEquityChart() {
+    const foundersEquity = parseFloat(document.querySelector('input[name="founders_equity_total"]').value) || 70;
+    const esopEquity = parseFloat(document.querySelector('input[name="esop_pool_percentage"]').value) || 15;
+    const investorEquity = parseFloat(document.querySelector('input[name="investor_equity_total"]').value) || 15;
+    
+    // Update percentage displays
+    document.getElementById('founders-percentage').textContent = foundersEquity + '%';
+    document.getElementById('esop-percentage').textContent = esopEquity + '%';
+    document.getElementById('investor-percentage').textContent = investorEquity + '%';
+    
+    // Simple pie chart representation (could be enhanced with Chart.js)
+    const canvas = document.getElementById('equity-chart');
+    if (canvas && canvas.getContext) {
+        const ctx = canvas.getContext('2d');
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = 100;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Calculate angles
+        const total = foundersEquity + esopEquity + investorEquity;
+        const foundersAngle = (foundersEquity / total) * 2 * Math.PI;
+        const esopAngle = (esopEquity / total) * 2 * Math.PI;
+        const investorAngle = (investorEquity / total) * 2 * Math.PI;
+        
+        let currentAngle = 0;
+        
+        // Draw founders slice
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + foundersAngle);
+        ctx.closePath();
+        ctx.fillStyle = '#3B82F6';
+        ctx.fill();
+        currentAngle += foundersAngle;
+        
+        // Draw ESOP slice
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + esopAngle);
+        ctx.closePath();
+        ctx.fillStyle = '#10B981';
+        ctx.fill();
+        currentAngle += esopAngle;
+        
+        // Draw investor slice
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + investorAngle);
+        ctx.closePath();
+        ctx.fillStyle = '#8B5CF6';
+        ctx.fill();
+    }
+}
+</script>
+
+{% endblock %}

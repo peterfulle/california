@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ startup.company_name }} - Perfil{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Startup Header -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+            <div class="flex items-center space-x-6">
+                <div class="flex-shrink-0">
+                    {% if startup.logo %}
+                        <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-20 h-20 rounded-lg object-cover">
+                    {% else %}
+                        <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <span class="text-2xl font-bold text-white">{{ startup.company_name|first|upper }}</span>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="flex-1">
+                    <h1 class="text-3xl font-bold text-gray-900">{{ startup.company_name }}</h1>
+                    <p class="text-xl text-gray-600 mt-2">{{ startup.tagline }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test private sections -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+            <h2 class="text-2xl font-bold mb-4">Private Data Sections (Test)</h2>
+            
+            <!-- Basic test for authentication -->
+            {% if user.is_authenticated %}
+                <p class="text-green-600">✅ User is authenticated</p>
+                
+                {% if is_founder %}
+                    <p class="text-blue-600">✅ User is founder</p>
+                {% else %}
+                    <p class="text-orange-600">⚠️ User is not founder</p>
+                {% endif %}
+                
+            {% else %}
+                <p class="text-red-600">❌ User is not authenticated</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

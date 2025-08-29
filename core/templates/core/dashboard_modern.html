@@ -1,0 +1,445 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Centro de Control{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Centro de control para tu startup{% endblock %}
+
+{% block dashboard_content %}
+<div class="space-y-6">
+    <!-- Welcome Section -->
+    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 text-white">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="relative z-10">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold mb-2">
+                        ¡Hola {{ user.get_full_name|default:user.username }}! 👋
+                    </h1>
+                    <p class="text-blue-100 text-base">
+                        Gestiona tu startup desde tu centro de control
+                    </p>
+                </div>
+                <div class="hidden md:block">
+                    <div class="w-20 h-20 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L13.09 8.26L22 9L13.09 9.74L12 16L10.91 9.74L2 9L10.91 8.26L12 2Z"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="card-modern p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Startups</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_startups|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-modern p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Inversores</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ total_investors|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-modern p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.172-.267l-2.628 1.543A1 1 0 017 20.414l1.543-2.628A8.955 8.955 0 014 17c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Mensajes</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ message_count|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-modern p-6">
+            <div class="flex items-center">
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                    <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                    </svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-600">Conexiones</p>
+                    <p class="text-2xl font-bold text-gray-900">{{ connection_count|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Content Area -->
+        <div class="lg:col-span-2 space-y-6">
+            
+            {% if user.founderprofile %}
+            <!-- Startup Management Section -->
+            <div class="card-modern p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-bold text-gray-900">Mis Startups</h2>
+                    <a href="/startup/create/" class="btn-modern btn-primary px-4 py-2 text-sm">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Nueva Startup
+                    </a>
+                </div>
+
+                {% if user.founderprofile.startup_set.exists %}
+                    <div class="space-y-4">
+                        {% for startup in user.founderprofile.startup_set.all %}
+                        <div class="border border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all duration-200">
+                            <div class="flex items-start justify-between">
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        {% if startup.logo %}
+                                            <img class="w-12 h-12 rounded-xl object-cover" src="{{ startup.logo.url }}" alt="{{ startup.company_name }}">
+                                        {% else %}
+                                            <span class="text-white font-bold text-lg">{{ startup.company_name|first }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-semibold text-gray-900 mb-1">{{ startup.company_name }}</h3>
+                                        <p class="text-sm text-gray-600 mb-3">{{ startup.description|truncatewords:15|default:"Descripción no disponible" }}</p>
+                                        
+                                        <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                            {% if startup.stage %}
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full">{{ startup.get_stage_display }}</span>
+                                            {% endif %}
+                                            {% if startup.industry %}
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full">{{ startup.industry.name }}</span>
+                                            {% endif %}
+                                            {% if startup.founded_date %}
+                                            <span>Fundada {{ startup.founded_date|date:"Y" }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex space-x-2">
+                                    <a href="/startup/{{ startup.id }}/" class="btn-modern btn-secondary px-3 py-2 text-sm">Ver</a>
+                                    <button class="btn-modern btn-outline px-3 py-2 text-sm">Editar</button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-12">
+                        <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-2">¡Crea tu primera startup!</h3>
+                        <p class="text-gray-600 mb-6 text-sm">Comienza tu viaje emprendedor registrando tu startup en nuestra plataforma.</p>
+                        <a href="/startup/create/" class="btn-modern btn-primary px-6 py-3">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Crear Startup
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% elif user.investorprofile %}
+            <!-- Investor Portfolio Section -->
+            <div class="card-modern p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Oportunidades de Inversión</h2>
+                
+                {% if latest_startups %}
+                    <div class="space-y-4">
+                        {% for startup in latest_startups|slice:":3" %}
+                        <div class="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-600 rounded-lg flex items-center justify-center">
+                                        <span class="text-white font-bold text-sm">{{ startup.company_name|first }}</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-semibold text-gray-900">{{ startup.company_name }}</h4>
+                                        <p class="text-xs text-gray-600">{{ startup.industry.name|default:"Tech" }} • {{ startup.get_stage_display|default:"Early Stage" }}</p>
+                                    </div>
+                                </div>
+                                <a href="/startup/{{ startup.id }}/" class="btn-modern btn-outline px-3 py-2 text-xs">Ver Detalles</a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="mt-6 text-center">
+                        <a href="/startups/" class="btn-modern btn-secondary px-6 py-3">Ver Todas las Startups</a>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <p class="text-gray-600 text-sm">No hay startups disponibles en este momento.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            {% else %}
+            <!-- New User Setup -->
+            <div class="card-modern p-8">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-3">¡Bienvenido a Silicon Founders!</h2>
+                    <p class="text-gray-600 mb-8 text-sm">Elige tu perfil para comenzar tu experiencia</p>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 max-w-md mx-auto">
+                        <a href="/startup/create/" class="block p-4 border-2 border-blue-200 rounded-xl hover:border-blue-400 transition-colors">
+                            <div class="text-2xl mb-2">🚀</div>
+                            <h3 class="font-semibold text-gray-900 text-sm">Soy Fundador</h3>
+                            <p class="text-xs text-gray-600 mt-1">Crear startup</p>
+                        </a>
+                        
+                        <a href="/investor/create/" class="block p-4 border-2 border-green-200 rounded-xl hover:border-green-400 transition-colors">
+                            <div class="text-2xl mb-2">💰</div>
+                            <h3 class="font-semibold text-gray-900 text-sm">Soy Inversor</h3>
+                            <p class="text-xs text-gray-600 mt-1">Buscar startups</p>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity & Analytics -->
+            <div class="card-modern p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-6">Actividad Reciente</h2>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start space-x-3 p-3 bg-blue-50 rounded-lg">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">Nueva startup registrada en la plataforma</p>
+                            <p class="text-xs text-gray-600">Hace 2 horas</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-3 bg-green-50 rounded-lg">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">Nuevo inversor se unió a la comunidad</p>
+                            <p class="text-xs text-gray-600">Hace 5 horas</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3 p-3 bg-purple-50 rounded-lg">
+                        <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.172-.267l-2.628 1.543A1 1 0 017 20.414l1.543-2.628A8.955 8.955 0 014 17c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-medium text-gray-900">Nueva conexión establecida</p>
+                            <p class="text-xs text-gray-600">Hace 1 día</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Messages & Notifications -->
+            <div class="card-modern p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Mensajes</h3>
+                    <span class="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">JD</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">Juan Pérez</p>
+                                <p class="text-xs text-gray-600 truncate">Interesado en tu startup...</p>
+                                <p class="text-xs text-gray-500">Hace 2h</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">MR</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">María Rodríguez</p>
+                                <p class="text-xs text-gray-600 truncate">Propuesta de inversión...</p>
+                                <p class="text-xs text-gray-500">Hace 4h</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span class="text-white text-xs font-bold">SF</span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-medium text-gray-900 truncate">Silicon Founders</p>
+                                <p class="text-xs text-gray-600 truncate">Actualización de la plataforma</p>
+                                <p class="text-xs text-gray-500">Hace 1d</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button class="w-full btn-modern btn-outline text-sm py-2">Ver Todos los Mensajes</button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card-modern p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones Rápidas</h3>
+                <div class="space-y-3">
+                    <a href="/startups/" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Explorar Startups</span>
+                    </a>
+
+                    <a href="/investors/" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Buscar Inversores</span>
+                    </a>
+
+                    <a href="/events/" class="flex items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-900">Próximos Eventos</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Tips & Insights -->
+            <div class="card-modern p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">💡 Consejos</h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                        <h4 class="text-sm font-semibold text-blue-900 mb-2">Optimiza tu perfil</h4>
+                        <p class="text-xs text-blue-700 leading-relaxed">
+                            Completa toda la información de tu startup para atraer más inversores interesados.
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                        <h4 class="text-sm font-semibold text-green-900 mb-2">Conecta con la comunidad</h4>
+                        <p class="text-xs text-green-700 leading-relaxed">
+                            Participa en eventos y networking para expandir tu red de contactos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Dashboard Styles -->
+<style>
+/* Enhanced card hover effects */
+.card-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Smooth transitions for all interactive elements */
+.card-modern, .btn-modern {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Message notification pulse */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+.animate-pulse {
+    animation: pulse 2s infinite;
+}
+
+/* Custom scrollbar for message area */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .grid.lg\\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+    
+    .lg\\:col-span-2 {
+        grid-column: span 1;
+    }
+}
+</style>
+
+<!-- Modern dashboard CSS link -->
+<link rel="stylesheet" href="{% static 'css/modern-forms.css' %}">
+{% endblock %}

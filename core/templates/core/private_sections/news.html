@@ -1,0 +1,398 @@
+{% extends 'base.html' %}
+
+{% block title %}News & Updates - {{ startup.company_name }} | Silicon Founders{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-6">
+                <nav class="flex items-center space-x-4 text-sm text-gray-500 mb-4">
+                    <a href="{% url 'core:startup_profile' startup.id %}" class="hover:text-gray-700">{{ startup.company_name }}</a>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                    <span class="text-gray-900 font-medium">Noticias y Actualizaciones</span>
+                </nav>
+
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 flex items-center">
+                            <svg class="w-8 h-8 text-purple-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
+                            </svg>
+                            Noticias y Actualizaciones
+                        </h1>
+                        <p class="text-gray-600 mt-1">Hitos, anuncios y actualizaciones del mercado</p>
+                    </div>
+                    
+                    {% if is_founder %}
+                    <div class="flex space-x-3">
+                        <button onclick="toggleEditMode()" id="editButton" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            Editar Información
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8">
+                
+                <!-- Edit Form (Hidden by default) -->
+                {% if is_founder %}
+                <form method="post" id="editForm" class="hidden space-y-8">
+                    {% csrf_token %}
+                    
+                    <!-- Recent Milestones Form -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Hitos Recientes</h2>
+                        
+                        <div>
+                            <label for="recent_milestones" class="block text-sm font-medium text-gray-700 mb-2">
+                                Logros y Hitos Importantes
+                            </label>
+                            <textarea id="recent_milestones" name="recent_milestones" rows="8"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Describe los hitos más importantes alcanzados recientemente...">{{ private_data.recent_milestones|default:'' }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">Incluye fechas, métricas alcanzadas, nuevos clientes, productos lanzados, etc.</p>
+                        </div>
+                    </div>
+
+                    <!-- Upcoming Announcements Form -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Próximos Anuncios</h2>
+                        
+                        <div>
+                            <label for="upcoming_announcements" class="block text-sm font-medium text-gray-700 mb-2">
+                                Anuncios y Eventos Planificados
+                            </label>
+                            <textarea id="upcoming_announcements" name="upcoming_announcements" rows="6"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Describe los próximos anuncios, lanzamientos, eventos o hitos planificados...">{{ private_data.upcoming_announcements|default:'' }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">Incluye timeline esperado, impacto potencial y detalles relevantes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Partnerships Form -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Alianzas y Partnerships</h2>
+                        
+                        <div>
+                            <label for="partnerships" class="block text-sm font-medium text-gray-700 mb-2">
+                                Alianzas Estratégicas y Partners
+                            </label>
+                            <textarea id="partnerships" name="partnerships" rows="6"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Describe las alianzas estratégicas, partnerships y colaboraciones...">{{ private_data.partnerships|default:'' }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">Incluye nombres de partners, tipo de colaboración y beneficios mutuos.</p>
+                        </div>
+                    </div>
+
+                    <!-- Market Updates Form -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Actualizaciones del Mercado</h2>
+                        
+                        <div>
+                            <label for="market_updates" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tendencias y Cambios del Mercado
+                            </label>
+                            <textarea id="market_updates" name="market_updates" rows="6"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Describe las tendencias del mercado, cambios en la industria y oportunidades...">{{ private_data.market_updates|default:'' }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">Incluye análisis de tendencias, nuevas oportunidades y cambios relevantes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Competitive Intelligence Form -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Inteligencia Competitiva</h2>
+                        
+                        <div>
+                            <label for="competitive_intelligence" class="block text-sm font-medium text-gray-700 mb-2">
+                                Análisis de Competencia
+                            </label>
+                            <textarea id="competitive_intelligence" name="competitive_intelligence" rows="6"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Información sobre competidores, movimientos en el mercado y posicionamiento...">{{ private_data.competitive_intelligence|default:'' }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">Incluye análisis de competidores, diferenciación y estrategias competitivas.</p>
+                        </div>
+                    </div>
+
+                    <!-- Regulatory Updates Form -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6">Actualizaciones Regulatorias</h2>
+                        
+                        <div>
+                            <label for="regulatory_updates" class="block text-sm font-medium text-gray-700 mb-2">
+                                Cambios Regulatorios y Compliance
+                            </label>
+                            <textarea id="regulatory_updates" name="regulatory_updates" rows="6"
+                                      class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                      placeholder="Información sobre cambios regulatorios, compliance y aspectos legales...">{{ private_data.regulatory_updates|default:'' }}</textarea>
+                            <p class="mt-2 text-sm text-gray-500">Incluye nuevas regulaciones, requirements de compliance y impacto en el negocio.</p>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="flex justify-end space-x-3">
+                            <button type="button" onclick="toggleEditMode()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-blue-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Guardar Cambios
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                {% endif %}
+
+                <!-- View Mode (Default) -->
+                <div id="viewMode">
+                    <!-- Recent Milestones -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Hitos Recientes
+                        </h2>
+                        
+                        {% if private_data.recent_milestones %}
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {{ private_data.recent_milestones|linebreaks }}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">No hay hitos recientes registrados</p>
+                                {% if is_founder %}
+                                <button onclick="toggleEditMode()" class="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Agregar hitos recientes
+                                </button>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Upcoming Announcements -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Próximos Anuncios
+                        </h2>
+                        
+                        {% if private_data.upcoming_announcements %}
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {{ private_data.upcoming_announcements|linebreaks }}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-6">
+                                <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">No hay anuncios próximos registrados</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Partnerships -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 text-orange-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            Alianzas y Partnerships
+                        </h2>
+                        
+                        {% if private_data.partnerships %}
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {{ private_data.partnerships|linebreaks }}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-6">
+                                <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">No hay alianzas registradas</p>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Market Updates -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h2 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                            </svg>
+                            Actualizaciones del Mercado
+                        </h2>
+                        
+                        {% if private_data.market_updates %}
+                            <div class="prose prose-sm max-w-none text-gray-700">
+                                {{ private_data.market_updates|linebreaks }}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-6">
+                                <svg class="w-10 h-10 text-gray-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                                <p class="text-sm text-gray-500">No hay actualizaciones del mercado</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <!-- Quick Stats -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Resumen de Actividad</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Última actualización</span>
+                            <span class="text-sm font-medium text-gray-900">{{ private_data.updated_at|date:"d M Y" }}</span>
+                        </div>
+                        
+                        <div class="border-t pt-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-green-600">
+                                        {% if private_data.recent_milestones %}1{% else %}0{% endif %}
+                                    </div>
+                                    <div class="text-xs text-gray-500">Hitos</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-blue-600">
+                                        {% if private_data.upcoming_announcements %}1{% else %}0{% endif %}
+                                    </div>
+                                    <div class="text-xs text-gray-500">Anuncios</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-orange-600">
+                                        {% if private_data.partnerships %}1{% else %}0{% endif %}
+                                    </div>
+                                    <div class="text-xs text-gray-500">Partners</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-lg font-bold text-purple-600">
+                                        {% if private_data.market_updates %}1{% else %}0{% endif %}
+                                    </div>
+                                    <div class="text-xs text-gray-500">Mercado</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Competitive & Regulatory -->
+                {% if private_data.competitive_intelligence or private_data.regulatory_updates %}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Análisis y Regulación</h3>
+                    
+                    {% if private_data.competitive_intelligence %}
+                    <div class="mb-4">
+                        <h4 class="text-sm font-medium text-gray-900 mb-2 flex items-center">
+                            <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Competencia
+                        </h4>
+                        <div class="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">
+                            {{ private_data.competitive_intelligence|truncatewords:25 }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if private_data.regulatory_updates %}
+                    <div>
+                        <h4 class="text-sm font-medium text-gray-900 mb-2 flex items-center">
+                            <svg class="w-4 h-4 text-yellow-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.98-.833-2.75 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                            </svg>
+                            Regulación
+                        </h4>
+                        <div class="text-sm text-gray-700 bg-gray-50 rounded-lg p-3">
+                            {{ private_data.regulatory_updates|truncatewords:25 }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Access Info -->
+                {% if not is_founder %}
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-900">Acceso Aprobado</h4>
+                            <p class="text-sm text-blue-700 mt-1">Tienes acceso a información sensible. Mantén la confidencialidad.</p>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Last Updated -->
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h4 class="text-sm font-medium text-gray-900 mb-2">Última Actualización</h4>
+                    <p class="text-sm text-gray-600">{{ private_data.updated_at|date:"d M Y" }} a las {{ private_data.updated_at|time:"H:i" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleEditMode() {
+    const editForm = document.getElementById('editForm');
+    const viewMode = document.getElementById('viewMode');
+    const editButton = document.getElementById('editButton');
+    
+    if (editForm.classList.contains('hidden')) {
+        // Switch to edit mode
+        editForm.classList.remove('hidden');
+        viewMode.classList.add('hidden');
+        editButton.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            Cancelar
+        `;
+        editButton.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+        editButton.classList.add('bg-gray-600', 'hover:bg-gray-700');
+    } else {
+        // Switch to view mode
+        editForm.classList.add('hidden');
+        viewMode.classList.remove('hidden');
+        editButton.innerHTML = `
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            </svg>
+            Editar Información
+        `;
+        editButton.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+        editButton.classList.add('bg-blue-600', 'hover:bg-blue-700');
+    }
+}
+</script>
+
+{% endblock %}

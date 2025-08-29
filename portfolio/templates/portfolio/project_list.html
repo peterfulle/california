@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Portfolio - DevStudio{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-primary">
+    <div class="container px-4 mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto text-center">
+            <h1 class="text-3xl font-bold text-white md:text-4xl font-display">Nuestro Portfolio</h1>
+            <p class="mt-4 text-xl text-gray-300">
+                Descubre nuestros proyectos y casos de éxito
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="py-16">
+    <div class="container px-4 mx-auto sm:px-6 lg:px-8">
+        <!-- Filter by category -->
+        <div class="flex flex-wrap items-center justify-center gap-4 mb-12">
+            <a href="{% url 'project_list' %}" class="px-4 py-2 transition-colors rounded-full {% if not request.GET.category %}bg-secondary text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                Todos
+            </a>
+            
+            {% for category in categories %}
+            <a href="{% url 'project_list' %}?category={{ category.slug }}" class="px-4 py-2 transition-colors rounded-full {% if request.GET.category == category.slug %}bg-secondary text-white{% else %}bg-gray-100 text-gray-700 hover:bg-gray-200{% endif %}">
+                {{ category.name }}
+            </a>
+            {% endfor %}
+        </div>
+        
+        <!-- Projects grid -->
+        <div class="grid gap-8 mt-8 md:grid-cols-2 lg:grid-cols-3">
+            {% for project in projects %}
+            <div class="overflow-hidden transition-all bg-white rounded-lg shadow-md hover:shadow-lg">
+                <a href="{% url 'project_detail' project.slug %}">
+                    <img src="{{ project.image.url }}" alt="{{ project.title }}" class="object-cover w-full h-48">
+                </a>
+                <div class="p-6">
+                    <span class="px-3 py-1 text-xs font-medium text-white rounded-full bg-secondary">{{ project.category.name }}</span>
+                    <h3 class="mt-2 text-xl font-semibold text-primary">{{ project.title }}</h3>
+                    <p class="mt-2 text-gray-600">{{ project.short_description }}</p>
+                    <a href="{% url 'project_detail' project.slug %}" class="inline-flex items-center mt-4 font-medium text-secondary hover:text-secondary/80">
+                        Ver detalles
+                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full">
+                <div class="p-8 text-center text-gray-600">
+                    <h3 class="mt-4 text-xl font-semibold">No hay proyectos disponibles</h3>
+                    <p class="mt-2">No se encontraron proyectos en esta categoría</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

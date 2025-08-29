@@ -1,0 +1,575 @@
+{% extends 'base.html' %}
+
+{% block title %}Información Financiera - {{ startup.company_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <a href="{% url 'core:startup_profile' startup.id %}" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </a>
+                        <div>
+                            <h1 class="text-2xl font-bold text-gray-900">Información Financiera</h1>
+                            <p class="text-gray-600">{{ startup.company_name }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if is_founder %}
+                    <div class="flex space-x-3">
+                        <button id="save-all-btn" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path>
+                            </svg>
+                            Guardar Todo
+                        </button>
+                        <button id="export-btn" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Exportar
+                        </button>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {% if is_founder %}
+        <form id="financials-form" method="post">
+            {% csrf_token %}
+        {% endif %}
+
+            <!-- Navigation Tabs -->
+            <div class="mb-8">
+                <div class="border-b border-gray-200">
+                    <nav class="-mb-px flex space-x-8">
+                        <button type="button" class="financial-tab active whitespace-nowrap py-2 px-1 border-b-2 border-blue-500 font-medium text-sm text-blue-600" data-tab="metrics">
+                            Métricas Clave
+                        </button>
+                        <button type="button" class="financial-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="valuation">
+                            Valoración
+                        </button>
+                        <button type="button" class="financial-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="projections">
+                            Proyecciones
+                        </button>
+                        <button type="button" class="financial-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="funding">
+                            Financiación
+                        </button>
+                        <button type="button" class="financial-tab whitespace-nowrap py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700" data-tab="documents">
+                            Documentos
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Tab Content: Métricas Clave -->
+            <div id="tab-metrics" class="tab-panel active">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Revenue Metrics -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Métricas de Revenue</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ARR Actual</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="arr_current" 
+                                           value="{{ private_data.arr_current|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="500000"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">MRR Growth Rate (%)</label>
+                                <input type="number" step="0.1" name="mrr_growth_rate" 
+                                       value="{{ private_data.mrr_growth_rate|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="15.5"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Net Revenue Retention (%)</label>
+                                <input type="number" step="0.1" name="net_revenue_retention" 
+                                       value="{{ private_data.net_revenue_retention|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="120.0"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Gross Margin (%)</label>
+                                <input type="number" step="0.1" name="gross_margin" 
+                                       value="{{ private_data.gross_margin|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="85.0"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Unit Economics -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Unit Economics</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">CAC Payback Period (meses)</label>
+                                <input type="number" step="0.1" name="cac_payback_period" 
+                                       value="{{ private_data.cac_payback_period|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="12.0"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">LTV/CAC Ratio</label>
+                                <input type="number" step="0.1" name="ltv_cac_ratio" 
+                                       value="{{ private_data.ltv_cac_ratio|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="3.5"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Customer Churn Rate (%)</label>
+                                <input type="number" step="0.1" name="churn_rate" 
+                                       value="{{ private_data.churn_rate|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="5.0"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">ARPU (Average Revenue Per User)</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="arpu" 
+                                           value="{{ private_data.arpu|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="150"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cash Flow -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cash Flow</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Posición de Cash Actual</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="cash_position" 
+                                           value="{{ private_data.cash_position|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="2000000"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Burn Rate Mensual</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="burn_rate_detailed" 
+                                           value="{{ private_data.burn_rate_detailed|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="150000"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Runway (meses)</label>
+                                <input type="number" step="0.1" name="runway_months" 
+                                       value="{{ private_data.runway_months|default:'' }}"
+                                       class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                       placeholder="13.3"
+                                       {% if not is_founder %}readonly{% endif %}>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- KPI Dashboard -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Dashboard de KPIs</h3>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="text-center p-4 bg-green-50 rounded-lg">
+                                <div class="text-2xl font-bold text-green-600" id="arr-display">
+                                    ${{ private_data.arr_current|default:0|floatformat:0 }}
+                                </div>
+                                <div class="text-sm text-green-700">ARR</div>
+                            </div>
+                            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                                <div class="text-2xl font-bold text-blue-600" id="growth-display">
+                                    {{ private_data.mrr_growth_rate|default:0 }}%
+                                </div>
+                                <div class="text-sm text-blue-700">MRR Growth</div>
+                            </div>
+                            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                                <div class="text-2xl font-bold text-purple-600" id="runway-display">
+                                    {{ private_data.runway_months|default:0 }}m
+                                </div>
+                                <div class="text-sm text-purple-700">Runway</div>
+                            </div>
+                            <div class="text-center p-4 bg-orange-50 rounded-lg">
+                                <div class="text-2xl font-bold text-orange-600" id="nrr-display">
+                                    {{ private_data.net_revenue_retention|default:0 }}%
+                                </div>
+                                <div class="text-sm text-orange-700">NRR</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Valoración -->
+            <div id="tab-valuation" class="tab-panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Valuation Calculator -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Calculadora de Valoración</h3>
+                        
+                        <div class="space-y-6">
+                            <!-- Revenue Multiple Method -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Método Revenue Multiple</h4>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Revenue Múltiple</label>
+                                        <input type="number" step="0.1" name="revenue_multiple" 
+                                               value="{{ private_data.revenue_multiple|default:'8.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Valoración Estimada</label>
+                                        <div class="text-lg font-bold text-green-600" id="revenue-valuation">
+                                            ${{ private_data.arr_current|default:0|floatformat:0 }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- DCF Method -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Método DCF (Discounted Cash Flow)</h4>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Tasa de Descuento (%)</label>
+                                        <input type="number" step="0.1" name="discount_rate" 
+                                               value="{{ private_data.discount_rate|default:'12.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Terminal Growth (%)</label>
+                                        <input type="number" step="0.1" name="terminal_growth_rate" 
+                                               value="{{ private_data.terminal_growth_rate|default:'3.0' }}"
+                                               class="w-full border border-gray-300 rounded-lg px-3 py-2"
+                                               {% if not is_founder %}readonly{% endif %}>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">Valoración DCF</label>
+                                        <div class="text-lg font-bold text-blue-600" id="dcf-valuation">
+                                            $0
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Market Comps -->
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <h4 class="font-medium text-gray-900 mb-3">Comparables de Mercado</h4>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">SaaS Públicas (Mediana)</span>
+                                        <span class="font-medium">8.5x Revenue</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">SaaS Privadas (Mediana)</span>
+                                        <span class="font-medium">6.2x Revenue</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-sm text-gray-600">Tu Industria</span>
+                                        <span class="font-medium">{{ private_data.industry_multiple|default:'7.0' }}x Revenue</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Valuation Summary -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Resumen de Valoración</h3>
+                        
+                        <div class="space-y-4">
+                            <div class="text-center p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg">
+                                <div class="text-3xl font-bold text-gray-900" id="final-valuation">
+                                    ${{ private_data.estimated_valuation|default:0|floatformat:0 }}
+                                </div>
+                                <div class="text-sm text-gray-600">Valoración Estimada</div>
+                            </div>
+                            
+                            <div class="space-y-2">
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600">Rango Bajo</span>
+                                    <span class="font-medium" id="valuation-low">$0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-gray-600">Rango Alto</span>
+                                    <span class="font-medium" id="valuation-high">$0</span>
+                                </div>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-gray-200">
+                                <h4 class="font-medium text-gray-900 mb-2">Últimas Rondas</h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Serie A</span>
+                                        <span class="font-medium">$5M @ $25M</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Seed</span>
+                                        <span class="font-medium">$2M @ $8M</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Proyecciones -->
+            <div id="tab-projections" class="tab-panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Revenue Projections -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Proyecciones de Revenue</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Revenue 12 meses</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="revenue_forecast_12m" 
+                                           value="{{ private_data.revenue_forecast_12m|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="1200000"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Revenue 24 meses</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="revenue_forecast_24m" 
+                                           value="{{ private_data.revenue_forecast_24m|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="2500000"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Revenue 36 meses</label>
+                                <div class="relative">
+                                    <span class="absolute left-3 top-3 text-gray-500">$</span>
+                                    <input type="number" name="revenue_forecast_36m" 
+                                           value="{{ private_data.revenue_forecast_36m|default:'' }}"
+                                           class="pl-8 w-full border border-gray-300 rounded-lg px-3 py-2"
+                                           placeholder="5000000"
+                                           {% if not is_founder %}readonly{% endif %}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Placeholder -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Gráfico de Crecimiento</h3>
+                        <div class="h-64 bg-gray-50 rounded-lg flex items-center justify-center">
+                            <p class="text-gray-500">Gráfico de proyecciones</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Funding -->
+            <div id="tab-funding" class="tab-panel hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <!-- Funding History -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Historial de Financiación</h3>
+                        <div id="funding-rounds">
+                            <!-- Rounds will be populated here -->
+                        </div>
+                        {% if is_founder %}
+                        <button type="button" id="add-funding-round" class="mt-4 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                            + Agregar Ronda
+                        </button>
+                        {% endif %}
+                    </div>
+
+                    <!-- Cap Table -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Cap Table</h3>
+                        <div id="cap-table">
+                            <!-- Cap table will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab Content: Documents -->
+            <div id="tab-documents" class="tab-panel hidden">
+                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Documentos Financieros</h3>
+                    
+                    {% if is_founder %}
+                    <div class="mb-6 p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                        <div class="text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                            </svg>
+                            <div class="mt-4">
+                                <label for="file-upload" class="cursor-pointer">
+                                    <span class="mt-2 block text-sm font-medium text-gray-900">
+                                        Subir documentos financieros
+                                    </span>
+                                </label>
+                                <input id="file-upload" name="file-upload" type="file" class="sr-only" multiple>
+                            </div>
+                            <p class="mt-2 text-xs text-gray-500">
+                                Estados financieros, P&L, Balance, Flujo de caja
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                            <div class="flex items-center space-x-3">
+                                <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-900">Financial_Statements_Q3_2024.pdf</p>
+                                    <p class="text-xs text-gray-500">Subido hace 2 días</p>
+                                </div>
+                            </div>
+                            <button class="text-blue-600 hover:text-blue-800 text-sm">Descargar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        {% if is_founder %}
+        </form>
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tab functionality
+    const tabs = document.querySelectorAll('.financial-tab');
+    const panels = document.querySelectorAll('.tab-panel');
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Update tab appearance
+            tabs.forEach(t => {
+                t.classList.remove('active', 'border-blue-500', 'text-blue-600');
+                t.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            this.classList.remove('border-transparent', 'text-gray-500');
+            this.classList.add('active', 'border-blue-500', 'text-blue-600');
+            
+            // Show/hide panels
+            panels.forEach(panel => {
+                panel.classList.add('hidden');
+                panel.classList.remove('active');
+            });
+            
+            const targetPanel = document.getElementById(`tab-${targetTab}`);
+            if (targetPanel) {
+                targetPanel.classList.remove('hidden');
+                targetPanel.classList.add('active');
+            }
+        });
+    });
+
+    // Real-time calculations
+    function updateKPIDisplay() {
+        const arr = document.querySelector('input[name="arr_current"]').value || 0;
+        const growth = document.querySelector('input[name="mrr_growth_rate"]').value || 0;
+        const runway = document.querySelector('input[name="runway_months"]').value || 0;
+        const nrr = document.querySelector('input[name="net_revenue_retention"]').value || 0;
+        
+        document.getElementById('arr-display').textContent = `$${parseInt(arr).toLocaleString()}`;
+        document.getElementById('growth-display').textContent = `${growth}%`;
+        document.getElementById('runway-display').textContent = `${runway}m`;
+        document.getElementById('nrr-display').textContent = `${nrr}%`;
+    }
+
+    function updateValuation() {
+        const arr = parseFloat(document.querySelector('input[name="arr_current"]').value) || 0;
+        const multiple = parseFloat(document.querySelector('input[name="revenue_multiple"]').value) || 8;
+        
+        const valuation = arr * multiple;
+        document.getElementById('revenue-valuation').textContent = `$${valuation.toLocaleString()}`;
+        document.getElementById('final-valuation').textContent = `$${valuation.toLocaleString()}`;
+        
+        const low = valuation * 0.8;
+        const high = valuation * 1.2;
+        document.getElementById('valuation-low').textContent = `$${low.toLocaleString()}`;
+        document.getElementById('valuation-high').textContent = `$${high.toLocaleString()}`;
+    }
+
+    // Add event listeners
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('input', function() {
+            updateKPIDisplay();
+            updateValuation();
+        });
+    });
+
+    // Initialize displays
+    updateKPIDisplay();
+    updateValuation();
+
+    // Save form
+    const saveBtn = document.getElementById('save-all-btn');
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
+            document.getElementById('financials-form').submit();
+        });
+    }
+});
+</script>
+
+{% endblock %}

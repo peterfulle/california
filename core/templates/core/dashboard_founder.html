@@ -1,0 +1,233 @@
+<!-- Dashboard específico para Fundadores -->
+{% if startup %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- Panel principal de la startup -->
+    <div class="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-gray-900">Mi Startup</h2>
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                {{ startup.stage|default:"Early Stage" }}
+            </span>
+        </div>
+        
+        <div class="flex items-start space-x-4 mb-6">
+            {% if startup.logo %}
+                <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-20 h-20 rounded-lg object-cover">
+            {% else %}
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                    <span class="text-white font-bold text-2xl">{{ startup.name|first }}</span>
+                </div>
+            {% endif %}
+            <div class="flex-1">
+                <a href="{% url 'core:startup_profile' startup.id %}" class="text-2xl font-bold text-gray-900 hover:text-blue-600">{{ startup.name }}</a>
+                <p class="text-gray-600 mt-1">{{ startup.tagline|default:"Startup innovadora" }}</p>
+                {% if startup.industry %}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 mt-2">
+                    {{ startup.industry.name }}
+                </span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Métricas clave -->
+        <div class="grid grid-cols-3 gap-4 mb-6">
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-green-600">${{ startup.total_funding_raised|default:0|floatformat:0 }}</div>
+                <div class="text-sm text-gray-600">Recaudado</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-blue-600">{{ startup.employees_count|default:1 }}</div>
+                <div class="text-sm text-gray-600">Empleados</div>
+            </div>
+            <div class="text-center p-4 bg-gray-50 rounded-lg">
+                <div class="text-2xl font-bold text-purple-600">
+                    {% if startup.founded_date %}
+                        {{ startup_metrics.years_since_founded }}
+                    {% else %}
+                        0
+                    {% endif %}
+                </div>
+                <div class="text-sm text-gray-600">Años</div>
+            </div>
+        </div>
+
+        <!-- Progreso de financiamiento -->
+        {% if startup.is_fundraising %}
+        <div class="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-4">
+            <div class="flex items-center justify-between mb-2">
+                <h4 class="font-semibold text-orange-800">Ronda de Financiamiento Activa</h4>
+                <span class="text-sm text-orange-600">{{ startup_metrics.funding_progress|floatformat:1 }}% completado</span>
+            </div>
+            <div class="w-full bg-orange-200 rounded-full h-2 mb-2">
+                <div class="bg-orange-600 h-2 rounded-full" style="width: {{ startup_metrics.funding_progress|floatformat:1 }}%"></div>
+            </div>
+            <div class="flex justify-between text-sm text-orange-700">
+                <span>${{ startup.total_funding_raised|default:0|floatformat:0 }} recaudado</span>
+                <span>Meta: ${{ startup.seeking_amount|default:0|floatformat:0 }}</span>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Acciones rápidas -->
+        <div class="flex space-x-3">
+            <button class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                Editar Perfil
+            </button>
+            <button class="flex-1 bg-gray-100 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-200 transition-colors">
+                Ver Público
+            </button>
+        </div>
+    </div>
+
+    <!-- Panel de insights -->
+    <div class="space-y-6">
+        <!-- Posición en la industria -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Tu Posición</h3>
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Ranking en {{ startup.industry.name }}</span>
+                    <span class="font-semibold text-gray-900">#{{ startup_metrics.industry_rank|default:"N/A" }}</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Financiamiento vs promedio</span>
+                    <span class="font-semibold text-green-600">+45%</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-gray-600">Crecimiento del equipo</span>
+                    <span class="font-semibold text-blue-600">+20%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Próximos hitos -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Próximos Hitos</h3>
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-yellow-400 rounded-full"></div>
+                    <span class="text-sm text-gray-700">Demo Day Q2 2024</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+                    <span class="text-sm text-gray-700">Lanzamiento Beta</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-2 h-2 bg-blue-400 rounded-full"></div>
+                    <span class="text-sm text-gray-700">Serie A preparación</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Inversores recomendados -->
+{% if recommended_investors %}
+<div class="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Inversores Recomendados</h2>
+        <span class="text-sm text-gray-500">Basado en tu perfil</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {% for investor in recommended_investors|slice:":8" %}
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <span class="text-white font-semibold">{{ investor.user.first_name|first|default:investor.user.username|first }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                        {{ investor.user.get_full_name|default:investor.user.username }}
+                    </p>
+                    <p class="text-xs text-gray-500 truncate">
+                        {{ investor.firm_name|default:"Inversor Individual" }}
+                    </p>
+                </div>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-600">Fondo</span>
+                    <span class="font-medium">${{ investor.fund_size|default:0|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-600">Check promedio</span>
+                    <span class="font-medium">${{ investor.average_check_size|default:0|floatformat:0 }}</span>
+                </div>
+                {% if investor.geographic_focus %}
+                <div class="flex justify-between text-xs">
+                    <span class="text-gray-600">Enfoque</span>
+                    <span class="font-medium">{{ investor.geographic_focus|title }}</span>
+                </div>
+                {% endif %}
+            </div>
+            <button class="w-full mt-3 bg-blue-600 text-white py-2 px-3 rounded text-xs hover:bg-blue-700 transition-colors">
+                Ver Perfil
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Startups similares -->
+{% if similar_startups %}
+<div class="bg-white rounded-lg border border-gray-200 p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-900">Startups Similares</h2>
+        <span class="text-sm text-gray-500">En tu industria y etapa</span>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% for similar in similar_startups %}
+        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3 mb-3">
+                {% if similar.logo %}
+                    <img src="{{ similar.logo.url }}" alt="{{ similar.name }}" class="w-10 h-10 rounded-lg object-cover">
+                {% else %}
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm">{{ similar.name|first }}</span>
+                    </div>
+                {% endif %}
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-gray-900 truncate">{{ similar.name }}</p>
+                    <p class="text-xs text-gray-500 truncate">{{ similar.tagline|truncatechars:30 }}</p>
+                </div>
+            </div>
+            <div class="space-y-1 text-xs text-gray-600">
+                <div class="flex justify-between">
+                    <span>Recaudado</span>
+                    <span class="font-medium">${{ similar.total_funding_raised|default:0|floatformat:0 }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span>Empleados</span>
+                    <span class="font-medium">{{ similar.employees_count|default:1 }}</span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% elif needs_startup %}
+<!-- Panel para crear startup -->
+<div class="bg-white rounded-lg border border-gray-200 p-8 text-center">
+    <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+    </svg>
+    <h3 class="text-xl font-semibold text-gray-900 mb-2">¡Hora de registrar tu startup!</h3>
+    <p class="text-gray-600 mb-6">
+        Como fundador, necesitas crear el perfil de tu startup para acceder a todas las funcionalidades de la plataforma.
+    </p>
+    <div class="space-y-4">
+        <a href="{% url 'core:create_startup' %}" class="inline-flex items-center px-6 py-3 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+            <svg class="-ml-1 mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Crear Perfil de Startup
+        </a>
+        <p class="text-sm text-gray-500">
+            Conecta con inversores, encuentra advisors y forma parte del ecosistema
+        </p>
+    </div>
+</div>
+{% endif %}
