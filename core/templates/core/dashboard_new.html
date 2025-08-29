@@ -437,18 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-{% endblock %}
-                            <p class="text-sm font-medium text-gray-900 truncate">{{ startup.name }}</p>
-                            <p class="text-sm text-gray-500 truncate">{{ startup.tagline|default:"Startup innovadora" }}</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}</div>
-                            <div class="text-xs text-gray-500">{{ startup.created_at|timesince }} ago</div>
-                        </div>
-                    </div>
-                    {% empty %}
-                    <p class="text-gray-500 text-sm">No hay startups recientes</p>
-                    {% endfor %}
+
                 </div>
             </div>
 
