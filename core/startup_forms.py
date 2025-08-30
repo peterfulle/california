@@ -17,115 +17,98 @@ class StartupForm(forms.ModelForm):
         ]
         widgets = {
             'company_name': forms.TextInput(attrs={
-                'class': 'input-modern',
-                'placeholder': 'Nombre de la startup',
-                'required': True
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': 'Nombre de la startup'
             }),
             'tagline': forms.TextInput(attrs={
-                'class': 'input-modern',
-                'placeholder': 'Descripción breve en una línea',
-                'maxlength': 100
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': 'Descripción breve en una línea'
             }),
             'description': forms.Textarea(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'rows': 6,
-                'placeholder': 'Descripción completa de la startup, productos, misión, innovaciones...',
-                'maxlength': 500
+                'placeholder': 'Descripción completa de la startup, productos, misión, innovaciones...'
             }),
             'founded_date': forms.DateInput(attrs={
-                'class': 'input-modern',
-                'type': 'date',
-                'required': True
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'type': 'date'
             }),
             'website': forms.URLInput(attrs={
-                'class': 'input-modern',
-                'placeholder': 'https://tustarrtup.com',
-                'type': 'url'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': 'https://tustarrtup.com'
             }),
             'pitch_deck_url': forms.URLInput(attrs={
-                'class': 'input-modern',
-                'placeholder': 'https://link-a-tu-pitch-deck.com',
-                'type': 'url'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': 'https://link-a-tu-pitch-deck.com'
             }),
             'demo_url': forms.URLInput(attrs={
-                'class': 'input-modern',
-                'placeholder': 'https://demo.tustarrtup.com',
-                'type': 'url'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': 'https://demo.tustarrtup.com'
             }),
             'employees_count': forms.NumberInput(attrs={
-                'class': 'input-modern',
-                'placeholder': '5',
-                'min': '1'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': '5'
             }),
             'stage': forms.Select(attrs={
-                'class': 'input-modern'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
             }),
             'revenue_stage': forms.Select(attrs={
-                'class': 'input-modern'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
             }),
             'industry': forms.Select(attrs={
-                'class': 'input-modern'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500'
             }),
             'sub_industry': forms.TextInput(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'placeholder': 'ej: Mobile App, B2B SaaS, etc.'
             }),
             'seeking_amount': forms.NumberInput(attrs={
-                'class': 'input-modern',
-                'placeholder': '1000000',
-                'min': '0'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': '1000000'
             }),
             'monthly_revenue': forms.NumberInput(attrs={
-                'class': 'input-modern',
-                'placeholder': '50000',
-                'min': '0'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': '50000'
             }),
             'annual_revenue': forms.NumberInput(attrs={
-                'class': 'input-modern',
-                'placeholder': '600000',
-                'min': '0'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': '600000'
             }),
             'monthly_users': forms.NumberInput(attrs={
-                'class': 'input-modern',
-                'placeholder': '10000',
-                'min': '0'
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
+                'placeholder': '10000'
             }),
             'problem_statement': forms.Textarea(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'rows': 3,
-                'placeholder': '¿Qué problema específico resuelve tu startup?',
-                'maxlength': 300
+                'placeholder': '¿Qué problema específico resuelve tu startup?'
             }),
             'solution_description': forms.Textarea(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'rows': 3,
-                'placeholder': '¿Cómo resuelve el problema tu solución?',
-                'maxlength': 300
+                'placeholder': '¿Cómo resuelve el problema tu solución?'
             }),
             'market_size': forms.Textarea(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'rows': 2,
-                'placeholder': 'Tamaño del mercado objetivo (TAM, SAM, SOM)',
-                'maxlength': 200
+                'placeholder': 'Tamaño del mercado objetivo (TAM, SAM, SOM)'
             }),
             'business_model': forms.Textarea(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'rows': 3,
-                'placeholder': 'SaaS, Marketplace, Freemium, etc.',
-                'maxlength': 300
+                'placeholder': 'SaaS, Marketplace, Freemium, etc.'
             }),
             'competitive_advantage': forms.Textarea(attrs={
-                'class': 'input-modern',
+                'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500',
                 'rows': 3,
-                'placeholder': '¿Qué te diferencia de la competencia?',
-                'maxlength': 300
+                'placeholder': '¿Qué te diferencia de la competencia?'
             }),
             'logo': forms.FileInput(attrs={
-                'class': 'hidden',
+                'class': 'mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100',
                 'accept': 'image/*'
             }),
             'cover_image': forms.FileInput(attrs={
-                'class': 'hidden',
+                'class': 'mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100',
                 'accept': 'image/*'
             }),
         }

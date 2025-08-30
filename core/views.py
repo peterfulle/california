@@ -636,37 +636,102 @@ def events_list(request):
 
 @login_required
 def create_startup(request):
-    """Vista para crear perfil de startup"""
+    """Vista para crear perfil de startup con debugging avanzado"""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    # Print simple para verificar que la vista se ejecuta
+    print(f"\n{'='*50}")
+    print(f"CREATE STARTUP VIEW CALLED")
+    print(f"Method: {request.method}")
+    print(f"User: {request.user}")
+    print(f"{'='*50}\n")
+    
+    logger.info(f"=== CREATE STARTUP REQUEST START ===")
+    logger.info(f"User: {request.user}")
+    logger.info(f"Method: {request.method}")
+    logger.info(f"POST data: {request.POST}")
+    logger.info(f"FILES data: {request.FILES}")
+    
     # Verificar que el usuario sea fundador
-    user_profile = get_object_or_404(UserProfile, user=request.user)
-    if user_profile.user_type != 'founder':
-        messages.error(request, 'Solo los fundadores pueden crear perfiles de startups.')
-        return redirect('core:dashboard')
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)
+        logger.info(f"User profile found: {user_profile}, type: {user_profile.user_type}")
+        
+        if user_profile.user_type != 'founder':
+            logger.warning(f"User {request.user} is not a founder, redirecting")
+            messages.error(request, 'Only founders can create startup profiles.')
+            return redirect('core:dashboard')
+    except UserProfile.DoesNotExist:
+        logger.info(f"Creating new founder profile for user {request.user}")
+        # Si no existe perfil, crear uno como founder
+        user_profile = UserProfile.objects.create(
+            user=request.user,
+            user_type='founder'
+        )
     
     # Verificar si ya tiene una startup
     existing_startup = Startup.objects.filter(founder=user_profile).first()
     if existing_startup:
-        messages.info(request, 'Ya tienes una startup registrada.')
+        logger.info(f"User already has startup: {existing_startup}")
+        messages.info(request, 'You already have a registered startup.')
         return redirect('core:startup_profile', startup_id=existing_startup.id)
     
     if request.method == 'POST':
+        logger.info("=== PROCESSING POST REQUEST ===")
+        logger.info(f"POST data keys: {list(request.POST.keys())}")
+        
+        # Log todos los datos del POST
+        for key, value in request.POST.items():
+            logger.info(f"POST[{key}] = {value}")
+        
         form = StartupForm(request.POST, request.FILES)
+        logger.info(f"Form created, checking validity...")
+        
         if form.is_valid():
-            startup = form.save(commit=False)
-            startup.founder = user_profile
-            startup.save()
+            logger.info("Form is valid, attempting to save...")
+            try:
+                startup = form.save(commit=False)
+                logger.info(f"Startup object created: {startup}")
+                
+                startup.founder = user_profile
+                logger.info(f"Founder assigned: {user_profile}")
+                
+                startup.save()
+                logger.info(f"Startup saved successfully with ID: {startup.id}")
+                
+                messages.success(request, '🚀 Startup profile created successfully!')
+                
+                redirect_url = f'/startup/{startup.id}/'
+                logger.info(f"Redirecting to: {redirect_url}")
+                return redirect('core:startup_profile', startup_id=startup.id)
+                
+            except Exception as e:
+                logger.error(f"ERROR saving startup: {str(e)}", exc_info=True)
+                messages.error(request, f'Error creating startup: {str(e)}')
+        else:
+            logger.error("Form is NOT valid")
+            logger.error(f"Form errors: {form.errors}")
             
-            messages.success(request, '¡Perfil de startup creado exitosamente!')
-            return redirect('core:startup_profile', startup_id=startup.id)
+            # Log cada error individualmente
+            for field, errors in form.errors.items():
+                logger.error(f"Field '{field}' errors: {errors}")
+                for error in errors:
+                    messages.error(request, f'{field}: {error}')
     else:
+        logger.info("Creating empty form for GET request")
         form = StartupForm()
     
     context = {
         'form': form,
-        'industries': Industry.objects.all()
+        'industries': Industry.objects.all(),
+        'form_errors': form.errors if 'form' in locals() else {}
     }
     
-    return render(request, 'core/create_startup.html', context)
+    logger.info(f"Rendering template with context keys: {list(context.keys())}")
+    logger.info("=== CREATE STARTUP REQUEST END ===")
+    
+    return render(request, 'core/create_startup_responsive.html', context)
 
 @login_required
 def startup_profile(request, startup_id):
