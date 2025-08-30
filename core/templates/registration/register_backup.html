@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join SF Startup Network - Exclusive for San Francisco Startups</title>
     
-    <!-- Typography -->
+    <!-- Professional Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -56,12 +56,29 @@
         
         .step-indicator {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
         }
         
         .step-indicator.completed {
             background: linear-gradient(135deg, #10b981, #059669);
             box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
             transform: scale(1.05);
+        }
+        
+        .step-indicator.completed::before {
+            left: 100%;
         }
         
         .step-indicator.active {
@@ -71,14 +88,91 @@
             animation: pulse 2s infinite;
         }
         
-        .step-indicator.future {
-            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
-            transform: scale(0.95);
+        .step-indicator.active::before {
+            left: 100%;
         }
         
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.5); }
             50% { box-shadow: 0 0 35px rgba(99, 102, 241, 0.7); }
+        }
+        
+        .step-indicator.future {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            transform: scale(0.95);
+        }
+        
+        .step-label {
+            transition: all 0.3s ease;
+        }
+        
+        .step-label.completed {
+            color: #059669;
+            font-weight: 700;
+        }
+        
+        .step-label.active {
+            color: #4f46e5;
+            font-weight: 700;
+            transform: scale(1.05);
+        }
+        
+        .progress-line {
+            background: linear-gradient(90deg, #e2e8f0, #cbd5e1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6, #06b6d4);
+            background-size: 200% 100%;
+            animation: shimmer 2s linear infinite;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        
+        .user-profile-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .user-profile-card:hover {
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .profile-avatar {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .button-disabled {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8) !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .button-disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .field-valid {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+        
+        .field-invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
         }
         
         .step-option {
@@ -111,7 +205,6 @@
             transform: translateY(-2px);
             box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.25);
         }
-        
         .professional-input {
             transition: all 0.3s ease;
         }
@@ -120,56 +213,13 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
             transform: translateY(-1px);
         }
-        
-        .user-profile-card {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
-            border: 2px solid rgba(99, 102, 241, 0.2);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        
-        .profile-avatar {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-        }
-        
-        .button-disabled {
-            background: linear-gradient(135deg, #cbd5e1, #94a3b8) !important;
-            cursor: not-allowed !important;
-            opacity: 0.6;
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        
-        .button-disabled:hover {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        
-        .field-valid {
-            border-color: #10b981 !important;
-            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
-        }
-        
-        .field-invalid {
-            border-color: #ef4444 !important;
-            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-        }
-    </style>
 </head>
 
 <body class="min-h-full bg-gradient-to-br from-slate-50 via-white to-gray-50 font-inter">
-    <!-- Background Pattern -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-100/20 to-purple-100/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
-        <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-cyan-100/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
-    </div>
-
-    <!-- Main Container -->
-    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8">
         <div class="max-w-6xl w-full grid lg:grid-cols-5 gap-8 lg:gap-12 items-center">
             
-            <!-- Left Column - SF Branding -->
+            <!-- Left Column - SF Startup Branding -->
             <div class="lg:col-span-2 space-y-6 lg:space-y-8 text-center lg:text-left">
                 <!-- SF Logo -->
                 <div class="flex items-center justify-center lg:justify-start space-x-4">
@@ -195,10 +245,29 @@
                         An exclusive network for founders, investors, and innovators building the future from the heart of Silicon Valley.
                     </p>
                     
-                    <!-- SF Badge -->
+                    <!-- Exclusive SF Badge -->
                     <div class="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-200">
                         <div class="w-2 h-2 bg-orange-500 rounded-full mr-2 sm:mr-3"></div>
                         <span class="text-xs sm:text-sm font-semibold text-orange-700">Exclusive to San Francisco, CA Startups</span>
+                    </div>
+                </div>
+                
+                <!-- Features - Hidden on mobile, shown on larger screens -->
+                <div class="hidden lg:block space-y-4">
+                    <div class="flex items-start space-x-4 p-4 rounded-xl bg-white/50 border border-sf-200">
+                        <div class="w-3 h-3 bg-tech-emerald rounded-full mt-2"></div>
+                        <div>
+                            <h3 class="font-semibold text-sf-800">Vetted Network</h3>
+                            <p class="text-sf-600 text-sm">Pre-qualified SF-based startups and investors only</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-start space-x-4 p-4 rounded-xl bg-white/50 border border-sf-200">
+                        <div class="w-3 h-3 bg-tech-purple rounded-full mt-2"></div>
+                        <div>
+                            <h3 class="font-semibold text-sf-800">Premium Access</h3>
+                            <p class="text-sf-600 text-sm">Private events and investor meetings in SOMA & Mission Bay</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -208,27 +277,38 @@
                 <!-- Progress Steps -->
                 <div class="mb-6 lg:mb-10">
                     <div class="flex items-center justify-between px-4 sm:px-0">
+                        <!-- Step 1 -->
                         <div class="flex flex-col items-center space-y-1 sm:space-y-2">
-                            <div id="step1-indicator" class="step-indicator active w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">1</div>
-                            <span id="step1-label" class="text-xs sm:text-sm font-medium text-tech-purple">Role</span>
+                            <div id="step1-indicator" class="step-indicator active w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold shadow-lg text-sm sm:text-base">
+                                1
+                            </div>
+                            <span id="step1-label" class="step-label active text-xs sm:text-sm font-medium">Role</span>
                         </div>
                         
-                        <div class="flex-1 mx-2 sm:mx-6 h-2 bg-sf-200 rounded-full">
-                            <div id="progress1" class="h-full bg-tech-purple rounded-full w-0 transition-all duration-500"></div>
+                        <!-- Progress Line 1 -->
+                        <div class="flex-1 mx-2 sm:mx-6 h-2 progress-line rounded-full">
+                            <div id="progress1" class="progress-fill h-full rounded-full w-0"></div>
                         </div>
                         
+                        <!-- Step 2 -->
                         <div class="flex flex-col items-center space-y-1 sm:space-y-2">
-                            <div id="step2-indicator" class="step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">2</div>
-                            <span id="step2-label" class="text-xs sm:text-sm font-medium text-sf-500">Profile</span>
+                            <div id="step2-indicator" class="step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">
+                                2
+                            </div>
+                            <span id="step2-label" class="step-label text-xs sm:text-sm font-medium text-sf-500">Profile</span>
                         </div>
                         
-                        <div class="flex-1 mx-2 sm:mx-6 h-2 bg-sf-200 rounded-full">
-                            <div id="progress2" class="h-full bg-tech-purple rounded-full w-0 transition-all duration-500"></div>
+                        <!-- Progress Line 2 -->
+                        <div class="flex-1 mx-2 sm:mx-6 h-2 progress-line rounded-full">
+                            <div id="progress2" class="progress-fill h-full rounded-full w-0"></div>
                         </div>
                         
+                        <!-- Step 3 -->
                         <div class="flex flex-col items-center space-y-1 sm:space-y-2">
-                            <div id="step3-indicator" class="step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">3</div>
-                            <span id="step3-label" class="text-xs sm:text-sm font-medium text-sf-500">Account</span>
+                            <div id="step3-indicator" class="step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">
+                                3
+                            </div>
+                            <span id="step3-label" class="step-label text-xs sm:text-sm font-medium text-sf-500">Account</span>
                         </div>
                     </div>
                 </div>
@@ -238,6 +318,20 @@
                     <form method="post" id="registrationForm" action="{% url 'core:register' %}">
                         {% csrf_token %}
                         
+                        <!-- Error Display -->
+                        {% if form.errors %}
+                        <div class="mb-6 lg:mb-8 p-4 lg:p-6 bg-red-50 border border-red-200 rounded-xl">
+                            <h3 class="text-sm font-semibold text-red-800 mb-2">Please correct the following:</h3>
+                            <div class="text-sm text-red-700 space-y-1">
+                                {% for field, errors in form.errors.items %}
+                                    {% for error in errors %}
+                                        <p>• {{ error }}</p>
+                                    {% endfor %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endif %}
+
                         <!-- Step 1: Role Selection -->
                         <div id="step1" class="form-step">
                             <div class="text-center mb-6 lg:mb-10">
@@ -345,23 +439,32 @@
                             </div>
                             
                             <div class="space-y-4 sm:space-y-6">
+                                <!-- Name Fields -->
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                                     <div>
-                                        <label for="first_name" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">First Name *</label>
+                                        <label for="first_name" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">
+                                            First Name *
+                                        </label>
                                         <input type="text" name="first_name" id="first_name" required
                                                class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
                                                placeholder="John">
                                     </div>
+                                    
                                     <div>
-                                        <label for="last_name" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Last Name *</label>
+                                        <label for="last_name" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">
+                                            Last Name *
+                                        </label>
                                         <input type="text" name="last_name" id="last_name" required
                                                class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
                                                placeholder="Smith">
                                     </div>
                                 </div>
                                 
+                                <!-- Email -->
                                 <div>
-                                    <label for="email" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Professional Email *</label>
+                                    <label for="email" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">
+                                        Professional Email *
+                                    </label>
                                     <input type="email" name="email" id="email" required
                                            class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
                                            placeholder="john@yourcompany.com">
@@ -385,7 +488,9 @@
                                         <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">
                                             <span id="profileFullName">Your Name</span> · <span id="profileRoleText3">Professional</span>
                                         </h3>
-                                        <p class="text-sm sm:text-base text-sf-600" id="profileEmail3">your@email.com</p>
+                                        <p class="text-sm sm:text-base text-sf-600" id="profileEmail3">
+                                            your@email.com
+                                        </p>
                                         <div class="flex items-center mt-2">
                                             <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                                             <span class="text-xs sm:text-sm text-green-700 font-medium">Almost ready to join SF Network</span>
@@ -400,23 +505,32 @@
                             </div>
                             
                             <div class="space-y-4 sm:space-y-6">
+                                <!-- Username -->
                                 <div>
-                                    <label for="username" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Username *</label>
+                                    <label for="username" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">
+                                        Username *
+                                    </label>
                                     <input type="text" name="username" id="username" required
                                            class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
                                            placeholder="Choose a unique username">
                                 </div>
 
+                                <!-- Password -->
                                 <div>
-                                    <label for="password1" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Password *</label>
+                                    <label for="password1" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">
+                                        Password *
+                                    </label>
                                     <input type="password" name="password1" id="password1" required
                                            class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
                                            placeholder="Create a secure password">
                                     <p class="mt-2 text-xs sm:text-sm text-sf-500">Minimum 8 characters with letters and numbers</p>
                                 </div>
 
+                                <!-- Confirm Password -->
                                 <div>
-                                    <label for="password2" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Confirm Password *</label>
+                                    <label for="password2" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">
+                                        Confirm Password *
+                                    </label>
                                     <input type="password" name="password2" id="password2" required
                                            class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
                                            placeholder="Confirm your password">
@@ -425,6 +539,7 @@
                                     </div>
                                 </div>
 
+                                <!-- Terms -->
                                 <div class="bg-sf-50 rounded-xl p-4 sm:p-6 border border-sf-200">
                                     <label class="flex items-start space-x-3 sm:space-x-4 cursor-pointer">
                                         <input type="checkbox" name="terms" id="terms" required
@@ -446,12 +561,12 @@
                             
                             <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 order-1 sm:order-2 sm:ml-auto">
                                 <button type="button" id="nextBtn" 
-                                        class="professional-button button-disabled w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-white font-bold rounded-xl shadow-xl text-sm uppercase tracking-wide" disabled>
+                                        class="professional-button w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-white font-bold rounded-xl shadow-xl text-sm uppercase tracking-wide">
                                     Continue
                                 </button>
                                 
                                 <button type="submit" id="submitBtn" 
-                                        class="hidden professional-button button-disabled w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-white font-bold rounded-xl shadow-xl text-sm uppercase tracking-wide" disabled>
+                                        class="hidden professional-button w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-white font-bold rounded-xl shadow-xl text-sm uppercase tracking-wide">
                                     Join SF Network
                                 </button>
                             </div>
@@ -481,6 +596,7 @@
             const totalSteps = 3;
             let selectedRole = '';
             let isEmailValid = false;
+            let arePasswordsMatching = false;
             
             // Role configuration
             const roleConfig = {
@@ -535,7 +651,6 @@
                         radio.checked = true;
                         selectedRole = roleValue;
                         updateUserProfile();
-                        enableContinueButton();
                         console.log('Radio checked:', radio.value);
                     }
                     
@@ -552,6 +667,13 @@
             function validateEmail(email) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 return emailRegex.test(email);
+            }
+            
+            // Password validation
+            function validatePasswords() {
+                const password1 = document.getElementById('password1').value;
+                const password2 = document.getElementById('password2').value;
+                return password1.length >= 8 && password1 === password2;
             }
             
             // Update user profile display
@@ -574,13 +696,12 @@
                 
                 if (profileInitials3) profileInitials3.textContent = config.initials;
                 if (profileRoleText3) profileRoleText3.textContent = config.title;
-            }
-            
-            // Enable/disable continue button
-            function enableContinueButton() {
-                const nextBtn = document.getElementById('nextBtn');
-                nextBtn.classList.remove('button-disabled');
-                nextBtn.disabled = false;
+                
+                // Update avatar colors
+                const avatars = document.querySelectorAll('.profile-avatar');
+                avatars.forEach(avatar => {
+                    avatar.className = `profile-avatar w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl bg-gradient-to-br ${config.color}`;
+                });
             }
             
             // Real-time profile updates
@@ -668,7 +789,7 @@
                 const password2 = document.getElementById('password2').value;
                 const terms = document.getElementById('terms').checked;
                 
-                const arePasswordsMatching = password1.length >= 8 && password1 === password2;
+                arePasswordsMatching = password1.length >= 8 && password1 === password2;
                 const isValid = username.length > 0 && arePasswordsMatching && terms;
                 
                 updateSubmitButton(isValid);
@@ -765,17 +886,17 @@
                         // Completed
                         indicator.className = 'step-indicator completed w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base';
                         indicator.innerHTML = '✓';
-                        label.className = 'text-xs sm:text-sm font-medium text-green-600';
+                        label.className = 'step-label completed text-xs sm:text-sm font-medium';
                     } else if (i === step) {
                         // Active
                         indicator.className = 'step-indicator active w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base';
                         indicator.textContent = i;
-                        label.className = 'text-xs sm:text-sm font-medium text-tech-purple';
+                        label.className = 'step-label active text-xs sm:text-sm font-medium';
                     } else {
                         // Future
                         indicator.className = 'step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base';
                         indicator.textContent = i;
-                        label.className = 'text-xs sm:text-sm font-medium text-sf-500';
+                        label.className = 'step-label text-xs sm:text-sm font-medium text-sf-500';
                     }
                 }
                 
@@ -841,6 +962,10 @@
                 }
                 console.log('Form submitted');
             });
+            
+            // Initialize
+            updateContinueButton(false);
+            updateSubmitButton(false);
         });
     </script>
 </body>
