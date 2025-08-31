@@ -35,108 +35,107 @@
             </div>
         </div>
         
-    </div>
-    
-    <!-- Profile Card Section (Fixed) -->
-    <div class="relative z-10 -mt-16 mb-8">
-        <div class="card-modern p-8 mx-8">
-            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
-                <!-- Company Info -->
-                <div class="flex items-start space-x-6">
-                    <!-- Logo -->
-                    <div class="flex-shrink-0">
-                        {% if startup.logo %}
-                            <img class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg" 
-                                 src="{{ startup.logo.url }}" alt="{{ startup.company_name }}">
-                        {% else %}
-                            <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg">
-                                <span class="text-white text-3xl font-bold">{{ startup.company_name|first }}</span>
+        <!-- Profile Card Overlay -->
+        <div class="absolute -bottom-16 left-8 right-8">
+            <div class="card-modern p-8">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+                    <!-- Company Info -->
+                    <div class="flex items-start space-x-6">
+                        <!-- Logo -->
+                        <div class="flex-shrink-0">
+                            {% if startup.logo %}
+                                <img class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg" 
+                                     src="{{ startup.logo.url }}" alt="{{ startup.company_name }}">
+                            {% else %}
+                                <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center border-4 border-white shadow-lg">
+                                    <span class="text-white text-3xl font-bold">{{ startup.company_name|first }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Company Details -->
+                        <div class="flex-1 min-w-0">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ startup.company_name }}</h1>
+                            <p class="text-lg text-gray-600 mb-4">{{ startup.tagline|default:"Innovando el futuro" }}</p>
+                            
+                            <!-- Key Metrics -->
+                            <div class="flex flex-wrap items-center gap-6 text-sm">
+                                {% if startup.founded_date %}
+                                <div class="flex items-center text-gray-600">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                    Fundada {{ startup.founded_date|date:"Y" }}
+                                </div>
+                                {% endif %}
+                                
+                                {% if startup.stage %}
+                                <div class="flex items-center">
+                                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                        {{ startup.get_stage_display }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex items-center text-gray-600">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                    {{ startup.employees_count|default:"1-10" }} empleados
+                                </div>
+                                
+                                {% if startup.website %}
+                                <div class="flex items-center">
+                                    <a href="{{ startup.website }}" target="_blank" 
+                                       class="flex items-center text-blue-600 hover:text-blue-700 transition-colors">
+                                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                        </svg>
+                                        Website
+                                    </a>
+                                </div>
+                                {% endif %}
                             </div>
-                        {% endif %}
+                            
+                            <!-- Industry Tags -->
+                            {% if startup.industry %}
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-xs font-medium">
+                                    {{ startup.industry.name }}
+                                </span>
+                                {% if startup.sub_industry %}
+                                <span class="px-3 py-1 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full text-xs font-medium">
+                                    {{ startup.sub_industry }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
                     </div>
                     
-                    <!-- Company Details -->
-                    <div class="flex-1 min-w-0">
-                        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ startup.company_name }}</h1>
-                        <p class="text-lg text-gray-600 mb-4">{{ startup.tagline|default:"Innovando el futuro" }}</p>
-                        
-                        <!-- Key Metrics -->
-                        <div class="flex flex-wrap items-center gap-6 text-sm">
-                            {% if startup.founded_date %}
-                            <div class="flex items-center text-gray-600">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                                </svg>
-                                Fundada {{ startup.founded_date|date:"Y" }}
-                            </div>
-                            {% endif %}
-                            
-                            {% if startup.stage %}
-                            <div class="flex items-center">
-                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                                    {{ startup.get_stage_display }}
-                                </span>
-                            </div>
-                            {% endif %}
-                            
-                            <div class="flex items-center text-gray-600">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                                </svg>
-                                {{ startup.employees_count|default:"1-10" }} empleados
-                            </div>
-                            
-                            {% if startup.website %}
-                            <div class="flex items-center">
-                                <a href="{{ startup.website }}" target="_blank" 
-                                   class="flex items-center text-blue-600 hover:text-blue-700 transition-colors">
-                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
-                                    </svg>
-                                    Website
-                                </a>
-                            </div>
-                            {% endif %}
-                        </div>
-                        
-                        <!-- Industry Tags -->
-                        {% if startup.industry %}
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-xs font-medium">
-                                {{ startup.industry.name }}
-                            </span>
-                            {% if startup.sub_industry %}
-                            <span class="px-3 py-1 bg-gradient-to-r from-green-500 to-teal-600 text-white rounded-full text-xs font-medium">
-                                {{ startup.sub_industry }}
-                            </span>
-                            {% endif %}
-                        </div>
-                        {% endif %}
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button class="btn-modern btn-secondary px-6 py-3">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                            </svg>
+                            Seguir
+                        </button>
+                        <button class="btn-modern btn-primary px-6 py-3">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.172-.267l-2.628 1.543A1 1 0 017 20.414l1.543-2.628A8.955 8.955 0 014 17c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+                            </svg>
+                            Contactar
+                        </button>
                     </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex flex-col sm:flex-row gap-3">
-                    <button class="btn-modern btn-secondary px-6 py-3">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                        </svg>
-                        Seguir
-                    </button>
-                    <button class="btn-modern btn-primary px-6 py-3">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.172-.267l-2.628 1.543A1 1 0 017 20.414l1.543-2.628A8.955 8.955 0 014 17c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
-                        </svg>
-                        Contactar
-                    </button>
                 </div>
             </div>
         </div>
     </div>
     
     <!-- Modern Tab Navigation -->
-    <div class="relative z-20">
-        <div class="border-b border-gray-200" id="tab-navigation">
+    <div class="mt-20">
+        <div class="border-b border-gray-200">
             <nav class="flex space-x-8" id="tab-navigation">
                 <button class="tab-modern active" data-tab="overview">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,10 +162,11 @@
                     Equipo
                 </button>
             </nav>
+        </div>
     </div>
     
     <!-- Content Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8 content-area">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">
             <!-- Tab Content: Overview -->
@@ -590,20 +590,6 @@
 
 <!-- Modern Tab Styles -->
 <style>
-    /* Fix z-index layering */
-    .relative {
-        position: relative;
-    }
-    
-    .z-10 {
-        z-index: 10;
-    }
-    
-    .z-20 {
-        z-index: 20;
-    }
-    
-    /* Tab system improvements */
     .tab-modern {
         display: flex;
         align-items: center;
@@ -617,7 +603,6 @@
         background: linear-gradient(135deg, transparent 0%, rgba(255, 255, 255, 0.5) 100%);
         position: relative;
         overflow: hidden;
-        z-index: 1;
     }
     
     .tab-modern::before {
@@ -642,21 +627,17 @@
         color: #0ea5e9;
         background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
         border-bottom-color: #0ea5e9;
-        z-index: 2;
     }
     
     .tab-modern.active::before {
         transform: scaleX(1);
     }
     
-    /* Tab content improvements */
     .tab-content {
         display: none;
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        z-index: 1;
     }
     
     .tab-content.active {
@@ -664,76 +645,12 @@
         opacity: 1;
         transform: translateY(0);
     }
-    
-    /* Card spacing fixes */
-    .card-modern {
-        margin-bottom: 1.5rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    .stat-card {
-        margin-bottom: 1rem;
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* Grid improvements */
-    .grid {
-        position: relative;
-        z-index: 1;
-    }
-    
-    /* Ensure proper spacing */
-    .space-y-8 > * + * {
-        margin-top: 2rem;
-    }
-    
-    .space-y-6 > * + * {
-        margin-top: 1.5rem;
-    }
-    
-    /* Profile card specific fixes */
-    .profile-card-container {
-        margin-top: -4rem;
-        margin-bottom: 2rem;
-        position: relative;
-        z-index: 10;
-    }
-    
-    /* Navigation fixes */
-    #tab-navigation {
-        border-bottom: 1px solid #e5e7eb;
-        margin-bottom: 2rem;
-        position: relative;
-        z-index: 20;
-    }
-    
-    /* Content area fixes */
-    .content-area {
-        position: relative;
-        z-index: 1;
-        padding-top: 1rem;
-    }
 </style>
 
 <!-- Modern Tab JavaScript -->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Fix initial layout issues
-    function fixLayout() {
-        const profileCard = document.querySelector('.profile-card-container');
-        const tabNavigation = document.querySelector('#tab-navigation');
-        const contentArea = document.querySelector('.content-area');
-        
-        if (profileCard && tabNavigation && contentArea) {
-            // Ensure proper spacing
-            tabNavigation.style.marginTop = '2rem';
-            contentArea.style.paddingTop = '1rem';
-        }
-    }
-    
-    // Tab functionality with improved transitions
+    // Tab functionality
     const tabButtons = document.querySelectorAll('.tab-modern');
     const tabContents = document.querySelectorAll('.tab-content');
     
@@ -747,59 +664,39 @@ document.addEventListener('DOMContentLoaded', function() {
             // Add active class to clicked button
             this.classList.add('active');
             
-            // Hide all tab contents with fade out
+            // Hide all tab contents
             tabContents.forEach(content => {
-                if (content.classList.contains('active')) {
-                    content.style.opacity = '0';
-                    content.style.transform = 'translateY(10px)';
-                    
-                    setTimeout(() => {
-                        content.classList.remove('active');
-                    }, 200);
-                }
+                content.classList.remove('active');
             });
             
-            // Show target tab content with fade in
+            // Show target tab content
             const targetContent = document.getElementById(`tab-${targetTab}`);
             if (targetContent) {
                 setTimeout(() => {
                     targetContent.classList.add('active');
-                    setTimeout(() => {
-                        targetContent.style.opacity = '1';
-                        targetContent.style.transform = 'translateY(0)';
-                    }, 50);
-                }, 250);
+                }, 150);
             }
         });
     });
     
-    // Smooth card animations on scroll
+    // Add animation to cards
     const cards = document.querySelectorAll('.card-modern, .stat-card');
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry, index) => {
+        entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.style.opacity = '0';
-                entry.target.style.transform = 'translateY(30px)';
+                entry.target.style.transform = 'translateY(20px)';
                 entry.target.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
                 
                 setTimeout(() => {
                     entry.target.style.opacity = '1';
                     entry.target.style.transform = 'translateY(0)';
-                }, index * 100);
+                }, entry.target.offsetTop * 0.1);
             }
         });
-    }, { 
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px'
-    });
+    }, { threshold: 0.1 });
     
     cards.forEach(card => observer.observe(card));
-    
-    // Initialize layout
-    fixLayout();
-    
-    // Handle window resize
-    window.addEventListener('resize', fixLayout);
 });
 </script>
 

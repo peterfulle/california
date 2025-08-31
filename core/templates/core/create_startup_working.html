@@ -1,0 +1,389 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}Crear Perfil de Startup{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/wizard.css' %}" rel="stylesheet">
+    <style>
+        .step-hidden { display: none !important; }
+        .step-visible { display: block; }
+        .progress-bar {
+            background-color: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .step-dot.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        .step-dot.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .step-dot.pending {
+            background: #f3f4f6;
+            color: #9ca3af;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                ¡Registra tu Startup!
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Crea un perfil increíble para tu startup y conecta con inversores, advisors y el ecosistema emprendedor
+            </p>
+        </div>
+
+        <!-- Formulario con Alpine.js -->
+        <div x-data="startupForm()">
+            
+            <!-- Indicador de Progreso -->
+            <div class="bg-white rounded-lg p-6 mb-8 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Progreso</h3>
+                    <span x-text="`${getProgress()}% completado`" class="text-blue-600 font-medium"></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" :style="`width: ${getProgress()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-3 text-sm text-gray-600">
+                    <span>Paso <span x-text="currentStep"></span> de <span x-text="totalSteps"></span></span>
+                    <span>Faltan <span x-text="totalSteps - currentStep"></span> pasos</span>
+                </div>
+            </div>
+
+            <!-- Indicadores de Pasos -->
+            <div class="step-indicator">
+                <template x-for="step in totalSteps" :key="step">
+                    <div 
+                        class="step-dot"
+                        :class="{
+                            'active': step === currentStep,
+                            'completed': step < currentStep,
+                            'pending': step > currentStep
+                        }"
+                        @click="goToStep(step)"
+                        x-text="step">
+                    </div>
+                </template>
+            </div>
+
+            <!-- Formulario -->
+            <form id="startup-form" method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg overflow-hidden">
+                {% csrf_token %}
+                
+                <!-- Paso 1: Información Básica -->
+                <div x-show="currentStep === 1" class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        📋 Información Básica
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre de la Empresa *
+                            </label>
+                            <input 
+                                type="text" 
+                                name="company_name" 
+                                class="form-input" 
+                                placeholder="Ej: TechStart Solutions"
+                                required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Eslogan *
+                            </label>
+                            <input 
+                                type="text" 
+                                name="tagline" 
+                                class="form-input" 
+                                placeholder="Ej: Revolucionando el futuro de la tecnología"
+                                required>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Descripción *
+                            </label>
+                            <textarea 
+                                name="description" 
+                                rows="4" 
+                                class="form-input" 
+                                placeholder="Describe tu startup, qué problema resuelve, cómo funciona..."
+                                required></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Fecha de Fundación
+                                </label>
+                                <input 
+                                    type="date" 
+                                    name="founded_date" 
+                                    class="form-input">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Sitio Web
+                                </label>
+                                <input 
+                                    type="url" 
+                                    name="website" 
+                                    class="form-input" 
+                                    placeholder="https://tustarrtup.com">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Industria y Modelo -->
+                <div x-show="currentStep === 2" class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        🏭 Industria y Modelo de Negocio
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Industria *
+                            </label>
+                            <select name="industry" class="form-input" required>
+                                <option value="">Selecciona una industria</option>
+                                <option value="technology">Tecnología</option>
+                                <option value="fintech">Fintech</option>
+                                <option value="healthcare">Salud</option>
+                                <option value="education">Educación</option>
+                                <option value="ecommerce">E-commerce</option>
+                                <option value="biotech">Biotecnología</option>
+                                <option value="artificial-intelligence">Inteligencia Artificial</option>
+                                <option value="blockchain">Blockchain</option>
+                                <option value="clean-energy">Energías Limpias</option>
+                                <option value="food-tech">Food Tech</option>
+                                <option value="real-estate">Real Estate</option>
+                                <option value="transportation">Transporte</option>
+                                <option value="entertainment">Entretenimiento</option>
+                                <option value="other">Otra</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Modelo de Negocio *
+                            </label>
+                            <select name="business_model" class="form-input" required>
+                                <option value="">Selecciona un modelo</option>
+                                <option value="saas">SaaS (Software as a Service)</option>
+                                <option value="marketplace">Marketplace</option>
+                                <option value="ecommerce">E-commerce</option>
+                                <option value="freemium">Freemium</option>
+                                <option value="subscription">Suscripción</option>
+                                <option value="advertising">Publicidad</option>
+                                <option value="commission">Comisiones</option>
+                                <option value="licensing">Licenciamiento</option>
+                                <option value="hardware">Hardware</option>
+                                <option value="consulting">Consultoría</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Etapa de la Startup
+                            </label>
+                            <select name="stage" class="form-input">
+                                <option value="">Selecciona una etapa</option>
+                                <option value="idea">Idea</option>
+                                <option value="prototype">Prototipo</option>
+                                <option value="mvp">MVP</option>
+                                <option value="early-stage">Early Stage</option>
+                                <option value="growth">Crecimiento</option>
+                                <option value="expansion">Expansión</option>
+                                <option value="mature">Madura</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Métricas -->
+                <div x-show="currentStep === 3" class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        📊 Métricas de la Empresa
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Número de Empleados
+                                </label>
+                                <input 
+                                    type="number" 
+                                    name="employees_count" 
+                                    class="form-input" 
+                                    placeholder="5"
+                                    min="1">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ingresos Mensuales (USD)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    name="monthly_revenue" 
+                                    class="form-input" 
+                                    placeholder="10000"
+                                    min="0"
+                                    step="0.01">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Financiamiento Total Recaudado (USD)
+                            </label>
+                            <input 
+                                type="number" 
+                                name="total_funding_raised" 
+                                class="form-input" 
+                                placeholder="100000"
+                                min="0"
+                                step="0.01">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                ¿Está buscando financiamiento?
+                            </label>
+                            <select name="is_fundraising" class="form-input">
+                                <option value="false">No</option>
+                                <option value="true">Sí</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                ¿Perfil público?
+                            </label>
+                            <select name="is_public" class="form-input">
+                                <option value="true">Sí, hacer público</option>
+                                <option value="false">No, mantener privado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+
+            <!-- Botones de Navegación -->
+            <div class="bg-white rounded-lg p-6 mt-4 shadow-lg">
+                <div class="flex justify-between items-center">
+                    <button 
+                        type="button" 
+                        @click="prevStep()" 
+                        x-show="!isFirstStep()"
+                        class="btn-secondary">
+                        ← Anterior
+                    </button>
+                    
+                    <div x-show="isFirstStep()" class="w-24"></div>
+                    
+                    <button 
+                        type="button" 
+                        @click="nextStep()" 
+                        x-show="!isLastStep()"
+                        class="btn-primary"
+                        :disabled="!canProceed()"
+                        :class="{ 'opacity-50 cursor-not-allowed': !canProceed() }">
+                        Siguiente →
+                    </button>
+                    
+                    <button 
+                        type="button" 
+                        @click="submitForm()" 
+                        x-show="isLastStep()"
+                        class="btn-primary">
+                        ✓ Crear Startup
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/startup-form.js' %}"></script>
+{% endblock %}
