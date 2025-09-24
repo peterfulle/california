@@ -685,6 +685,9 @@ def create_startup(request):
         for key, value in request.POST.items():
             logger.info(f"POST[{key}] = {value}")
         
+        # Handle cropped logo data
+        cropped_logo_data = request.POST.get('cropped_logo_data')
+        
         form = StartupForm(request.POST, request.FILES)
         logger.info(f"Form created, checking validity...")
         
@@ -696,6 +699,37 @@ def create_startup(request):
                 
                 startup.founder = user_profile
                 logger.info(f"Founder assigned: {user_profile}")
+                
+                # Process cropped logo if available
+                if cropped_logo_data and cropped_logo_data.startswith('data:image'):
+                    logger.info("Processing cropped logo data...")
+                    
+                    import base64
+                    import tempfile
+                    from django.core.files.base import ContentFile
+                    from django.core.files.storage import default_storage
+                    import uuid
+                    
+                    try:
+                        # Extract base64 data
+                        format, imgstr = cropped_logo_data.split(';base64,')
+                        ext = format.split('/')[-1]
+                        
+                        # Decode base64 data
+                        data = ContentFile(base64.b64decode(imgstr))
+                        
+                        # Generate unique filename
+                        filename = f"startup_logos/logo_{uuid.uuid4().hex}.{ext}"
+                        
+                        # Save the cropped logo
+                        saved_path = default_storage.save(filename, data)
+                        startup.logo = saved_path
+                        
+                        logger.info(f"Cropped logo saved to: {saved_path}")
+                        
+                    except Exception as e:
+                        logger.error(f"Error processing cropped logo: {str(e)}")
+                        # Continue without cropped logo
                 
                 startup.save()
                 logger.info(f"Startup saved successfully with ID: {startup.id}")
@@ -731,7 +765,7 @@ def create_startup(request):
     logger.info(f"Rendering template with context keys: {list(context.keys())}")
     logger.info("=== CREATE STARTUP REQUEST END ===")
     
-    return render(request, 'core/create_startup_responsive.html', context)
+    return render(request, 'core/create_startup.html', context)
 
 @login_required
 def startup_profile(request, startup_id):
