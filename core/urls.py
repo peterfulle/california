@@ -39,6 +39,10 @@ urlpatterns = [
     path('startup/<int:startup_id>/request-access/', views.request_startup_access, name='request_startup_access'),
     path('startup/<int:startup_id>/private/<str:section>/', views.startup_private_section, name='startup_private_section'),
     
+    # Pitch Deck Generator
+    path('startup/<int:startup_id>/pitch-deck/', views.pitch_deck_generator, name='pitch_deck_generator'),
+    path('startup/<int:startup_id>/pitch-deck/generate-slide/', views.generate_pitch_deck_slide, name='generate_pitch_deck_slide'),
+    
     # Chatbot IA
     path('chat/', views.chat_interface, name='chat_interface'),
     path('chat/send/', views.send_message, name='send_message'),

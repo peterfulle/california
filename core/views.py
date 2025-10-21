@@ -3,11 +3,12 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.views.decorators.http import require_http_methods, require_POST
 from django.db.models import Q, Count, Sum, Avg
 from django.db import models
 from django.utils import timezone
+import json
 from .models import (
     Contact, Industry, UserProfile, Startup, InvestorProfile, 
     Event, EventRegistration, FounderProfile, EventComment, EventAttendance
@@ -878,6 +879,72 @@ def startup_profile(request, startup_id):
         context['user_has_private_access'] = False
     
     return render(request, 'core/startup_profile.html', context)
+
+
+# ===== GENERADOR DE PITCH DECK CON IA =====
+
+@login_required
+def pitch_deck_generator(request, startup_id):
+    """Vista para generar y editar pitch deck con IA"""
+    startup = get_object_or_404(Startup, id=startup_id)
+    
+    # Verificar permisos (fundador de la startup o usuario con acceso)
+    if hasattr(request.user, 'profile'):
+        profile = request.user.profile
+        is_owner = profile.user_type == 'founder' and startup.founder == profile
+    else:
+        is_owner = False
+    
+    if not is_owner:
+        messages.error(request, 'No tienes permiso para generar el pitch deck de esta startup.')
+        return redirect('core:startup_profile', pk=startup_id)
+    
+    context = {
+        'startup': startup,
+        'is_owner': is_owner,
+    }
+    
+    return render(request, 'core/pitch_deck_generator.html', context)
+
+
+@login_required
+def generate_pitch_deck_slide(request, startup_id):
+    """API endpoint para generar un slide específico del pitch deck con IA"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    startup = get_object_or_404(Startup, id=startup_id)
+    
+    # Verificar permisos
+    if not hasattr(request.user, 'profile'):
+        return JsonResponse({'error': 'Perfil no encontrado'}, status=403)
+    
+    profile = request.user.profile
+    is_owner = profile.user_type == 'founder' and startup.founder == profile
+    
+    if not is_owner:
+        return JsonResponse({'error': 'No autorizado'}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        slide_type = data.get('slide_type')
+        custom_instructions = data.get('custom_instructions', '')
+        
+        # Importar la función de generación
+        from .ai_service import generate_pitch_deck_slide_content
+        
+        content = generate_pitch_deck_slide_content(startup, slide_type, custom_instructions)
+        
+        return JsonResponse({
+            'success': True,
+            'content': content
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
 
 
 # ===== SISTEMA DE INFORMACIÓN PRIVADA =====

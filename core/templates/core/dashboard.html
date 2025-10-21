@@ -144,9 +144,19 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="flex space-x-3">
-                                        <a href="/startup/{{ startup.id }}/" class="btn-modern btn-secondary px-4 py-2">Ver</a>
-                                        <button class="btn-modern btn-outline px-4 py-2">Editar</button>
+                                    <div class="flex flex-col space-y-2">
+                                        <div class="flex space-x-2">
+                                            <a href="/startup/{{ startup.id }}/" class="btn-modern btn-secondary px-4 py-2 text-sm">
+                                                <i class="fas fa-eye mr-1"></i> Ver
+                                            </a>
+                                            <button class="btn-modern btn-outline px-4 py-2 text-sm">
+                                                <i class="fas fa-edit mr-1"></i> Editar
+                                            </button>
+                                        </div>
+                                        <a href="{% url 'core:pitch_deck_generator' startup.id %}" 
+                                           class="btn-modern px-4 py-2 text-sm bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:shadow-lg transition-all">
+                                            <i class="fas fa-magic mr-1"></i> Pitch Deck AI
+                                        </a>
                                     </div>
                                 </div>
                             </div>

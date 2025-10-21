@@ -676,12 +676,14 @@
                         <span class="menu-icon"><i class="fas fa-plus"></i></span>
                         <span class="sidebar-text">Nueva Startup</span>
                     </a>
+                    {% comment %}
                     {% if startup %}
                         <a href="{% url 'core:startup_finances' startup.id %}" class="menu-item {% if request.resolver_match.url_name == 'startup_finances' %}active{% endif %}">
                             <span class="menu-icon"><i class="fas fa-chart-bar"></i></span>
                             <span class="sidebar-text">Finanzas</span>
                         </a>
                     {% endif %}
+                    {% endcomment %}
                 {% endif %}
                 
                 {% if user.profile.user_type == 'investor' %}
@@ -716,7 +718,7 @@
                 </div>
                 
                 {% if user.profile.user_type == 'founder' %}
-                <a href="javascript:void(0)" onclick="openAIMatchFromSidebar('founder')" class="menu-item relative overflow-hidden group">
+                <button id="btnAIMatch" type="button" class="menu-item relative overflow-hidden group w-full text-left">
                     <span class="menu-icon">
                         <i class="fas fa-network-wired"></i>
                     </span>
@@ -724,11 +726,25 @@
                         <span>Match con Inversores</span>
                         <span class="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs rounded-full">AI</span>
                     </span>
+                </button>
+                
+                {% with user_startup=user.profile.startup_set.first %}
+                {% if user_startup %}
+                <a href="{% url 'core:pitch_deck_generator' user_startup.id %}" class="menu-item relative overflow-hidden group">
+                    <span class="menu-icon">
+                        <i class="fas fa-magic"></i>
+                    </span>
+                    <span class="sidebar-text flex items-center justify-between flex-1">
+                        <span>Pitch Deck Generator</span>
+                        <span class="px-2 py-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs rounded-full">AI</span>
+                    </span>
                 </a>
+                {% endif %}
+                {% endwith %}
                 {% endif %}
                 
                 {% if user.profile.user_type == 'investor' %}
-                <a href="javascript:void(0)" onclick="openAIMatchFromSidebar('investor')" class="menu-item relative overflow-hidden group">
+                <button id="btnAIMatch" type="button" class="menu-item relative overflow-hidden group w-full text-left">
                     <span class="menu-icon">
                         <i class="fas fa-network-wired"></i>
                     </span>
@@ -736,7 +752,7 @@
                         <span>Match con Startups</span>
                         <span class="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs rounded-full">AI</span>
                     </span>
-                </a>
+                </button>
                 {% endif %}
                 
                 <div style="height: 1px; background: #f3f4f6; margin: 12px 0;"></div>
@@ -1191,19 +1207,21 @@
     <script>
         // Función global para abrir AI Match desde el sidebar
         function openAIMatchFromSidebar(userType) {
-            const chatbotEl = document.getElementById('aiChatbot');
-            if (!chatbotEl) return;
+            console.log('🚀 Iniciando AI Match para:', userType);
             
-            // Esperar a que Alpine.js esté listo
+            // Primero abrir el chatbot manualmente clickeando el botón flotante
+            const floatingButton = document.querySelector('[\\@click="toggleChat()"]');
+            if (floatingButton && floatingButton.style.display !== 'none') {
+                console.log('📍 Haciendo click en botón flotante');
+                floatingButton.click();
+            }
+            
+            // Luego esperar y rellenar el mensaje
             setTimeout(() => {
-                if (chatbotEl.__x && chatbotEl.__x.$data) {
-                    const chatbot = chatbotEl.__x.$data;
-                    
-                    // Abrir el chatbot
-                    chatbot.isOpen = true;
-                    localStorage.setItem('chatbotOpen', 'true');
-                    
-                    // Crear mensaje según tipo de usuario
+                const inputField = document.querySelector('input[type="text"][x-model="inputMessage"]');
+                console.log('📝 Campo de input encontrado:', inputField);
+                
+                if (inputField) {
                     let matchMessage = '';
                     if (userType === 'founder') {
                         matchMessage = 'Quiero encontrar inversores que sean compatibles con mi startup. Ayúdame a hacer un match basándote en mi perfil, industria, etapa de financiamiento y necesidades.';
@@ -1211,19 +1229,55 @@
                         matchMessage = 'Quiero encontrar startups que sean compatibles con mi perfil de inversión. Ayúdame a hacer un match basándote en mis criterios de inversión, industrias de interés y ticket de inversión.';
                     }
                     
-                    // Enviar el mensaje después de un pequeño delay
+                    // Establecer el valor directamente
+                    inputField.value = matchMessage;
+                    console.log('✅ Mensaje establecido');
+                    
+                    // Disparar evento input para que Alpine.js lo detecte
+                    inputField.dispatchEvent(new Event('input', { bubbles: true }));
+                    
+                    // Enviar el formulario después de un delay
                     setTimeout(() => {
-                        chatbot.inputMessage = matchMessage;
-                        chatbot.sendMessage();
-                    }, 500);
+                        const form = inputField.closest('form');
+                        if (form) {
+                            console.log('📤 Enviando formulario');
+                            form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                        } else {
+                            // Si no hay formulario, buscar el botón de enviar
+                            const sendButton = document.querySelector('button[type="submit"]');
+                            if (sendButton) {
+                                sendButton.click();
+                            }
+                        }
+                    }, 300);
+                } else {
+                    console.error('❌ No se encontró el campo de input');
                 }
-            }, 100);
+            }, 500);
         }
         
         function toggleMobileMenu() {
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('hidden');
         }
+        
+        // Event listener para el botón AI Match
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔍 DOM cargado, buscando botón AI Match...');
+            const btnAIMatch = document.getElementById('btnAIMatch');
+            if (btnAIMatch) {
+                console.log('✅ Botón AI Match encontrado!');
+                btnAIMatch.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('🖱️ Click detectado en botón AI Match');
+                    const userType = '{{ user.profile.user_type }}';
+                    openAIMatchFromSidebar(userType);
+                });
+            } else {
+                console.warn('⚠️ Botón AI Match NO encontrado');
+            }
+        });
     </script>
     
     <!-- Messages -->
