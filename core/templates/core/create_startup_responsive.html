@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Your Startup</title>
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px 0 rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 10px 0 rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            transform: translateY(-1px);
+        }
+        
+        .step-indicator.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            transform: scale(1.1);
+        }
+        
+        .step-indicator.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .input-field:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .input-field.error {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+        
+        .form-section {
+            min-height: 400px;
+        }
+        
+        @media (max-width: 640px) {
+            .form-section {
+                min-height: auto;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-6 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-6">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                Register Your <span class="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Startup</span>
+            </h1>
+            <p class="text-gray-600 text-base md:text-lg">Create an amazing profile and connect with investors</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="glass-card rounded-2xl shadow-xl p-4 md:p-8" 
+             x-data="startupWizard()" 
+             x-init="init()">
+            
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <div>
+                        <h3 class="font-semibold text-gray-900 text-sm md:text-base">Progress</h3>
+                        <p class="text-xs md:text-sm text-gray-500" x-text="`${Math.round((currentStep / totalSteps) * 100)}% completed`"></p>
+                    </div>
+                    <span class="text-xs md:text-sm font-medium text-indigo-600" x-text="`Step ${currentStep} of ${totalSteps}`"></span>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
+                    <div class="gradient-bg h-2 rounded-full transition-all duration-500" 
+                         :style="`width: ${(currentStep / totalSteps) * 100}%`"></div>
+                </div>
+                
+                <!-- Step Indicators -->
+                <div class="flex justify-center space-x-4 md:space-x-8">
+                    <template x-for="step in totalSteps" :key="step">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-xs md:text-sm font-semibold step-indicator transition-all duration-300"
+                                 :class="{
+                                     'active': step === currentStep,
+                                     'completed': step < currentStep,
+                                     'bg-gray-200 text-gray-400': step > currentStep
+                                 }">
+                                <span x-text="step"></span>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form method="post" enctype="multipart/form-data" x-ref="startupForm">
+                {% csrf_token %}
+                
+                <!-- Step 1: Basic Info -->
+                <div x-show="currentStep === 1" x-transition class="form-section">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Basic Information
+                    </h2>
+                    
+                    <div class="space-y-4 md:space-y-6">
+                        <!-- Company Name -->
+                        <div>
+                            <label for="company_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                Company Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="company_name" id="company_name" required
+                                   class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                   placeholder="Enter your company name">
+                        </div>
+                        
+                        <!-- Tagline -->
+                        <div>
+                            <label for="tagline" class="block text-sm font-medium text-gray-700 mb-2">
+                                Tagline <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="tagline" id="tagline" required
+                                   class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                   placeholder="One-line description of what you do">
+                        </div>
+                        
+                        <!-- Description -->
+                        <div>
+                            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">
+                                Description <span class="text-red-500">*</span>
+                            </label>
+                            <textarea name="description" id="description" rows="3" required
+                                      class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none resize-none text-sm md:text-base"
+                                      placeholder="Detailed description of your startup"></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <!-- Founded Date -->
+                            <div>
+                                <label for="founded_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Founded Date
+                                </label>
+                                <input type="date" name="founded_date" id="founded_date"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base">
+                            </div>
+                            
+                            <!-- Website -->
+                            <div>
+                                <label for="website" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Website
+                                </label>
+                                <input type="url" name="website" id="website"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                       placeholder="https://yourwebsite.com">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Business Model -->
+                <div x-show="currentStep === 2" x-transition class="form-section">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        Business Model
+                    </h2>
+                    
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <!-- Industry -->
+                            <div>
+                                <label for="industry" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Industry <span class="text-red-500">*</span>
+                                </label>
+                                <select name="industry" id="industry" required
+                                        class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none bg-white text-sm md:text-base">
+                                    <option value="">Select Industry</option>
+                                    {% for industry in industries %}
+                                        <option value="{{ industry.id }}">{{ industry.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <!-- Stage -->
+                            <div>
+                                <label for="stage" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Stage <span class="text-red-500">*</span>
+                                </label>
+                                <select name="stage" id="stage" required
+                                        class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none bg-white text-sm md:text-base">
+                                    <option value="">Select Stage</option>
+                                    <option value="idea">Idea</option>
+                                    <option value="prototype">Prototype</option>
+                                    <option value="mvp">MVP</option>
+                                    <option value="early_traction">Early Traction</option>
+                                    <option value="growth">Growth</option>
+                                    <option value="scale">Scale</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <!-- Business Model -->
+                        <div>
+                            <label for="business_model" class="block text-sm font-medium text-gray-700 mb-2">
+                                Business Model
+                            </label>
+                            <textarea name="business_model" id="business_model" rows="3"
+                                      class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none resize-none text-sm md:text-base"
+                                      placeholder="How do you make money?"></textarea>
+                        </div>
+                        
+                        <!-- Problem Statement -->
+                        <div>
+                            <label for="problem_statement" class="block text-sm font-medium text-gray-700 mb-2">
+                                Problem Statement
+                            </label>
+                            <textarea name="problem_statement" id="problem_statement" rows="3"
+                                      class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none resize-none text-sm md:text-base"
+                                      placeholder="What problem are you solving?"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Metrics & Files -->
+                <div x-show="currentStep === 3" x-transition class="form-section">
+                    <h2 class="text-lg md:text-xl font-semibold text-gray-900 mb-4 md:mb-6 flex items-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Metrics & Assets
+                    </h2>
+                    
+                    <div class="space-y-4 md:space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <!-- Team Size -->
+                            <div>
+                                <label for="employees_count" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Team Size
+                                </label>
+                                <input type="number" name="employees_count" id="employees_count" min="1"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                       placeholder="Number of employees">
+                            </div>
+                            
+                            <!-- Monthly Revenue -->
+                            <div>
+                                <label for="monthly_revenue" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Monthly Revenue ($)
+                                </label>
+                                <input type="number" name="monthly_revenue" id="monthly_revenue" min="0" step="0.01"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                       placeholder="0">
+                            </div>
+                            
+                            <!-- Total Funding -->
+                            <div>
+                                <label for="total_funding_raised" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Total Funding Raised ($)
+                                </label>
+                                <input type="number" name="total_funding_raised" id="total_funding_raised" min="0" step="0.01" value="0"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                       placeholder="0">
+                            </div>
+                            
+                            <!-- Seeking Amount -->
+                            <div>
+                                <label for="seeking_amount" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Seeking Amount ($)
+                                </label>
+                                <input type="number" name="seeking_amount" id="seeking_amount" min="0" step="0.01"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base"
+                                       placeholder="0">
+                            </div>
+                        </div>
+                        
+                        <!-- File Uploads -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <!-- Logo -->
+                            <div>
+                                <label for="logo" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Company Logo
+                                </label>
+                                <input type="file" name="logo" id="logo" accept="image/*"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base">
+                            </div>
+                            
+                            <!-- Cover Image -->
+                            <div>
+                                <label for="cover_image" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Cover Image
+                                </label>
+                                <input type="file" name="cover_image" id="cover_image" accept="image/*"
+                                       class="w-full px-3 md:px-4 py-2 md:py-3 input-field rounded-lg focus:outline-none text-sm md:text-base">
+                            </div>
+                        </div>
+                        
+                        <!-- Checkboxes -->
+                        <div class="space-y-3 pt-4">
+                            <label class="flex items-center">
+                                <input type="checkbox" name="is_public" id="is_public" checked
+                                       class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                <span class="ml-3 text-sm text-gray-700">Make profile public</span>
+                            </label>
+                            
+                            <label class="flex items-center">
+                                <input type="checkbox" name="is_fundraising" id="is_fundraising"
+                                       class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                <span class="ml-3 text-sm text-gray-700">Currently fundraising</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mt-6 md:mt-8 pt-6 border-t border-gray-200">
+                    <button type="button" x-show="currentStep > 1" @click="prevStep()"
+                            class="w-full sm:w-auto px-6 py-3 btn-secondary rounded-lg font-medium order-2 sm:order-1">
+                        ← Previous
+                    </button>
+                    
+                    <div class="flex-1 hidden sm:block"></div>
+                    
+                    <button type="button" x-show="currentStep < totalSteps" @click="nextStep()"
+                            class="w-full sm:w-auto px-8 py-3 btn-primary text-white rounded-lg font-semibold order-1 sm:order-2">
+                        Next Step →
+                    </button>
+                    
+                    <button type="button" x-show="currentStep === totalSteps" @click="submitForm()"
+                            class="w-full sm:w-auto px-8 py-3 btn-primary text-white rounded-lg font-bold order-1 sm:order-2">
+                        🚀 Create Startup
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function startupWizard() {
+            return {
+                currentStep: 1,
+                totalSteps: 3,
+                isSubmitting: false,
+                
+                init() {
+                    // Initialize wizard
+                },
+                
+                nextStep() {
+                    if (this.validateCurrentStep()) {
+                        if (this.currentStep < this.totalSteps) {
+                            this.currentStep++;
+                        }
+                    }
+                },
+                
+                prevStep() {
+                    if (this.currentStep > 1) {
+                        this.currentStep--;
+                    }
+                },
+                
+                validateCurrentStep() {
+                    console.log(`🔍 Validating step ${this.currentStep}...`);
+                    
+                    const stepElement = document.querySelector(`[x-show="currentStep === ${this.currentStep}"]`);
+                    console.log('Step element found:', stepElement);
+                    
+                    const requiredFields = stepElement.querySelectorAll('[required]');
+                    console.log(`Found ${requiredFields.length} required fields:`, requiredFields);
+                    
+                    let isValid = true;
+                    
+                    requiredFields.forEach((field, index) => {
+                        const value = field.value.trim();
+                        console.log(`  Field ${index + 1} (${field.name || field.id}): "${value}" - ${value ? '✅ Valid' : '❌ Empty'}`);
+                        
+                        if (!value) {
+                            this.showFieldError(field);
+                            isValid = false;
+                        } else {
+                            this.clearFieldError(field);
+                        }
+                    });
+                    
+                    console.log(`Validation result: ${isValid ? '✅ PASSED' : '❌ FAILED'}`);
+                    
+                    if (!isValid) {
+                        // Scroll to first error field
+                        const firstError = stepElement.querySelector('.error');
+                        if (firstError) {
+                            console.log('Scrolling to first error field');
+                            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }
+                    
+                    return isValid;
+                },
+                
+                showFieldError(field) {
+                    field.classList.add('error');
+                    field.classList.remove('border-gray-200');
+                },
+                
+                clearFieldError(field) {
+                    field.classList.remove('error');
+                    field.classList.add('border-gray-200');
+                },
+                
+                submitForm() {
+                    console.log('=== FORM SUBMISSION DEBUG START ===');
+                    console.log('Current step:', this.currentStep);
+                    console.log('Is submitting:', this.isSubmitting);
+                    
+                    if (this.isSubmitting) {
+                        console.log('❌ Already submitting, aborting');
+                        return;
+                    }
+                    
+                    console.log('🔍 Validating current step...');
+                    if (this.validateCurrentStep()) {
+                        console.log('✅ Validation passed');
+                        this.isSubmitting = true;
+                        
+                        // Log form data
+                        const formElement = this.$refs.startupForm;
+                        console.log('📋 Form element:', formElement);
+                        console.log('📋 Form action:', formElement.action);
+                        console.log('📋 Form method:', formElement.method);
+                        
+                        const formData = new FormData(formElement);
+                        console.log('📝 Form data contents:');
+                        for (let [key, value] of formData.entries()) {
+                            console.log(`  ${key}: ${value}`);
+                        }
+                        
+                        // Show loading state
+                        const submitBtn = document.querySelector('[x-show="currentStep === totalSteps"]');
+                        if (submitBtn) {
+                            console.log('🔄 Setting button to loading state');
+                            submitBtn.innerHTML = '⏳ Creating...';
+                            submitBtn.disabled = true;
+                        }
+                        
+                        // Add submit event listener to track submission
+                        formElement.addEventListener('submit', function(e) {
+                            console.log('📤 Submit event fired!');
+                            console.log('Event:', e);
+                        });
+                        
+                        // Submit the form
+                        console.log('🚀 SUBMITTING FORM NOW...');
+                        try {
+                            formElement.submit();
+                            console.log('✅ Form submit() called successfully');
+                        } catch (error) {
+                            console.error('❌ Error submitting form:', error);
+                            this.isSubmitting = false;
+                        }
+                    } else {
+                        console.log('❌ Validation failed');
+                    }
+                    
+                    console.log('=== FORM SUBMISSION DEBUG END ===');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+/* Modern Startup Wizard Styles */
+
+/* Step Progress Indicator */
+.step-progress {
+    @apply relative flex items-center justify-between w-full mb-8;
+}
+
+.step-item {
+    @apply relative flex flex-col items-center z-10;
+}
+
+.step-circle {
+    @apply w-12 h-12 rounded-full border-2 flex items-center justify-center font-semibold text-sm transition-all duration-300;
+}
+
+.step-circle.completed {
+    @apply bg-green-500 border-green-500 text-white shadow-lg transform scale-110;
+}
+
+.step-circle.current {
+    @apply bg-blue-500 border-blue-500 text-white shadow-lg transform scale-110 animate-pulse;
+}
+
+.step-circle.error {
+    @apply bg-red-500 border-red-500 text-white;
+}
+
+.step-circle.pending {
+    @apply bg-gray-100 border-gray-300 text-gray-400;
+}
+
+.step-line {
+    @apply absolute top-6 left-1/2 w-full h-0.5 bg-gray-200 -z-10;
+}
+
+.step-line.completed {
+    @apply bg-green-500;
+}
+
+.step-title {
+    @apply mt-2 text-sm font-medium text-center;
+}
+
+.step-title.completed {
+    @apply text-green-600;
+}
+
+.step-title.current {
+    @apply text-blue-600;
+}
+
+.step-title.pending {
+    @apply text-gray-400;
+}
+
+/* Modern Form Controls */
+.modern-input {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white;
+}
+
+.modern-input:focus {
+    @apply shadow-lg transform -translate-y-0.5;
+}
+
+.modern-textarea {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white resize-none;
+}
+
+.modern-select {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white appearance-none cursor-pointer;
+}
+
+/* Input Groups with Icons */
+.input-group {
+    @apply relative;
+}
+
+.input-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5;
+}
+
+.input-group .modern-input {
+    @apply pl-10;
+}
+
+/* File Upload Zones */
+.upload-zone {
+    @apply border-2 border-dashed border-gray-300 rounded-xl p-8 text-center transition-all duration-300 cursor-pointer hover:border-blue-400 hover:bg-blue-50;
+}
+
+.upload-zone.drag-over {
+    @apply border-blue-500 bg-blue-100 transform scale-105;
+}
+
+.upload-preview {
+    @apply w-24 h-24 rounded-lg object-cover mx-auto mb-4 shadow-lg;
+}
+
+/* Modern Buttons */
+.btn-modern {
+    @apply px-6 py-3 rounded-xl font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+}
+
+.btn-primary {
+    @apply bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 focus:ring-blue-500 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5;
+}
+
+.btn-secondary {
+    @apply bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-gray-500 shadow-md hover:shadow-lg;
+}
+
+.btn-ghost {
+    @apply bg-transparent text-gray-600 hover:bg-gray-100 focus:ring-gray-500;
+}
+
+/* Progress Bar */
+.progress-bar {
+    @apply w-full bg-gray-200 rounded-full h-2 overflow-hidden;
+}
+
+.progress-fill {
+    @apply h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500 ease-out;
+}
+
+/* Step Content Animation */
+.step-content {
+    @apply transition-all duration-300 ease-in-out;
+}
+
+/* Form Cards */
+.form-card {
+    @apply bg-white rounded-2xl shadow-lg border border-gray-100 p-8 transition-all duration-200;
+}
+
+.form-card:hover {
+    @apply shadow-xl;
+}
+
+/* Field Labels */
+.field-label {
+    @apply block text-sm font-semibold text-gray-700 mb-2;
+}
+
+.field-description {
+    @apply text-xs text-gray-500 mt-1;
+}
+
+/* Error States */
+.field-error {
+    @apply border-red-300 bg-red-50 focus:ring-red-500 focus:border-red-500;
+}
+
+.error-message {
+    @apply text-red-600 text-xs mt-1 flex items-center;
+}
+
+/* Success States */
+.field-success {
+    @apply border-green-300 bg-green-50 focus:ring-green-500 focus:border-green-500;
+}
+
+/* Loading States */
+.loading-spinner {
+    @apply inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+    .step-progress {
+        @apply flex-col space-y-4;
+    }
+    
+    .step-item {
+        @apply w-full flex-row justify-start;
+    }
+    
+    .step-circle {
+        @apply w-8 h-8 mr-3;
+    }
+    
+    .step-title {
+        @apply text-left mt-0;
+    }
+    
+    .form-card {
+        @apply p-6;
+    }
+}
+
+/* Custom Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fadeInUp {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+}
+
+/* Floating Labels */
+.floating-label {
+    @apply relative;
+}
+
+.floating-label input:focus + label,
+.floating-label input:not(:placeholder-shown) + label {
+    @apply text-xs text-blue-600 -translate-y-6 translate-x-2 bg-white px-2;
+}
+
+.floating-label label {
+    @apply absolute left-3 top-3 text-gray-500 transition-all duration-200 pointer-events-none;
+}
+
+/* Glassmorphism effect for header */
+.glass-morphism {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Gradient backgrounds */
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.gradient-card {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+/* Field validation states */
+.field-error {
+    @apply border-red-300 bg-red-50 focus:border-red-500 focus:ring-red-500;
+    animation: shake 0.5s ease-in-out;
+}
+
+.field-success {
+    @apply border-green-300 bg-green-50 focus:border-green-500 focus:ring-green-500;
+}
+
+.field-error:focus {
+    @apply shadow-lg ring-2 ring-red-500 ring-opacity-50;
+}
+
+.field-success:focus {
+    @apply shadow-lg ring-2 ring-green-500 ring-opacity-50;
+}
+
+/* Character counter styling */
+.character-counter {
+    @apply text-xs text-gray-500 mt-1 flex justify-end;
+    transition: color 0.3s ease;
+}
+
+.character-counter.warning {
+    @apply text-orange-500;
+}
+
+.character-counter.danger {
+    @apply text-red-500;
+}
+
+/* Animation keyframes */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Enhanced form controls */
+.modern-input:focus,
+.modern-textarea:focus {
+    @apply ring-2 ring-blue-500 ring-opacity-50 border-blue-500 shadow-lg;
+    transform: scale(1.01);
+    transition: all 0.3s ease;
+}
+
+/* Success and error messages */
+.success-message {
+    @apply text-green-600 text-sm flex items-center;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.error-message {
+    @apply text-red-600 text-sm flex items-center;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.success-message::before {
+    content: '✓';
+    @apply mr-1 text-green-500 font-bold;
+}
+
+.error-message::before {
+    content: '⚠';
+    @apply mr-1 text-red-500 font-bold;
+}

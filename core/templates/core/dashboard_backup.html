@@ -1,0 +1,741 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Silicon Founders{% endblock %}
+
+{% block extra_head %}
+<style>
+/* Componentes inspirados en Radix UI y HeroUI */
+.card-glass {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.gradient-bg {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.metric-card {
+    background: linear-gradient(145deg, #ffffff, #f8fafc);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.pulse-dot {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: .5;
+    }
+}
+
+.floating-card {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translatey(0px);
+    }
+    50% {
+        transform: translatey(-10px);
+    }
+    100% {
+        transform: translatey(0px);
+    }
+}
+
+.hero-section {
+    background: linear-gradient(135deg, #1e40af 0%, #3b82f6 25%, #06b6d4 50%, #8b5cf6 75%, #d946ef 100%);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+}
+
+@keyframes gradientShift {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.glass-morphism {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.status-indicator {
+    position: relative;
+}
+
+.status-indicator::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.progress-ring {
+    transform: rotate(-90deg);
+}
+
+.progress-ring-circle {
+    stroke-dasharray: 251.2;
+    stroke-dashoffset: 251.2;
+    transition: stroke-dashoffset 0.5s ease-in-out;
+}
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <!-- Hero Section con diseño moderno -->
+    <div class="hero-section relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/20"></div>
+        <div class="relative px-8 py-12">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-6 lg:space-y-0">
+                    <div class="glass-morphism rounded-2xl p-6 backdrop-blur-xl">
+                        <h1 class="text-4xl lg:text-5xl font-bold text-white mb-2">
+                            Hola, {{ user.first_name|default:user.username }} 👋
+                        </h1>
+                        <p class="text-white/80 text-lg">
+                            {% if profile.user_type == 'founder' %}
+                                🚀 Construyendo el futuro, una startup a la vez
+                            {% elif profile.user_type == 'investor' %}
+                                💰 Invirtiendo en las mejores oportunidades
+                            {% else %}
+                                🌟 Explorando el ecosistema de innovación
+                            {% endif %}
+                        </p>
+                        <div class="flex items-center mt-4 text-white/70">
+                            <div class="pulse-dot w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                            <span class="text-sm">Última actualización: {{ "now"|date:"d M Y, H:i" }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Widget de progreso circular -->
+                    <div class="glass-morphism rounded-2xl p-6 backdrop-blur-xl">
+                        <div class="flex items-center space-x-4">
+                            <div class="relative w-16 h-16">
+                                <svg class="progress-ring w-16 h-16" viewBox="0 0 120 120">
+                                    <circle class="progress-ring-circle stroke-white/30" stroke-width="4" fill="transparent" r="40" cx="60" cy="60"/>
+                                    <circle class="progress-ring-circle stroke-white" stroke-width="4" fill="transparent" r="40" cx="60" cy="60" style="stroke-dashoffset: 75.36"/>
+                                </svg>
+                                <div class="absolute inset-0 flex items-center justify-center">
+                                    <span class="text-white font-bold text-sm">70%</span>
+                                </div>
+                            </div>
+                            <div class="text-white">
+                                <div class="font-semibold">Completitud del perfil</div>
+                                <div class="text-sm text-white/80">Actualiza tu información</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estadísticas del ecosistema con diseño mejorado -->
+    <div class="px-8 -mt-8 relative z-10">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-12">
+                <!-- Tarjeta de Startups -->
+                <div class="metric-card rounded-2xl p-6 floating-card">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                        </div>
+                        <div class="status-indicator">
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                +{{ ecosystem_stats.new_this_month }}
+                            </span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Startups Activas</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ ecosystem_stats.total_startups }}</p>
+                        <p class="text-xs text-green-600 font-medium mt-1">↗️ +12% este mes</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Inversores -->
+                <div class="metric-card rounded-2xl p-6 floating-card" style="animation-delay: 0.5s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                        </div>
+                        <div class="pulse-dot w-2 h-2 bg-green-400 rounded-full"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Inversores</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ ecosystem_stats.total_investors }}</p>
+                        <p class="text-xs text-green-600 font-medium mt-1">💰 Activos</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Financiamiento -->
+                <div class="metric-card rounded-2xl p-6 floating-card" style="animation-delay: 1s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded-full">
+                            Total
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Financiamiento</p>
+                        <p class="text-3xl font-bold text-gray-900">${{ ecosystem_stats.total_funding|floatformat:0 }}</p>
+                        <p class="text-xs text-purple-600 font-medium mt-1">📈 En crecimiento</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Recaudando -->
+                <div class="metric-card rounded-2xl p-6 floating-card" style="animation-delay: 1.5s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="pulse-dot w-2 h-2 bg-orange-400 rounded-full"></div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Recaudando</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ ecosystem_stats.active_fundraising }}</p>
+                        <p class="text-xs text-orange-600 font-medium mt-1">🔥 Activos ahora</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Buscando -->
+                <div class="metric-card rounded-2xl p-6 floating-card" style="animation-delay: 2s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 100 4m0-4v2m0-6V4"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xs font-medium text-indigo-600 bg-indigo-100 px-2 py-1 rounded-full">
+                            USD
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Capital Buscado</p>
+                        <p class="text-3xl font-bold text-gray-900">${{ ecosystem_stats.total_seeking|floatformat:0 }}</p>
+                        <p class="text-xs text-indigo-600 font-medium mt-1">💼 Oportunidades</p>
+                    </div>
+                </div>
+
+                <!-- Tarjeta de Nuevos -->
+                <div class="metric-card rounded-2xl p-6 floating-card" style="animation-delay: 2.5s">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="p-3 bg-gradient-to-br from-pink-500 to-rose-500 rounded-xl shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-pink-100 text-pink-800">
+                            Nuevo
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600 mb-1">Este Mes</p>
+                        <p class="text-3xl font-bold text-gray-900">{{ ecosystem_stats.new_this_month }}</p>
+                        <p class="text-xs text-pink-600 font-medium mt-1">🌟 Recién llegadas</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido específico por tipo de usuario -->
+    <div class="px-8 pb-12">
+        <div class="max-w-7xl mx-auto">
+            {% if user.is_authenticated %}
+                {% if user.user_type == 'founder' %}
+                    <!-- Dashboard de Founder con diseño moderno -->
+                    <div class="space-y-8">
+                        <!-- Panel de actividad reciente -->
+                        <div class="modern-card rounded-2xl p-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                                    <div class="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mr-3 animate-pulse"></div>
+                                    Mi Dashboard de Founder
+                                </h2>
+                                <div class="flex space-x-3">
+                                    <button class="btn-modern bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        Nueva Startup
+                                    </button>
+                                    <button class="btn-modern bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            {% include 'core/dashboard_founder.html' %}
+                        </div>
+                    </div>
+
+                {% elif user.user_type == 'investor' %}
+                    <!-- Dashboard de Inversor con diseño moderno -->
+                    <div class="space-y-8">
+                        <!-- Panel de oportunidades -->
+                        <div class="modern-card rounded-2xl p-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                                    <div class="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mr-3 animate-pulse"></div>
+                                    Mi Dashboard de Inversor
+                                </h2>
+                                <div class="flex space-x-3">
+                                    <button class="btn-modern bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                        </svg>
+                                        Buscar Startups
+                                    </button>
+                                    <button class="btn-modern bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            {% include 'core/dashboard_investor.html' %}
+                        </div>
+                    </div>
+
+                {% else %}
+                    <!-- Dashboard de Comunidad con diseño moderno -->
+                    <div class="space-y-8">
+                        <!-- Panel de comunidad -->
+                        <div class="modern-card rounded-2xl p-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+                                    <div class="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mr-3 animate-pulse"></div>
+                                    Mi Dashboard de Comunidad
+                                </h2>
+                                <div class="flex space-x-3">
+                                    <button class="btn-modern bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                        </svg>
+                                        Unirse a Eventos
+                                    </button>
+                                    <button class="btn-modern bg-gray-100 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-200 transition-all duration-300">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            {% include 'core/dashboard_community.html' %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <!-- Dashboard para usuarios no autenticados -->
+                <div class="space-y-8">
+                    <!-- Panel de bienvenida -->
+                    <div class="modern-card rounded-2xl p-8 text-center">
+                        <div class="max-w-3xl mx-auto">
+                            <div class="mb-8">
+                                <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl mb-4">
+                                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                <h2 class="text-3xl font-bold text-gray-900 mb-4">Bienvenido al Ecosistema</h2>
+                                <p class="text-xl text-gray-600 mb-8">Únete a la comunidad más vibrante de startups e inversores. Descubre oportunidades, conecta con fundadores y forma parte del futuro de la innovación.</p>
+                            </div>
+                            
+                            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+                                <a href="{% url 'auth:register' %}" class="btn-modern bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl hover:shadow-xl transition-all duration-300 flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                                    </svg>
+                                    Crear Cuenta
+                                </a>
+                                <a href="{% url 'auth:login' %}" class="btn-modern bg-gray-100 text-gray-700 px-8 py-4 rounded-xl hover:bg-gray-200 transition-all duration-300 flex items-center justify-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                    </svg>
+                                    Iniciar Sesión
+                                </a>
+                            </div>
+
+                            <!-- Beneficios -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+                                <div class="benefit-card p-6 rounded-xl">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 mb-2">Conecta Rápido</h3>
+                                    <p class="text-sm text-gray-600">Encuentra inversores y startups alineados con tus intereses en minutos.</p>
+                                </div>
+                                <div class="benefit-card p-6 rounded-xl">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 mb-2">Validado</h3>
+                                    <p class="text-sm text-gray-600">Todos los perfiles son verificados para garantizar conexiones auténticas.</p>
+                                </div>
+                                <div class="benefit-card p-6 rounded-xl">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 mx-auto">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="font-semibold text-gray-900 mb-2">Crece Juntos</h3>
+                                    <p class="text-sm text-gray-600">Accede a recursos, eventos y mentorías para acelerar tu crecimiento.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actividad reciente del ecosistema con diseño moderno -->
+    <div class="px-8 pb-12">
+        <div class="max-w-7xl mx-auto">
+            <div class="modern-card rounded-2xl p-8">
+                <div class="flex items-center justify-between mb-8">
+                    <h2 class="text-3xl font-bold text-gray-900 flex items-center">
+                        <div class="w-4 h-4 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full mr-4 animate-pulse"></div>
+                        Actividad Reciente del Ecosistema
+                    </h2>
+                    <div class="flex space-x-3">
+                        <button class="btn-modern bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-all duration-300 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Actualizar
+                        </button>
+                        <button class="btn-modern bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-all duration-300 flex items-center">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                            </svg>
+                            Ver Todo
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Startups recientes -->
+                    <div class="activity-section rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                    </svg>
+                                </div>
+                                Startups Recientes
+                            </h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Últimas 6</span>
+                        </div>
+                        <div class="space-y-4">
+                            {% for startup in recent_activity.recent_startups %}
+                            <div class="startup-item flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                                <div class="flex-shrink-0">
+                                    {% if startup.logo %}
+                                        <img class="h-12 w-12 rounded-xl object-cover shadow-md" src="{{ startup.logo.url }}" alt="{{ startup.name }}">
+                                    {% else %}
+                                        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md">
+                                            <span class="text-white font-bold text-lg">{{ startup.name|first }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-gray-900 truncate">{{ startup.name }}</p>
+                                    <p class="text-sm text-gray-600 truncate">{{ startup.tagline|default:"Startup innovadora" }}</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="pulse-dot w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
+                                        <span class="text-xs text-green-600 font-medium">{{ startup.created_at|timesince }} ago</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}</div>
+                                    <div class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full mt-1">Fundada</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-8 text-gray-500">
+                                <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                                <p>No hay startups recientes</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Inversores activos -->
+                    <div class="activity-section rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                                Inversores Activos
+                            </h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Top 6</span>
+                        </div>
+                        <div class="space-y-4">
+                            {% for investor in recent_activity.active_investors %}
+                            <div class="startup-item flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                                <div class="flex-shrink-0">
+                                    {% if investor.profile_picture %}
+                                        <img class="h-12 w-12 rounded-xl object-cover shadow-md" src="{{ investor.profile_picture.url }}" alt="{{ investor.get_full_name }}">
+                                    {% else %}
+                                        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-md">
+                                            <span class="text-white font-bold text-lg">{{ investor.get_full_name|first }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-gray-900 truncate">{{ investor.get_full_name }}</p>
+                                    <p class="text-sm text-gray-600 truncate">{{ investor.company|default:"Inversor independiente" }}</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="pulse-dot w-1.5 h-1.5 bg-green-400 rounded-full mr-2"></div>
+                                        <span class="text-xs text-green-600 font-medium">Activo</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-gray-900">${{ investor.total_invested|default:0|floatformat:0 }}</div>
+                                    <div class="text-xs text-green-600 bg-green-100 px-2 py-1 rounded-full mt-1">Invertido</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-8 text-gray-500">
+                                <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                </svg>
+                                <p>No hay inversores activos</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Oportunidades de inversión -->
+                    <div class="activity-section rounded-xl p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                                <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center mr-3">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                    </svg>
+                                </div>
+                                Recaudando Ahora
+                            </h3>
+                            <span class="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">Activas</span>
+                        </div>
+                        <div class="space-y-4">
+                            {% for opportunity in recent_activity.fundraising_opportunities %}
+                            <div class="startup-item flex items-center space-x-4 p-4 rounded-xl hover:bg-gray-50 transition-all duration-300">
+                                <div class="flex-shrink-0">
+                                    {% if opportunity.logo %}
+                                        <img class="h-12 w-12 rounded-xl object-cover shadow-md" src="{{ opportunity.logo.url }}" alt="{{ opportunity.name }}">
+                                    {% else %}
+                                        <div class="h-12 w-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center shadow-md">
+                                            <span class="text-white font-bold text-lg">{{ opportunity.name|first }}</span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-semibold text-gray-900 truncate">{{ opportunity.name }}</p>
+                                    <p class="text-sm text-gray-600 truncate">Buscando ${{ opportunity.fundraising_amount|floatformat:0 }}</p>
+                                    <div class="flex items-center mt-1">
+                                        <div class="pulse-dot w-1.5 h-1.5 bg-orange-400 rounded-full mr-2"></div>
+                                        <span class="text-xs text-orange-600 font-medium">{{ opportunity.fundraising_stage }}</span>
+                                    </div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm font-bold text-gray-900">${{ opportunity.fundraising_amount|floatformat:0 }}</div>
+                                    <div class="text-xs text-orange-600 bg-orange-100 px-2 py-1 rounded-full mt-1">Objetivo</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="text-center py-8 text-gray-500">
+                                <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                                <p>No hay oportunidades activas</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            <!-- Startups recientes -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Startups Recientes</h3>
+                    <span class="text-sm text-gray-500">Últimas 6</span>
+                </div>
+                <div class="space-y-4">
+                    {% for startup in recent_activity.recent_startups %}
+                    <div class="flex items-center space-x-3">
+                        <div class="flex-shrink-0">
+                            {% if startup.logo %}
+                                <img class="h-10 w-10 rounded-lg object-cover" src="{{ startup.logo.url }}" alt="{{ startup.name }}">
+                            {% else %}
+                                <div class="h-10 w-10 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+                                    <span class="text-white font-semibold text-sm">{{ startup.name|first }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">{{ startup.name }}</p>
+                            <p class="text-sm text-gray-500 truncate">{{ startup.tagline|default:"Startup innovadora" }}</p>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}</div>
+                            <div class="text-xs text-gray-500">{{ startup.created_at|timesince }} ago</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-sm">No hay startups recientes</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Financiamientos recientes -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Financiamientos</h3>
+                    <span class="text-sm text-gray-500">Recientes</span>
+                </div>
+                <div class="space-y-4">
+                    {% for startup in recent_activity.recent_funding %}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                {% if startup.logo %}
+                                    <img class="h-8 w-8 rounded-lg object-cover" src="{{ startup.logo.url }}" alt="{{ startup.name }}">
+                                {% else %}
+                                    <div class="h-8 w-8 rounded-lg bg-gradient-to-r from-green-500 to-blue-600 flex items-center justify-center">
+                                        <span class="text-white font-semibold text-xs">{{ startup.name|first }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ startup.name }}</p>
+                                <p class="text-xs text-gray-500">{{ startup.stage|default:"Early Stage" }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-sm font-semibold text-green-600">${{ startup.total_funding_raised|floatformat:0 }}</div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-sm">No hay financiamientos recientes</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Industrias trending -->
+            <div class="bg-white rounded-lg border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Industrias Trending</h3>
+                    <span class="text-sm text-gray-500">Top 5</span>
+                </div>
+                <div class="space-y-4">
+                    {% for industry in recent_activity.trending_industries %}
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-3">
+                            <div class="flex-shrink-0">
+                                <div class="h-3 w-3 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600"></div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900">{{ industry.name }}</p>
+                                <p class="text-xs text-gray-500">{{ industry.description|truncatechars:40 }}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                {{ industry.startup_count }} startups
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-500 text-sm">No hay datos de industrias</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Próximos eventos -->
+    {% if recent_activity.upcoming_events %}
+    <div class="mt-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6">Próximos Eventos</h2>
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {% for event in recent_activity.upcoming_events %}
+                <div class="border border-gray-200 rounded-lg p-4">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="font-semibold text-gray-900">{{ event.title }}</h3>
+                            <p class="text-sm text-gray-600 mt-1">{{ event.description|truncatechars:80 }}</p>
+                            <div class="mt-2 flex items-center text-sm text-gray-500">
+                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                </svg>
+                                {{ event.start_datetime|date:"d M, Y" }}
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                            {{ event.event_type|default:"Event" }}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

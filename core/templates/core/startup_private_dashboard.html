@@ -1,0 +1,316 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Private Information Dashboard - {{ startup.company_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Private Information Dashboard</h1>
+                    <p class="text-gray-600">Manage confidential information for {{ startup.company_name }}</p>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="bg-blue-100 text-blue-800 text-sm font-medium px-3 py-1 rounded-full">
+                        Owner Access
+                    </span>
+                    <a href="{% url 'core:startup_profile' startup.id %}" 
+                       class="text-blue-600 hover:text-blue-800 font-medium">
+                        View Public Profile →
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Financials</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if startup_financials %}Updated{% else %}Pending{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-blue-100 rounded-lg">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Team</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if startup_people %}Updated{% else %}Pending{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-purple-100 rounded-lg">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">News</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if startup_news %}Updated{% else %}Pending{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center">
+                    <div class="p-2 bg-gray-100 rounded-lg">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                    </div>
+                    <div class="ml-4">
+                        <p class="text-sm font-medium text-gray-600">Technology</p>
+                        <p class="text-lg font-semibold text-gray-900">
+                            {% if startup_technology %}Updated{% else %}Pending{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Management Cards -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Financial Information -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Financial Information</h2>
+                    <span class="text-sm text-gray-500">
+                        {% if startup_financials %}Last updated: {{ startup_financials.updated_at|date:"M d, Y" }}{% else %}Not set{% endif %}
+                    </span>
+                </div>
+
+                {% if startup_financials %}
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Monthly Revenue</p>
+                                <p class="text-lg font-semibold text-gray-900">${{ startup_financials.monthly_revenue|floatformat:0|default:"Not disclosed" }}</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Annual Revenue</p>
+                                <p class="text-lg font-semibold text-gray-900">${{ startup_financials.annual_revenue|floatformat:0|default:"Not disclosed" }}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <p class="text-sm text-gray-600">Burn Rate</p>
+                                <p class="text-lg font-semibold text-gray-900">${{ startup_financials.burn_rate|floatformat:0|default:"Not disclosed" }}/mo</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-600">Runway</p>
+                                <p class="text-lg font-semibold text-gray-900">{{ startup_financials.runway_months|default:"Not disclosed" }} months</p>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                        <p class="text-gray-600 mb-4">No financial information added yet</p>
+                    </div>
+                {% endif %}
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        {% if startup_financials %}Update{% else %}Add{% endif %} Financial Information
+                    </button>
+                </div>
+            </div>
+
+            <!-- Team Information -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Team Information</h2>
+                    <span class="text-sm text-gray-500">
+                        {% if startup_people %}Last updated: {{ startup_people.updated_at|date:"M d, Y" }}{% else %}Not set{% endif %}
+                    </span>
+                </div>
+
+                {% if startup_people %}
+                    <div class="space-y-4">
+                        {% for member in startup_people.team_members %}
+                        <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
+                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                                <span class="text-sm font-medium text-blue-800">{{ member.name|first|upper }}</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="font-medium text-gray-900">{{ member.name }}</p>
+                                <p class="text-sm text-gray-600">{{ member.role|default:"Team Member" }}</p>
+                                {% if member.background %}
+                                    <p class="text-xs text-gray-500 mt-1">{{ member.background|truncatechars:60 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"></path>
+                        </svg>
+                        <p class="text-gray-600 mb-4">No team information added yet</p>
+                    </div>
+                {% endif %}
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        {% if startup_people %}Update{% else %}Add{% endif %} Team Information
+                    </button>
+                </div>
+            </div>
+
+            <!-- News & Updates -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">News & Updates</h2>
+                    <span class="text-sm text-gray-500">
+                        {% if startup_news %}{{ startup_news.news_items|length }} updates{% else %}No updates{% endif %}
+                    </span>
+                </div>
+
+                {% if startup_news and startup_news.news_items %}
+                    <div class="space-y-3">
+                        {% for item in startup_news.news_items|slice:":3" %}
+                        <div class="border-l-2 border-blue-200 pl-4">
+                            <p class="font-medium text-gray-900">{{ item.title }}</p>
+                            <p class="text-sm text-gray-600">{{ item.category|default:"Company Update" }}</p>
+                            <p class="text-xs text-gray-500">{{ item.date|default:startup_news.updated_at|date:"M d, Y" }}</p>
+                        </div>
+                        {% endfor %}
+                        {% if startup_news.news_items|length > 3 %}
+                            <p class="text-sm text-gray-500 text-center pt-2">+ {{ startup_news.news_items|length|add:"-3" }} more updates</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H14"></path>
+                        </svg>
+                        <p class="text-gray-600 mb-4">No news updates added yet</p>
+                    </div>
+                {% endif %}
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        {% if startup_news %}Update{% else %}Add{% endif %} News & Updates
+                    </button>
+                </div>
+            </div>
+
+            <!-- Technology Information -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-semibold text-gray-900">Technology Stack</h2>
+                    <span class="text-sm text-gray-500">
+                        {% if startup_technology %}Last updated: {{ startup_technology.updated_at|date:"M d, Y" }}{% else %}Not set{% endif %}
+                    </span>
+                </div>
+
+                {% if startup_technology and startup_technology.tech_stack %}
+                    <div class="space-y-4">
+                        {% for category, technologies in startup_technology.tech_stack.items %}
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 capitalize mb-2">{{ category }}</p>
+                            <div class="flex flex-wrap gap-2">
+                                {% for tech in technologies|slice:":3" %}
+                                <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+                                    {{ tech.name }}{% if tech.version %} v{{ tech.version }}{% endif %}
+                                </span>
+                                {% endfor %}
+                                {% if technologies|length > 3 %}
+                                    <span class="bg-gray-100 text-gray-600 text-xs font-medium px-2.5 py-0.5 rounded">
+                                        +{{ technologies|length|add:"-3" }} more
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-8">
+                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"></path>
+                        </svg>
+                        <p class="text-gray-600 mb-4">No technology information added yet</p>
+                    </div>
+                {% endif %}
+
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <button class="w-full bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        {% if startup_technology %}Update{% else %}Add{% endif %} Technology Information
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Access Requests Section -->
+        <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-lg font-semibold text-gray-900">Access Requests</h2>
+                <span class="bg-yellow-100 text-yellow-800 text-sm font-medium px-3 py-1 rounded-full">
+                    {{ pending_requests.count }} Pending
+                </span>
+            </div>
+
+            {% if pending_requests %}
+                <div class="space-y-4">
+                    {% for request in pending_requests %}
+                    <div class="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                <span class="text-sm font-medium text-gray-600">{{ request.investor.user.first_name|first|upper }}</span>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">{{ request.investor.user.get_full_name }}</p>
+                                <p class="text-sm text-gray-600">{{ request.investor.company_name|default:"Independent Investor" }}</p>
+                                <p class="text-xs text-gray-500">Requested {{ request.requested_at|timesince }} ago</p>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700 transition">
+                                Approve
+                            </button>
+                            <button class="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700 transition">
+                                Decline
+                            </button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-8">
+                    <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <p class="text-gray-600">No pending access requests</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

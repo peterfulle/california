@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Perfil de Startup{% endblock %}
+
+{% block extra_css %}
+    <style>
+        .step-hidden { display: none !important; }
+        .step-visible { display: block; }
+        .progress-bar {
+            background-color: #e5e7eb;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+            padding: 12px 24px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .step-dot.active {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        .step-dot.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+        .step-dot.pending {
+            background: #f3f4f6;
+            color: #9ca3af;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 py-12">
+    <div class="max-w-4xl mx-auto px-4">
+        
+        <!-- Header -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                ¡Registra tu Startup!
+            </h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Crea un perfil increíble para tu startup y conecta con inversores, advisors y el ecosistema emprendedor
+            </p>
+        </div>
+
+        <!-- Formulario con Alpine.js -->
+        <div x-data="startupForm()">
+            
+            <!-- Indicador de Progreso -->
+            <div class="bg-white rounded-lg p-6 mb-8 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Progreso</h3>
+                    <span x-text="`${getProgress()}% completado`" class="text-blue-600 font-medium"></span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" :style="`width: ${getProgress()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-3 text-sm text-gray-600">
+                    <span>Paso <span x-text="currentStep"></span> de <span x-text="totalSteps"></span></span>
+                    <span>Faltan <span x-text="totalSteps - currentStep"></span> pasos</span>
+                </div>
+            </div>
+
+            <!-- Indicadores de Pasos -->
+            <div class="step-indicator">
+                <template x-for="step in totalSteps" :key="step">
+                    <div 
+                        class="step-dot"
+                        :class="{
+                            'active': step === currentStep,
+                            'completed': step < currentStep,
+                            'pending': step > currentStep
+                        }"
+                        @click="goToStep(step)"
+                        x-text="step">
+                    </div>
+                </template>
+            </div>
+
+            <!-- Formulario -->
+            <form id="startup-form" method="post" enctype="multipart/form-data" class="bg-white rounded-lg shadow-lg overflow-hidden">
+                {% csrf_token %}
+                
+                <!-- Paso 1: Información Básica -->
+                <div x-show="currentStep === 1" class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        📋 Información Básica
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Nombre de la Empresa *
+                            </label>
+                            {{ form.company_name }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Eslogan *
+                            </label>
+                            {{ form.tagline }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Descripción *
+                            </label>
+                            {{ form.description }}
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Fecha de Fundación
+                                </label>
+                                {{ form.founded_date }}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Sitio Web
+                                </label>
+                                {{ form.website }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Industria y Modelo -->
+                <div x-show="currentStep === 2" class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        🏭 Industria y Modelo de Negocio
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Industria *
+                            </label>
+                            {{ form.industry }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Modelo de Negocio *
+                            </label>
+                            {{ form.business_model }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Etapa de la Startup
+                            </label>
+                            {{ form.stage }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Métricas -->
+                <div x-show="currentStep === 3" class="p-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        📊 Métricas de la Empresa
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Número de Empleados
+                                </label>
+                                {{ form.employees_count }}
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    Ingresos Mensuales (USD)
+                                </label>
+                                {{ form.monthly_revenue }}
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Financiamiento Total Recaudado (USD)
+                            </label>
+                            {{ form.total_funding_raised }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                ¿Está buscando financiamiento?
+                            </label>
+                            {{ form.is_fundraising }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                ¿Perfil público?
+                            </label>
+                            {{ form.is_public }}
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+
+            <!-- Botones de Navegación -->
+            <div class="bg-white rounded-lg p-6 mt-4 shadow-lg">
+                <div class="flex justify-between items-center">
+                    <button 
+                        type="button" 
+                        @click="prevStep()" 
+                        x-show="!isFirstStep()"
+                        class="btn-secondary">
+                        ← Anterior
+                    </button>
+                    
+                    <div x-show="isFirstStep()" class="w-24"></div>
+                    
+                    <button 
+                        type="button" 
+                        @click="nextStep()" 
+                        x-show="!isLastStep()"
+                        class="btn-primary">
+                        Siguiente →
+                    </button>
+                    
+                    <button 
+                        type="button" 
+                        @click="submitForm()" 
+                        x-show="isLastStep()"
+                        class="btn-primary">
+                        ✓ Crear Startup
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+// Alpine.js component integrado
+document.addEventListener('alpine:init', () => {
+    Alpine.data('startupForm', () => ({
+        currentStep: 1,
+        totalSteps: 3,
+        
+        init() {
+            console.log('Formulario de startup inicializado');
+            // Aplicar estilos a los campos del formulario de Django
+            this.$nextTick(() => {
+                const inputs = document.querySelectorAll('input, textarea, select');
+                inputs.forEach(input => {
+                    if (!input.classList.contains('form-input')) {
+                        input.classList.add('form-input');
+                    }
+                });
+            });
+        },
+        
+        nextStep() {
+            if (this.currentStep < this.totalSteps) {
+                this.currentStep++;
+                console.log('Avanzando al paso:', this.currentStep);
+            }
+        },
+        
+        prevStep() {
+            if (this.currentStep > 1) {
+                this.currentStep--;
+                console.log('Retrocediendo al paso:', this.currentStep);
+            }
+        },
+        
+        goToStep(step) {
+            if (step >= 1 && step <= this.totalSteps) {
+                this.currentStep = step;
+                console.log('Saltando al paso:', step);
+            }
+        },
+        
+        getProgress() {
+            return Math.round((this.currentStep / this.totalSteps) * 100);
+        },
+        
+        isFirstStep() {
+            return this.currentStep === 1;
+        },
+        
+        isLastStep() {
+            return this.currentStep === this.totalSteps;
+        },
+        
+        submitForm() {
+            console.log('Enviando formulario...');
+            const form = document.getElementById('startup-form');
+            if (form) {
+                form.submit();
+            }
+        }
+    }));
+});
+</script>
+{% endblock %}
+
+{% block extra_js %}
+{% endblock %}

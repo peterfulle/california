@@ -1,0 +1,868 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}Create Startup Profile{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/wizard.css' %}" rel="stylesheet">
+    <link href="{% static 'css/logo-cropper.css' %}" rel="stylesheet">
+    <!-- Cropper.js for professional logo editing -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    
+    <style>
+        /* ===== ESTILOS MODERNOS PARA FORMULARIO ===== */
+        
+        /* Asegurar que todos los inputs del formulario tengan el estilo correcto */
+        #startup-form input[type="text"],
+        #startup-form input[type="email"],
+        #startup-form input[type="url"],
+        #startup-form input[type="date"],
+        #startup-form input[type="number"],
+        #startup-form textarea,
+        #startup-form select {
+            width: 100% !important;
+            padding: 12px 16px !important;
+            border: 2px solid #e5e7eb !important;
+            border-radius: 10px !important;
+            font-size: 14px !important;
+            font-family: inherit !important;
+            transition: all 0.2s ease !important;
+            background-color: #ffffff !important;
+            color: #1f2937 !important;
+            box-sizing: border-box !important;
+        }
+        
+        #startup-form input[type="text"]:focus,
+        #startup-form input[type="email"]:focus,
+        #startup-form input[type="url"]:focus,
+        #startup-form input[type="date"]:focus,
+        #startup-form input[type="number"]:focus,
+        #startup-form textarea:focus,
+        #startup-form select:focus {
+            outline: none !important;
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1) !important;
+            background-color: #ffffff !important;
+        }
+        
+        #startup-form textarea {
+            min-height: 120px !important;
+            resize: vertical !important;
+        }
+        
+        #startup-form input::placeholder,
+        #startup-form textarea::placeholder {
+            color: #9ca3af !important;
+            opacity: 1 !important;
+        }
+        
+        /* Labels */
+        .field-label {
+            display: block !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: #1f2937 !important;
+            margin-bottom: 8px !important;
+        }
+        
+        .field-description {
+            font-size: 12px !important;
+            color: #6b7280 !important;
+            margin-top: 6px !important;
+            line-height: 1.4 !important;
+        }
+        
+        /* Select especial */
+        #startup-form select {
+            appearance: none !important;
+            background-image: url("data:svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 12px center !important;
+            background-size: 20px !important;
+            padding-right: 40px !important;
+        }
+        
+        /* Campo con error */
+        #startup-form input.error,
+        #startup-form textarea.error,
+        #startup-form select.error {
+        
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed #d1d5db !important;
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+        
+        .upload-zone:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        
+        .loading-spinner {
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+    
+    <!-- Alpine.js will be loaded at the bottom -->
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8" 
+     x-data="startupModal()" 
+     x-init="console.log('Alpine.js initialized')">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Main Header with Call to Action -->
+        <div class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 mb-8 text-center shadow-xl border border-white/20">
+            <div class="flex items-center justify-center mb-6">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
+                Register Your Startup!
+            </h1>
+            <p class="text-lg text-gray-700 mb-6 max-w-2xl mx-auto">
+                Create an incredible profile for your startup and connect with investors, advisors and the entrepreneurial ecosystem
+            </p>
+            <div class="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full text-blue-800 text-sm font-medium mb-8">
+                <span class="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                Guided step-by-step process
+            </div>
+            
+            <!-- Create Startup Button -->
+            <button 
+                @click="openModal(); console.log('Button clicked!');"
+                onclick="console.log('Plain onclick also triggered')"
+                class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-lg">
+                <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Create My Startup
+            </button>
+        </div>
+        
+        <!-- Professional Startup Creation Modal -->
+        <div 
+            x-show="showModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto"
+            style="display: none;"
+        >
+            <!-- Modal Backdrop -->
+            <div class="fixed inset-0 bg-black bg-opacity-75 backdrop-blur-sm"></div>
+            
+            <!-- Modal Container -->
+            <div class="relative min-h-screen flex items-center justify-center p-4">
+                <div 
+                    @click.away="closeModal()"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden relative modal-content">
+                    
+                    <!-- Modal Header -->
+                    <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center">
+                                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 class="text-2xl font-bold">Create Your Startup Profile</h2>
+                                    <p class="text-blue-100 text-sm">Step <span x-text="currentStep"></span> of <span x-text="totalSteps"></span> • <span x-text="getOverallProgress()"></span>% Complete</p>
+                                </div>
+                            </div>
+                            <button @click="closeModal()" class="text-white hover:text-gray-200 transition-colors p-2">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="mt-6">
+                            <div class="w-full bg-white bg-opacity-20 rounded-full h-2">
+                                <div 
+                                    class="bg-white rounded-full h-2 transition-all duration-500 ease-out"
+                                    :style="`width: ${getOverallProgress()}%`">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Required Fields Notice -->
+                        <div class="mt-4 bg-white bg-opacity-10 rounded-lg p-3">
+                            <p class="text-white text-sm text-center">
+                                <span class="text-red-300">*</span> Fields marked with asterisk are required to complete your profile
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- Modal Content -->
+                    <div class="p-8 max-h-[60vh] overflow-y-auto">
+                        <form method="post" enctype="multipart/form-data" id="startup-form">
+                        {% csrf_token %}
+                        
+                        <!-- Step 1: Basic Information -->
+                        <div x-show="currentStep === 1" x-transition class="space-y-6">
+                            <div class="text-center mb-8">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900">Basic Information</h3>
+                                <p class="text-gray-600">Tell us about your startup fundamentals</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="field-label">Startup Name <span class="text-red-500">*</span></label>
+                                    {{ form.company_name|add_class:"modern-input" }}
+                                    <p class="field-description">The official name of your startup</p>
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Founded Date</label>
+                                    {{ form.founded_date|add_class:"modern-input" }}
+                                    <p class="field-description">When was your startup founded?</p>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Tagline <span class="text-red-500">*</span></label>
+                                {{ form.tagline|add_class:"modern-input" }}
+                                <p class="field-description">A brief one-liner that captures your startup's essence</p>
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Description <span class="text-red-500">*</span></label>
+                                {{ form.description|add_class:"modern-textarea" }}
+                                <p class="field-description">Describe your startup, products, mission and innovations</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 2: Branding & Media -->
+                        <div x-show="currentStep === 2" x-transition class="space-y-6">
+                            <div class="text-center mb-8">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900">Branding & Media</h3>
+                                <p class="text-gray-600">Your brand image and media assets</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="field-label">Logo</label>
+                                    <div class="upload-zone" id="logoUploadZone">
+                                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                        <p class="text-lg font-medium text-gray-700 mb-2">Drop your logo here</p>
+                                        <p class="text-sm text-gray-500 mb-4">or click to select</p>
+                                        <div class="text-xs text-gray-400">
+                                            <p>• Will be automatically adjusted to square</p>
+                                            <p>• Max 2MB • JPG, PNG, SVG</p>
+                                        </div>
+                                    </div>
+                                    {{ form.logo }}
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Cover Image</label>
+                                    <div class="upload-zone" id="coverUploadZone">
+                                        <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                        </svg>
+                                        <p class="text-lg font-medium text-gray-700 mb-2">Drop cover image here</p>
+                                        <p class="text-sm text-gray-500">Recommended 1200x400px</p>
+                                    </div>
+                                    {{ form.cover_image }}
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="field-label">Website</label>
+                                    {{ form.website|add_class:"modern-input" }}
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Pitch Deck URL</label>
+                                    {{ form.pitch_deck_url|add_class:"modern-input" }}
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Demo URL</label>
+                                    {{ form.demo_url|add_class:"modern-input" }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Step 3: Industry & Business -->
+                        <div x-show="currentStep === 3" x-transition class="space-y-6">
+                            <div class="text-center mb-8">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900">Industry & Business</h3>
+                                <p class="text-gray-600">Define your market and business model</p>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="field-label">Industry <span class="text-red-500">*</span></label>
+                                    {{ form.industry|add_class:"modern-select" }}
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Sub-Industry</label>
+                                    {{ form.sub_industry|add_class:"modern-input" }}
+                                    <p class="field-description">e.g., Mobile App, B2B SaaS, etc.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div>
+                                    <label class="field-label">Company Stage <span class="text-red-500">*</span></label>
+                                    {{ form.stage|add_class:"modern-select" }}
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Number of Employees</label>
+                                    {{ form.employees_count|add_class:"modern-input" }}
+                                </div>
+                                
+                                <div>
+                                    <label class="field-label">Revenue Stage</label>
+                                    {{ form.revenue_stage|add_class:"modern-select" }}
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="field-label">Business Model</label>
+                                {{ form.business_model|add_class:"modern-input" }}
+                                <p class="field-description">SaaS, Marketplace, Freemium, etc.</p>
+                            </div>
+                        </div>
+                        
+                        </form>
+                    </div>
+                    
+                    <!-- Modal Footer -->
+                    <div class="px-8 py-6 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                        <button 
+                            @click="prevStep()" 
+                            x-show="currentStep > 1"
+                            class="inline-flex items-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                            Previous
+                        </button>
+                        
+                        <div x-show="currentStep === 1" class="w-20"></div>
+                        
+                        <div class="text-center">
+                            <div class="text-sm text-gray-600 mb-1">Form Progress</div>
+                            <div class="text-xs text-blue-600" x-text="`${Math.round(getOverallProgress())}% completed`"></div>
+                        </div>
+                        
+                        <button 
+                            @click="nextStep()" 
+                            x-show="currentStep < totalSteps"
+                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-lg hover:shadow-lg transition-all">
+                            Next
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
+                        </button>
+                        
+                        <button 
+                            @click="submitForm()" 
+                            x-show="currentStep === totalSteps"
+                            :disabled="isLoading"
+                            class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-600 to-blue-600 text-white font-medium rounded-lg hover:shadow-lg transition-all">
+                            <span x-show="!isLoading" class="flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Create My Startup
+                            </span>
+                            <span x-show="isLoading" class="flex items-center">
+                                <div class="loading-spinner mr-2"></div>
+                                Creating...
+                            </span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Hidden Fields for Unused Form Fields -->
+<div class="hidden">
+    {{ form.burn_rate }}
+    {{ form.runway_months }}
+    {{ form.customer_acquisition_cost }}
+    {{ form.lifetime_value }}
+    {{ form.churn_rate }}
+    {{ form.monthly_revenue }}
+    {{ form.annual_revenue }}
+    {{ form.seeking_amount }}
+    {{ form.valuation }}
+    {{ form.monthly_users }}
+    {{ form.competitive_advantage }}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+<script>
+// Alpine.js component for startup modal
+function startupModal() {
+    return {
+        showModal: false,
+        currentStep: 1,
+        totalSteps: 3,
+        isLoading: false,
+        errors: {},
+        
+        // Open modal
+        openModal() {
+            console.log('Opening modal...');
+            console.log('showModal before:', this.showModal);
+            this.showModal = true;
+            console.log('showModal after:', this.showModal);
+        },
+        
+        // Close modal
+        closeModal() {
+            this.showModal = false;
+            this.currentStep = 1;
+            this.clearFieldErrors();
+        },
+        
+        // Validation for each step
+        validateStep(step) {
+            this.errors = {};
+            let isValid = true;
+            
+            if (step === 1) {
+                // Step 1: Basic Information - Required fields
+                const companyName = document.querySelector('[name="company_name"]')?.value?.trim() || '';
+                const tagline = document.querySelector('[name="tagline"]')?.value?.trim() || '';
+                const description = document.querySelector('[name="description"]')?.value?.trim() || '';
+                
+                if (!companyName || companyName.length < 2) {
+                    this.errors.company_name = 'Company name is required (min 2 characters)';
+                    this.showFieldError('[name="company_name"]', this.errors.company_name);
+                    isValid = false;
+                }
+                
+                if (!tagline || tagline.length < 10) {
+                    this.errors.tagline = 'Tagline is required (min 10 characters)';
+                    this.showFieldError('[name="tagline"]', this.errors.tagline);
+                    isValid = false;
+                }
+                
+                if (!description || description.length < 50) {
+                    this.errors.description = 'Description is required (min 50 characters)';
+                    this.showFieldError('[name="description"]', this.errors.description);
+                    isValid = false;
+                }
+            }
+            
+            if (step === 2) {
+                // Step 2: Branding & Media - Optional but validate format if provided
+                const website = document.querySelector('[name="website"]')?.value?.trim() || '';
+                const pitchDeck = document.querySelector('[name="pitch_deck_url"]')?.value?.trim() || '';
+                const demo = document.querySelector('[name="demo_url"]')?.value?.trim() || '';
+                
+                if (website && !this.isValidUrl(website)) {
+                    this.errors.website = 'Please enter a valid website URL';
+                    this.showFieldError('[name="website"]', this.errors.website);
+                    isValid = false;
+                }
+                
+                if (pitchDeck && !this.isValidUrl(pitchDeck)) {
+                    this.errors.pitch_deck_url = 'Please enter a valid pitch deck URL';
+                    this.showFieldError('[name="pitch_deck_url"]', this.errors.pitch_deck_url);
+                    isValid = false;
+                }
+                
+                if (demo && !this.isValidUrl(demo)) {
+                    this.errors.demo_url = 'Please enter a valid demo URL';
+                    this.showFieldError('[name="demo_url"]', this.errors.demo_url);
+                    isValid = false;
+                }
+            }
+            
+            if (step === 3) {
+                // Step 3: Industry & Business - Required fields
+                const industry = document.querySelector('[name="industry"]')?.value || '';
+                const stage = document.querySelector('[name="stage"]')?.value || '';
+                
+                if (!industry) {
+                    this.errors.industry = 'Industry selection is required';
+                    this.showFieldError('[name="industry"]', this.errors.industry);
+                    isValid = false;
+                }
+                
+                if (!stage) {
+                    this.errors.stage = 'Company stage is required';
+                    this.showFieldError('[name="stage"]', this.errors.stage);
+                    isValid = false;
+                }
+                
+                // Optional but validate if provided
+                const employees = document.querySelector('[name="employees_count"]')?.value;
+                if (employees && (parseInt(employees) < 1 || parseInt(employees) > 10000)) {
+                    this.errors.employees_count = 'Number of employees must be between 1 and 10,000';
+                    this.showFieldError('[name="employees_count"]', this.errors.employees_count);
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        },
+        
+        // Show field error
+        showFieldError(selector, message) {
+            const field = document.querySelector(selector);
+            if (field) {
+                field.classList.add('border-red-500', 'bg-red-50');
+                field.classList.remove('border-gray-300');
+                
+                // Remove existing error message
+                const existingError = field.parentNode.querySelector('.field-error');
+                if (existingError) existingError.remove();
+                
+                // Add new error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'field-error text-red-500 text-sm mt-1';
+                errorDiv.textContent = message;
+                field.parentNode.appendChild(errorDiv);
+            }
+        },
+        
+        // Clear field errors
+        clearFieldErrors() {
+            document.querySelectorAll('.field-error').forEach(error => error.remove());
+            document.querySelectorAll('.border-red-500').forEach(field => {
+                field.classList.remove('border-red-500', 'bg-red-50');
+                field.classList.add('border-gray-300');
+            });
+        },
+        
+        // Validate URL
+        isValidUrl(string) {
+            try {
+                if (!string.startsWith('http://') && !string.startsWith('https://')) {
+                    string = 'https://' + string;
+                }
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        },
+        
+        // Next step
+        nextStep() {
+            console.log('Next step clicked, current:', this.currentStep);
+            this.clearFieldErrors();
+            
+            if (this.validateStep(this.currentStep)) {
+                if (this.currentStep < this.totalSteps) {
+                    this.currentStep++;
+                }
+            } else {
+                this.showStepError('Please correct the errors above before proceeding to the next step.');
+            }
+        },
+        
+        // Previous step
+        prevStep() {
+            if (this.currentStep > 1) {
+                this.clearFieldErrors();
+                this.currentStep--;
+            }
+        },
+        
+        // Show step error notification
+        showStepError(message) {
+            const existing = document.querySelector('.step-error-notification');
+            if (existing) existing.remove();
+            
+            const notification = document.createElement('div');
+            notification.className = 'step-error-notification fixed top-4 right-4 bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-lg z-50 max-w-md';
+            notification.innerHTML = '<div class="flex items-center"><svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg><span>' + message + '</span></div>';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        },
+        
+        // Get progress percentage
+        getOverallProgress() {
+            return Math.round((this.currentStep / this.totalSteps) * 100);
+        },
+        
+        // Submit form
+        submitForm() {
+            this.clearFieldErrors();
+            
+            let allValid = true;
+            for (let step = 1; step <= this.totalSteps; step++) {
+                if (!this.validateStep(step)) {
+                    allValid = false;
+                }
+            }
+            
+            if (allValid) {
+                this.isLoading = true;
+                document.getElementById('startup-form').submit();
+            } else {
+                this.showStepError('Please correct all errors before submitting the form.');
+                for (let step = 1; step <= this.totalSteps; step++) {
+                    if (!this.validateStep(step)) {
+                        this.currentStep = step;
+                        break;
+                    }
+                }
+            }
+        }
+    };
+}
+
+// Upload functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Logo upload
+    const logoZone = document.getElementById('logoUploadZone');
+    const logoInput = document.querySelector('[name="logo"]');
+    
+    if (logoZone && logoInput) {
+        logoZone.addEventListener('click', () => logoInput.click());
+        logoInput.addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                const file = e.target.files[0];
+                if (file.type.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        logoZone.innerHTML = `<img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    }
+    
+    // Cover upload
+    const coverZone = document.getElementById('coverUploadZone');
+    const coverInput = document.querySelector('[name="cover_image"]');
+    
+    if (coverZone && coverInput) {
+        coverZone.addEventListener('click', () => coverInput.click());
+        coverInput.addEventListener('change', function(e) {
+            if (e.target.files[0]) {
+                const file = e.target.files[0];
+                if (file.type.match(/^image\/(jpeg|jpg|png|gif)$/)) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        coverZone.innerHTML = `<img src="${e.target.result}" class="w-full h-32 object-cover rounded-lg">`;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    }
+
+    // Real-time field validation
+    function validateField(field, validationFn, errorMessage) {
+        const errorContainer = field.parentNode.querySelector('.validation-error') || 
+            document.createElement('div');
+        errorContainer.className = 'validation-error text-red-500 text-sm mt-1';
+        
+        field.addEventListener('blur', function() {
+            const isValid = validationFn(this.value);
+            if (!isValid) {
+                this.classList.add('border-red-500');
+                this.classList.remove('border-gray-300');
+                errorContainer.textContent = errorMessage;
+                if (!field.parentNode.querySelector('.validation-error')) {
+                    field.parentNode.appendChild(errorContainer);
+                }
+            } else {
+                this.classList.remove('border-red-500');
+                this.classList.add('border-gray-300');
+                if (field.parentNode.querySelector('.validation-error')) {
+                    errorContainer.remove();
+                }
+            }
+        });
+    }
+
+    // Validation rules
+    const companyNameField = document.querySelector('[name="company_name"]');
+    if (companyNameField) {
+        validateField(
+            companyNameField,
+            value => value.length >= 2 && value.length <= 200,
+            'Company name must be between 2 and 200 characters'
+        );
+    }
+
+    const taglineField = document.querySelector('[name="tagline"]');
+    if (taglineField) {
+        validateField(
+            taglineField,
+            value => value.length >= 10 && value.length <= 150,
+            'Tagline must be between 10 and 150 characters'
+        );
+    }
+
+    const descriptionField = document.querySelector('[name="description"]');
+    if (descriptionField) {
+        validateField(
+            descriptionField,
+            value => value.length >= 50 && value.length <= 5000,
+            'Description must be between 50 and 5000 characters'
+        );
+    }
+
+    const websiteField = document.querySelector('[name="website"]');
+    if (websiteField) {
+        validateField(
+            websiteField,
+            value => !value || /^https?:\/\/.+\..+/.test(value) || /^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/.test(value),
+            'Please enter a valid website URL'
+        );
+    }
+
+    const emailFields = document.querySelectorAll('input[type="email"]');
+    emailFields.forEach(field => {
+        validateField(
+            field,
+            value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value),
+            'Please enter a valid email address'
+        );
+    });
+
+    const employeesField = document.querySelector('[name="employees_count"]');
+    if (employeesField) {
+        validateField(
+            employeesField,
+            value => !value || (parseInt(value) >= 1 && parseInt(value) <= 10000),
+            'Number of employees must be between 1 and 10,000'
+        );
+    }
+
+    const revenueFields = document.querySelectorAll('[name="monthly_revenue"], [name="annual_revenue"], [name="seeking_amount"], [name="valuation"]');
+    revenueFields.forEach(field => {
+        validateField(
+            field,
+            value => !value || (parseFloat(value) >= 0 && parseFloat(value) <= 1000000000),
+            'Please enter a valid positive amount'
+        );
+    });
+
+    // Form submission validation
+    document.querySelector('#startup-form').addEventListener('submit', function(e) {
+        const requiredFields = ['company_name', 'tagline', 'description', 'stage', 'industry'];
+        let hasErrors = false;
+
+        requiredFields.forEach(fieldName => {
+            const field = document.querySelector(`[name="${fieldName}"]`);
+            if (field && !field.value.trim()) {
+                field.classList.add('border-red-500');
+                hasErrors = true;
+                
+                // Show error message
+                const errorContainer = field.parentNode.querySelector('.validation-error') || 
+                    document.createElement('div');
+                errorContainer.className = 'validation-error text-red-500 text-sm mt-1';
+                errorContainer.textContent = 'This field is required';
+                if (!field.parentNode.querySelector('.validation-error')) {
+                    field.parentNode.appendChild(errorContainer);
+                }
+            }
+        });
+
+        if (hasErrors) {
+            e.preventDefault();
+            // Show error message
+            const existingAlert = document.querySelector('.form-error-alert');
+            if (existingAlert) existingAlert.remove();
+            
+            const errorAlert = document.createElement('div');
+            errorAlert.className = 'form-error-alert bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
+            errorAlert.innerHTML = `
+                <div class="flex items-center">
+                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Please correct the errors above before submitting.
+                </div>
+            `;
+            document.querySelector('#startup-form').prepend(errorAlert);
+            
+            // Scroll to first error
+            const firstError = document.querySelector('.border-red-500');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+    });
+});
+</script>
+
+<!-- Load Alpine.js after all functions are defined -->
+<script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+<script>
+// Debug Alpine.js loading
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded');
+    console.log('Alpine available:', typeof Alpine !== 'undefined');
+    if (typeof Alpine !== 'undefined') {
+        console.log('Alpine.js loaded successfully');
+    } else {
+        console.error('Alpine.js failed to load');
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,567 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Silicon Founders{% endblock %}
+
+{% block content %}
+<style>
+:root {
+    --primary: #3b82f6;
+    --primary-dark: #1d4ed8;
+    --primary-light: #dbeafe;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --gray-900: #111827;
+    --green: #10b981;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --blue: #3b82f6;
+    --purple: #8b5cf6;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.dashboard-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, var(--primary-light) 0%, #f0f9ff 50%, var(--gray-50) 100%);
+    padding: 2rem 0;
+}
+
+.dashboard-hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 3rem 0;
+    margin-bottom: 2rem;
+    border-radius: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.dashboard-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    z-index: 1;
+}
+
+.dashboard-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-xl);
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+}
+
+.stat-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.dashboard-section {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--gray-200);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.section-title::before {
+    content: '';
+    width: 4px;
+    height: 1.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 2px;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 2rem;
+}
+
+.activity-feed {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.activity-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    transition: all 0.2s ease;
+}
+
+.activity-item:hover {
+    background: var(--gray-50);
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    color: white;
+    text-decoration: none;
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.startup-card, .investor-card {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+}
+
+.startup-card:hover, .investor-card:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-hero {
+        padding: 2rem 0;
+    }
+    
+    .dashboard-section {
+        padding: 1.5rem;
+    }
+}
+</style>
+
+<div class="dashboard-container">
+    <div class="container mx-auto px-4">
+        <!-- Hero Section -->
+        <div class="dashboard-hero">
+            <div class="dashboard-hero-content">
+                <div class="container mx-auto px-4">
+                    <div class="text-center">
+                        <h1 class="text-4xl font-bold mb-4">
+                            Bienvenido, {{ user.get_full_name|default:user.username }}
+                        </h1>
+                        <p class="text-xl opacity-90">
+                            Tu centro de control en Silicon Founders
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--blue), #1e40af); color: white;">
+                    🏢
+                </div>
+                <div class="stat-number">{{ total_startups }}</div>
+                <div class="stat-label">Total Startups</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--green), #047857); color: white;">
+                    💰
+                </div>
+                <div class="stat-number">{{ total_investors }}</div>
+                <div class="stat-label">Total Inversores</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--purple), #6d28d9); color: white;">
+                    🎯
+                </div>
+                <div class="stat-number">{{ total_events }}</div>
+                <div class="stat-label">Eventos Activos</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--amber), #d97706); color: white;">
+                    📊
+                </div>
+                <div class="stat-number">{{ connection_count }}</div>
+                <div class="stat-label">Conexiones</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, var(--red), #dc2626); color: white;">
+                    📈
+                </div>
+                <div class="stat-number">{{ investment_amount|default:"0" }}</div>
+                <div class="stat-label">Inversión Total</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2); color: white;">
+                    ⭐
+                </div>
+                <div class="stat-number">{{ user_rating|default:"5.0" }}</div>
+                <div class="stat-label">Rating Promedio</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Main Content -->
+            <div>
+                {% if user.founderprofile %}
+                <!-- Founder Dashboard -->
+                <div class="dashboard-section">
+                    <h2 class="section-title">Panel de Fundador</h2>
+                    
+                    {% if user.founderprofile.startup_set.exists %}
+                        <div class="space-y-4">
+                            {% for startup in user.founderprofile.startup_set.all %}
+                                <div class="startup-card">
+                                    <div class="flex items-start justify-between">
+                                        <div class="flex-1">
+                                            <h3 class="text-lg font-semibold text-gray-900 mb-2">
+                                                {{ startup.name }}
+                                            </h3>
+                                            <p class="text-gray-600 text-sm mb-3">
+                                                {{ startup.description|truncatewords:20 }}
+                                            </p>
+                                            <div class="flex items-center gap-4 text-sm text-gray-500">
+                                                <span>💰 {{ startup.funding_stage }}</span>
+                                                <span>🏢 {{ startup.industry }}</span>
+                                                <span>📍 {{ startup.location }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            {% if startup.logo %}
+                                                <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" 
+                                                     class="w-16 h-16 rounded-lg object-cover">
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex gap-2">
+                                        <a href="/startup/{{ startup.id }}/" 
+                                           class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            Ver Perfil
+                                        </a>
+                                        <span class="text-gray-400">•</span>
+                                        <span class="text-gray-500 text-sm">Editar</span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-8">
+                            <div class="text-6xl mb-4">🚀</div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">
+                                ¡Hora de crear tu startup!
+                            </h3>
+                            <p class="text-gray-500 mb-6">
+                                Comienza tu viaje emprendedor creando el perfil de tu startup.
+                            </p>
+                            <a href="/startup/create/" class="btn-primary">
+                                ➕ Crear Startup
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% elif user.investorprofile %}
+                <!-- Investor Dashboard -->
+                <div class="dashboard-section">
+                    <h2 class="section-title">Panel de Inversor</h2>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                Oportunidades de Inversión
+                            </h3>
+                            
+                            {% if latest_startups %}
+                                <div class="space-y-3">
+                                    {% for startup in latest_startups|slice:":5" %}
+                                        <div class="bg-white p-4 rounded-lg shadow-sm">
+                                            <div class="flex items-center justify-between">
+                                                <div>
+                                                    <h4 class="font-medium text-gray-900">{{ startup.name }}</h4>
+                                                    <p class="text-sm text-gray-600">{{ startup.industry }} • {{ startup.funding_stage }}</p>
+                                                </div>
+                                                <a href="/startup/{{ startup.id }}/" 
+                                                   class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                                    Ver →
+                                                </a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <p class="text-gray-500">No hay startups disponibles en este momento.</p>
+                            {% endif %}
+                            
+                            <div class="mt-4">
+                                <a href="/startups/" class="btn-primary">
+                                    🔍 Ver Todas las Startups
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-xl">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                                Mi Portafolio
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-purple-600">0</div>
+                                    <div class="text-sm text-gray-600">Inversiones Activas</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="text-2xl font-bold text-green-600">$0</div>
+                                    <div class="text-sm text-gray-600">Capital Invertido</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- New User Dashboard -->
+                <div class="dashboard-section">
+                    <h2 class="section-title">¡Bienvenido a Silicon Founders!</h2>
+                    
+                    <div class="text-center py-8">
+                        <div class="text-6xl mb-6">🎯</div>
+                        <h3 class="text-2xl font-bold text-gray-900 mb-4">
+                            ¿Cómo te gustaría empezar?
+                        </h3>
+                        <p class="text-lg text-gray-600 mb-8">
+                            Elige tu perfil para personalizar tu experiencia
+                        </p>
+                        
+                        <div class="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                            <div class="bg-gradient-to-br from-blue-50 to-indigo-100 p-6 rounded-xl border border-blue-200">
+                                <div class="text-4xl mb-4">🚀</div>
+                                <h4 class="text-xl font-semibold text-gray-900 mb-2">Soy Fundador</h4>
+                                <p class="text-gray-600 mb-4">
+                                    Tengo una startup y busco inversores y conexiones
+                                </p>
+                                <a href="/startup/create/" 
+                                   class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors inline-block">
+                                    Crear Mi Startup
+                                </a>
+                            </div>
+                            
+                            <div class="bg-gradient-to-br from-green-50 to-emerald-100 p-6 rounded-xl border border-green-200">
+                                <div class="text-4xl mb-4">💰</div>
+                                <h4 class="text-xl font-semibold text-gray-900 mb-2">Soy Inversor</h4>
+                                <p class="text-gray-600 mb-4">
+                                    Busco oportunidades de inversión en startups prometedoras
+                                </p>
+                        <a href="/investor/create/" 
+                           class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors inline-block">
+                            Crear Perfil de Inversor
+                        </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Quick Actions -->
+                <div class="dashboard-section">
+                    <h2 class="section-title">Acciones Rápidas</h2>
+                    <div class="quick-actions">
+                        <a href="/startups/" class="btn-primary">
+                            🏢 Explorar Startups
+                        </a>
+                        <a href="/investors/" class="btn-primary">
+                            💰 Ver Inversores
+                        </a>
+                        <a href="/events/" class="btn-primary">
+                            📅 Eventos
+                        </a>
+                        <a href="/contact/" class="btn-primary">
+                            📞 Contacto
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div>
+                <!-- Recent Activity -->
+                <div class="dashboard-section">
+                    <h3 class="section-title">Actividad Reciente</h3>
+                    <div class="activity-feed">
+                        <div class="activity-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 text-sm">
+                                    🏢
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-800">Nueva startup registrada</p>
+                                    <p class="text-xs text-gray-500">Hace 2 horas</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 text-sm">
+                                    💰
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-800">Nuevo inversor se unió</p>
+                                    <p class="text-xs text-gray-500">Hace 5 horas</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 text-sm">
+                                    📅
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-800">Evento programado</p>
+                                    <p class="text-xs text-gray-500">Hace 1 día</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="activity-item">
+                            <div class="flex items-start gap-3">
+                                <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center text-amber-600 text-sm">
+                                    🤝
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-sm text-gray-800">Nueva conexión realizada</p>
+                                    <p class="text-xs text-gray-500">Hace 2 días</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tips Section -->
+                <div class="dashboard-section">
+                    <h3 class="section-title">💡 Consejos</h3>
+                    <div class="space-y-3">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                            <h4 class="font-medium text-blue-900 mb-1">Para Fundadores</h4>
+                            <p class="text-sm text-blue-700">
+                                Completa tu perfil de startup con toda la información relevante para atraer inversores.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-200">
+                            <h4 class="font-medium text-green-900 mb-1">Para Inversores</h4>
+                            <p class="text-sm text-green-700">
+                                Explora los perfiles de startups y conecta con fundadores que coincidan con tus intereses.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

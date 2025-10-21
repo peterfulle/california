@@ -1,0 +1,565 @@
+{% extends 'base.html' %}
+
+{% block title %}StartupConnect - Connecting the Startup Ecosystem{% endblock %}
+
+{% block public_content %}
+<!-- Hero Section - Modern Design with Better Colors -->
+<div class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background with animated gradient -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+    
+    <!-- Floating elements -->
+    <div class="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full opacity-20 animate-pulse"></div>
+    <div class="absolute top-40 right-20 w-32 h-32 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full opacity-10 animate-bounce"></div>
+    <div class="absolute bottom-20 left-20 w-16 h-16 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full opacity-20 animate-pulse"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div class="text-center">
+            <!-- Badge -->
+            <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-8">
+                <span class="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                Join 10,000+ startups and investors
+            </div>
+            
+            <!-- Main Headline -->
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                The ecosystem that
+                <span class="block bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+                    connects startups
+                </span>
+                <span class="block bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 bg-clip-text text-transparent">
+                    with investors
+                </span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-xl sm:text-2xl text-gray-300 mb-10 max-w-4xl mx-auto leading-relaxed">
+                Discover, connect, and grow. The leading platform where founders find investment 
+                and investors discover the best opportunities in the ecosystem.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'core:register' %}" 
+                       class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                        <i class="fas fa-rocket mr-3 group-hover:animate-pulse"></i>
+                        Join Free
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-purple-400 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                    </a>
+                    <a href="{% url 'core:startup_directory' %}" 
+                       class="group inline-flex items-center px-8 py-4 border-2 border-white/30 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm">
+                        <i class="fas fa-search mr-3 group-hover:animate-spin"></i>
+                        Explore Startups
+                    </a>
+                {% else %}
+                    <a href="{% url 'core:dashboard' %}" 
+                       class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                        <i class="fas fa-tachometer-alt mr-3 group-hover:animate-pulse"></i>
+                        Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+            
+            <!-- Trust indicators -->
+            <div class="flex flex-wrap justify-center items-center gap-8 text-white/60 text-sm">
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt mr-2 text-green-400"></i>
+                    SOC 2 Compliant
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-globe mr-2 text-blue-400"></i>
+                    Global Network
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-users mr-2 text-purple-400"></i>
+                    10,000+ Members
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <i class="fas fa-chevron-down text-white/50 text-2xl"></i>
+    </div>
+</div>
+
+<!-- Stats Section - Modern Design -->
+<div class="bg-gradient-to-b from-white to-gray-50 py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Powering the Innovation Economy</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Join thousands of entrepreneurs and investors who are building the future together</p>
+        </div>
+        
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-rocket text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ total_startups|default:"1,200" }}+</div>
+                <div class="text-gray-600 font-medium">Active Startups</div>
+            </div>
+            
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-coins text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ total_investors|default:"800" }}+</div>
+                <div class="text-gray-600 font-medium">Active Investors</div>
+            </div>
+            
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-handshake text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">{{ total_funding|default:"$50M" }}</div>
+                <div class="text-gray-600 font-medium">Funding Facilitated</div>
+            </div>
+            
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                <div class="w-16 h-16 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-chart-line text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">250+</div>
+                <div class="text-gray-600 font-medium">Success Stories</div>
+            </div>
+        </div>
+    </div>
+</div>
+            </div>
+            <!-- Features Section - Modern Design with Better Colors -->
+<div class="py-16 sm:py-24 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Built for Every Ecosystem Player</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Powerful tools and features designed specifically for founders, investors, and advisors</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Founders -->
+            <div class="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-gray-100">
+                <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-lightbulb text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">For Founders</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Complete startup profile with rich media</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-cyan-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Advanced metrics and KPI tracking</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-blue-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Direct connection with investors</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-cyan-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Expert advisor network access</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Investors -->
+            <div class="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-gray-100">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chart-line text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">For Investors</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Curated deal flow and opportunities</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-teal-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Streamlined due diligence process</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Portfolio tracking and analytics</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-teal-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Market insights and trends</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Advisors -->
+            <div class="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border border-gray-100">
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-users text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">For Advisors</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Premium advisory opportunities</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-pink-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Extensive network connections</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-purple-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Visible track record showcase</span>
+                        </li>
+                        <li class="flex items-center text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-2 h-2 bg-pink-500 rounded-full mr-4 flex-shrink-0"></div>
+                            <span class="font-medium">Smart expertise matching</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Startups - Modern Design -->
+<div class="bg-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Featured Startups</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Discover some of the most promising startups in our ecosystem</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for startup in featured_startups %}
+            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100">
+                <div class="relative h-48 bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
+                    {% if startup.cover_image %}
+                        <img src="{{ startup.cover_image.url }}" alt="{{ startup.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
+                            <i class="fas fa-rocket text-4xl text-white opacity-80"></i>
+                        </div>
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    
+                    <!-- Industry Badge -->
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 bg-white/90 backdrop-blur-sm text-gray-800 rounded-full text-xs font-semibold">
+                            {{ startup.industry|default:"Technology" }}
+                        </span>
+                    </div>
+                    
+                    <!-- Logo -->
+                    {% if startup.logo %}
+                        <div class="absolute bottom-4 right-4">
+                            <img src="{{ startup.logo.url }}" alt="{{ startup.name }} logo" 
+                                 class="w-12 h-12 rounded-xl object-cover border-2 border-white shadow-lg">
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {{ startup.name }}
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm leading-relaxed">
+                        {{ startup.description|truncatechars:80 }}
+                    </p>
+                    
+                    <!-- Metrics -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <div class="text-lg font-bold text-gray-900">{{ startup.team_size|default:"8" }}</div>
+                            <div class="text-xs text-gray-600">Team Size</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-xl p-3 text-center">
+                            <div class="text-lg font-bold text-gray-900">{{ startup.funding_stage|default:"Seed" }}</div>
+                            <div class="text-xs text-gray-600">Stage</div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'core:startup_detail' startup.id %}" 
+                       class="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 group-hover:shadow-lg">
+                        View Startup
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-16">
+                <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-rocket text-3xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Coming Soon</h3>
+                <p class="text-gray-600">Featured startups will appear here soon</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- View All Button -->
+        <div class="text-center mt-12">
+            <a href="{% url 'core:startup_directory' %}" 
+               class="inline-flex items-center px-8 py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-300 hover:shadow-lg group">
+                <span>View All Startups</span>
+                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+    </div>
+</div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section - Enhanced Mobile Layout -->
+<div class="bg-gray-50 py-12 sm:py-16 lg:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8 sm:mb-12 lg:mb-16">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Para cada actor del ecosistema</h2>
+            <p class="text-lg sm:text-xl text-gray-600 px-4 sm:px-0">Herramientas específicas para founders, inversores y advisors</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+            <!-- Founders -->
+            <div class="bg-white rounded-xl p-6 sm:p-8 card-shadow hover-lift text-center">
+                <div class="bg-blue-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fas fa-lightbulb text-xl sm:text-2xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Para Founders</h3>
+                <ul class="text-gray-600 space-y-2 sm:space-y-3 text-left">
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Perfil completo de startup</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Métricas y KPIs</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Conexión con inversores</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Red de advisors</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Investors -->
+            <div class="bg-white rounded-xl p-6 sm:p-8 card-shadow hover-lift text-center">
+                <div class="bg-green-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fas fa-chart-line text-xl sm:text-2xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Para Inversores</h3>
+                <ul class="text-gray-600 space-y-2 sm:space-y-3 text-left">
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Deal flow organizado</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Due diligence simplificado</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Portfolio tracking</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Análisis de mercado</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Advisors -->
+            <div class="bg-white rounded-xl p-6 sm:p-8 card-shadow hover-lift text-center">
+                <div class="bg-purple-100 w-14 h-14 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6">
+                    <i class="fas fa-users text-xl sm:text-2xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">Para Advisors</h3>
+                <ul class="text-gray-600 space-y-2 sm:space-y-3 text-left">
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Oportunidades de advisory</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Red de contactos</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Track record visible</span>
+                    </li>
+                    <li class="flex items-center text-sm sm:text-base">
+                        <i class="fas fa-check text-green-500 mr-2 sm:mr-3 flex-shrink-0"></i> 
+                        <span>Expertise matching</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Startups - Mobile Optimized -->
+<div class="bg-white py-12 sm:py-16 lg:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8 sm:mb-12">
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Startups Destacadas</h2>
+            <p class="text-lg sm:text-xl text-gray-600 px-4 sm:px-0">Descubre algunas de las startups más prometedoras de nuestro ecosistema</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+            {% for startup in featured_startups %}
+            <div class="bg-white rounded-xl card-shadow hover-lift overflow-hidden">
+                <div class="aspect-w-16 aspect-h-9 bg-gradient-to-br from-blue-500 to-purple-600 relative">
+                    {% if startup.cover_image %}
+                        <img src="{{ startup.cover_image.url }}" alt="{{ startup.name }}" class="w-full h-32 sm:h-40 object-cover">
+                    {% else %}
+                        <div class="h-32 sm:h-40 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                            <i class="fas fa-rocket text-2xl sm:text-3xl text-white"></i>
+                        </div>
+                    {% endif %}
+                    <!-- Industry Badge -->
+                    <div class="absolute top-2 left-2 sm:top-3 sm:left-3">
+                        <span class="bg-white/90 backdrop-blur-sm text-gray-800 px-2 py-1 rounded-full text-xs font-medium">
+                            {{ startup.industry|default:"Tech" }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-4 sm:p-6">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-900 truncate">{{ startup.name }}</h3>
+                            <p class="text-sm text-gray-600 mt-1">{{ startup.description|truncatechars:60 }}</p>
+                        </div>
+                        {% if startup.logo %}
+                            <img src="{{ startup.logo.url }}" alt="{{ startup.name }} logo" 
+                                 class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover ml-3 flex-shrink-0">
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Startup Metrics -->
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4 mb-4">
+                        <div class="text-center bg-gray-50 rounded-lg p-2 sm:p-3">
+                            <div class="text-sm sm:text-base font-bold text-gray-900">{{ startup.team_size|default:"—" }}</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Equipo</div>
+                        </div>
+                        <div class="text-center bg-gray-50 rounded-lg p-2 sm:p-3">
+                            <div class="text-sm sm:text-base font-bold text-gray-900">{{ startup.funding_stage|default:"Pre-Seed" }}</div>
+                            <div class="text-xs sm:text-sm text-gray-600">Etapa</div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'core:startup_detail' startup.id %}" 
+                       class="block w-full bg-blue-600 text-white text-center py-2 sm:py-3 rounded-lg font-medium hover:bg-blue-700 transition text-sm sm:text-base">
+                        Ver Startup
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-8 sm:py-12">
+                <i class="fas fa-rocket text-4xl sm:text-5xl text-gray-400 mb-4"></i>
+                <p class="text-lg sm:text-xl text-gray-600">Próximamente startups destacadas</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- View All Button -->
+        <div class="text-center mt-8 sm:mt-12">
+            <a href="{% url 'core:startup_directory' %}" 
+               class="inline-flex items-center px-6 sm:px-8 py-3 sm:py-4 bg-gray-900 text-white rounded-lg font-medium hover:bg-gray-800 transition text-sm sm:text-base">
+                <i class="fas fa-arrow-right mr-2"></i>
+                Ver Todas las Startups
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section - Modern Design with Better Colors -->
+<div class="relative py-16 sm:py-24 overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+    
+    <!-- Floating shapes -->
+    <div class="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-40 h-40 bg-purple-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Ready to scale your startup?
+        </h2>
+        <p class="text-xl sm:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Join thousands of founders and investors who are already building the future together in our ecosystem
+        </p>
+        
+        {% if not user.is_authenticated %}
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <a href="{% url 'core:register' %}" 
+               class="group relative inline-flex items-center px-8 py-4 bg-white text-gray-900 font-bold text-lg rounded-xl hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                <i class="fas fa-user-plus mr-3 group-hover:animate-bounce"></i>
+                Create Free Account
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </a>
+            <a href="{% url 'core:login' %}" 
+               class="group inline-flex items-center px-8 py-4 border-2 border-white/30 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm">
+                <i class="fas fa-sign-in-alt mr-3 group-hover:animate-pulse"></i>
+                Sign In
+            </a>
+        </div>
+        {% else %}
+        <div class="mb-12">
+            <a href="{% url 'core:dashboard' %}" 
+               class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <i class="fas fa-tachometer-alt mr-3 group-hover:animate-pulse"></i>
+                Go to Dashboard
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- Trust Indicators -->
+        <div class="border-t border-white/20 pt-8">
+            <p class="text-gray-400 mb-6 text-sm uppercase tracking-wide font-medium">Trusted by industry leaders</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 text-white/70">
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-r from-green-400 to-emerald-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-shield-alt text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold">Enterprise Security</div>
+                        <div class="text-xs text-gray-400">SOC 2 Type II</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-globe text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold">Global Network</div>
+                        <div class="text-xs text-gray-400">50+ Countries</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold">Success Rate</div>
+                        <div class="text-xs text-gray-400">92% Satisfaction</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

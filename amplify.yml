@@ -1,0 +1,31 @@
+version: 1
+frontend:
+  phases:
+    preBuild:
+      commands:
+        - echo "Iniciando fase de pre-construcción"
+        - python --version
+        - pip install --upgrade pip
+    build:
+      commands:
+        - echo "Instalando dependencias de Django sin dependencias específicas de MacOS"
+        - pip install Django==4.2.20 gunicorn whitenoise psycopg2-binary
+        - echo "Configurando proyecto Django para producción"
+        - sed -i 's/DEBUG = True/DEBUG = False/' mydevsite/settings.py
+        - sed -i "s/ALLOWED_HOSTS = \[\]/ALLOWED_HOSTS = \['*'\]/" mydevsite/settings.py
+        - echo "Recolectando archivos estáticos"
+        - python manage.py collectstatic --noinput || echo "Error en collectstatic, creando directorio estático manualmente"
+        - mkdir -p staticfiles
+        - echo "Construcción completada"
+  artifacts:
+    baseDirectory: .
+    files:
+      - '**/*'
+  cache:
+    paths:
+      - .pip-cache/**/*
+  customHeaders:
+    - pattern: '**/*.*'
+      headers:
+        - key: 'Cache-Control'
+          value: 'max-age=86400'

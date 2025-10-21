@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load form_tags %}
+
+{% block title %}Crear Perfil de Startup{% endblock %}
+
+{% block extra_css %}
+    <link href="{% static 'css/wizard.css' %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen gradient-bg py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Test Alpine.js first -->
+        <div class="text-center mb-4 p-4 bg-white rounded-lg" x-data="{ test: 'Alpine.js funciona!' }">
+            <p x-text="test" class="text-lg font-bold text-green-600"></p>
+        </div>
+        
+        <!-- Modern Header with Glassmorphism -->
+        <div class="glass-morphism rounded-3xl p-8 mb-8 text-center">
+            <div class="flex items-center justify-center mb-6">
+                <div class="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
+            </div>
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-4">
+                ¡Registra tu Startup!
+            </h1>
+            <p class="text-lg text-gray-700 mb-2 max-w-2xl mx-auto">
+                Crea un perfil increíble para tu startup y conecta con inversores, advisors y el ecosistema emprendedor
+            </p>
+            <div class="inline-flex items-center px-4 py-2 bg-blue-100 rounded-full text-blue-800 text-sm font-medium">
+                <span class="w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span>
+                Proceso guiado paso a paso
+            </div>
+        </div>
+
+        <!-- Multi-Step Form with Alpine.js -->
+        <div x-data="startupWizard()">
+            
+            <!-- Progress Display -->
+            <div class="mb-8 p-6 bg-white rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-800">Progreso del Formulario</h3>
+                    <span x-text="`${getOverallProgress()}% completado`" class="text-sm text-blue-600 font-medium"></span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-3">
+                    <div class="bg-blue-500 h-3 rounded-full transition-all duration-500" :style="`width: ${getOverallProgress()}%`"></div>
+                </div>
+                <div class="flex justify-between mt-3 text-sm text-gray-600">
+                    <span>Paso <span x-text="currentStep"></span> de <span x-text="totalSteps"></span></span>
+                    <span>Faltan <span x-text="totalSteps - currentStep"></span> pasos</span>
+                </div>
+            </div>
+
+            <!-- Step Navigation Buttons -->
+            <div class="flex justify-center space-x-4 mb-8">
+                <template x-for="step in totalSteps" :key="step">
+                    <button type="button" 
+                            @click="currentStep = step"
+                            class="w-12 h-12 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-300"
+                            :class="{
+                                'bg-blue-500 text-white': step === currentStep,
+                                'bg-green-500 text-white': step < currentStep,
+                                'bg-gray-200 text-gray-500': step > currentStep
+                            }"
+                            x-text="step">
+                    </button>
+                </template>
+            </div>
+
+            <!-- Form Content -->
+            <form method="post" enctype="multipart/form-data" id="startup-form" class="space-y-8">
+                {% csrf_token %}
+                
+                <!-- Step 1: Información Básica -->
+                <div x-show="currentStep === 1" class="bg-white rounded-xl p-8 shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Paso 1: Información Básica</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nombre de la Empresa *</label>
+                            {{ form.company_name|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Eslogan *</label>
+                            {{ form.tagline|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div class="lg:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Descripción *</label>
+                            {{ form.description|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 h-32" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Fecha de Fundación</label>
+                            {{ form.founded_date|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Sitio Web</label>
+                            {{ form.website|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Industria -->
+                <div x-show="currentStep === 2" class="bg-white rounded-xl p-8 shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Paso 2: Industria y Modelo de Negocio</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Industria *</label>
+                            {{ form.industry|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Modelo de Negocio *</label>
+                            {{ form.business_model|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Etapa</label>
+                            {{ form.stage|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Métricas -->
+                <div x-show="currentStep === 3" class="bg-white rounded-xl p-8 shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Paso 3: Métricas de la Empresa</h2>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Número de Empleados</label>
+                            {{ form.employees_count|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Ingresos Mensuales (USD)</label>
+                            {{ form.monthly_revenue|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Financiamiento Total (USD)</label>
+                            {{ form.total_funding_raised|add_class:"w-full p-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200" }}
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center mt-8 p-6 bg-white rounded-xl shadow-lg">
+                <button type="button" 
+                        @click="prevStep()" 
+                        x-show="currentStep > 1"
+                        class="px-6 py-3 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200">
+                    ← Anterior
+                </button>
+                
+                <div x-show="currentStep === 1" class="w-24"></div>
+                
+                <button type="button" 
+                        @click="nextStep()" 
+                        x-show="currentStep < totalSteps"
+                        class="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                    Siguiente →
+                </button>
+                
+                <button type="button" 
+                        @click="submitForm()" 
+                        x-show="currentStep === totalSteps"
+                        class="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200">
+                    ✓ Crear Startup
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/startup-wizard-simple.js' %}"></script>
+{% endblock %}

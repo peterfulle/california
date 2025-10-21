@@ -1,0 +1,718 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Únete a StartupConnect - Red Global de Startups</title>
+    
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        .professional-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-indicator {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .step-indicator.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .step-indicator.active {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+            transform: scale(1.1);
+            animation: pulse 2s infinite;
+        }
+        
+        .step-indicator.future {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            transform: scale(0.95);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(99, 102, 241, 0.7); }
+        }
+        
+        .step-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .step-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.15);
+        }
+        
+        .step-option.selected {
+            border-color: #6366f1 !important;
+            background-color: #f8fafc !important;
+            box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        
+        .step-option.selected .radio-indicator {
+            background-color: #6366f1 !important;
+            opacity: 1 !important;
+        }
+        
+        .professional-button {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .professional-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        
+        .professional-input {
+            transition: all 0.3s ease;
+        }
+        
+        .professional-input:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .user-profile-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-avatar {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .button-disabled {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8) !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+        }
+        
+        .field-valid {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+        
+        .field-invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-full bg-gradient-to-br from-slate-50 via-white to-gray-50 font-inter">
+    <!-- Background Pattern -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-100/20 to-purple-100/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-cyan-100/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-lg border-b border-gray-200/50 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <a href="{% url 'core:home' %}" class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <i class="fas fa-rocket text-lg text-white"></i>
+                    </div>
+                    <span class="font-bold text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">StartupConnect</span>
+                </a>
+                <a href="{% url 'core:login' %}" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">
+                    ¿Ya tienes cuenta? <span class="text-blue-600">Iniciar Sesión</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="min-h-screen flex items-center justify-center py-24 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-6xl w-full grid lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+            
+            <!-- Left Column - Branding -->
+            <div class="lg:col-span-2 space-y-6 lg:space-y-8 text-center lg:text-left">
+                <!-- Icon -->
+                <div class="flex items-center justify-center lg:justify-start space-x-4">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                        <i class="fas fa-users text-3xl text-white"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">StartupConnect</h1>
+                        <p class="text-base text-gray-600 font-medium">Ecosystem Platform</p>
+                    </div>
+                </div>
+                
+                <!-- Main Heading -->
+                <div class="space-y-6">
+                    <h2 class="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+                        Únete al
+                        <span class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                            Ecosistema Global
+                        </span>
+                        de Innovación
+                    </h2>
+                    <p class="text-xl text-gray-600 leading-relaxed">
+                        Una red exclusiva para emprendedores, inversores e innovadores que están construyendo el futuro.
+                    </p>
+                    
+                    <!-- Benefits -->
+                    <div class="space-y-3">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-emerald-600"></i>
+                            </div>
+                            <span class="text-gray-700">Conecta con inversores y startups</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-blue-600"></i>
+                            </div>
+                            <span class="text-gray-700">Acceso a eventos exclusivos</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-check text-purple-600"></i>
+                            </div>
+                            <span class="text-gray-700">Red global de profesionales</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Badge -->
+                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-200">
+                        <div class="w-2 h-2 bg-green-500 rounded-full mr-3 animate-pulse"></div>
+                        <span class="text-sm font-semibold text-gray-700">10,000+ miembros activos</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Registration Form -->
+            <div class="lg:col-span-3 w-full max-w-2xl mx-auto">
+                <!-- Progress Steps -->
+                <div class="mb-10">
+                    <div class="flex items-center justify-between px-0">
+                        <div class="flex flex-col items-center space-y-2">
+                            <div id="step1-indicator" class="step-indicator active w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                            <span id="step1-label" class="text-sm font-medium text-indigo-600">Rol</span>
+                        </div>
+                        
+                        <div class="flex-1 mx-6 h-2 bg-gray-200 rounded-full">
+                            <div id="progress1" class="h-full bg-indigo-600 rounded-full w-0 transition-all duration-500"></div>
+                        </div>
+                        
+                        <div class="flex flex-col items-center space-y-2">
+                            <div id="step2-indicator" class="step-indicator future w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                            <span id="step2-label" class="text-sm font-medium text-gray-500">Perfil</span>
+                        </div>
+                        
+                        <div class="flex-1 mx-6 h-2 bg-gray-200 rounded-full">
+                            <div id="progress2" class="h-full bg-indigo-600 rounded-full w-0 transition-all duration-500"></div>
+                        </div>
+                        
+                        <div class="flex flex-col items-center space-y-2">
+                            <div id="step3-indicator" class="step-indicator future w-12 h-12 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                            <span id="step3-label" class="text-sm font-medium text-gray-500">Cuenta</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <div class="professional-card rounded-2xl p-8 lg:p-10">
+                    <form method="post" id="registrationForm" action="{% url 'core:register' %}">
+                        {% csrf_token %}
+                        
+                        <!-- Step 1: Role Selection -->
+                        <div id="step1" class="form-step">
+                            <div class="text-center mb-10">
+                                <h2 class="text-3xl font-bold text-gray-900 mb-4">Tu Rol en el Ecosistema</h2>
+                                <p class="text-lg text-gray-600">¿Cómo contribuyes al mundo de las startups?</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <!-- Founder Option -->
+                                <div class="step-option border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-300" data-value="founder">
+                                    <input type="radio" name="user_type" id="founder" value="founder" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center">
+                                                <i class="fas fa-rocket text-white text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-900 mb-1">Fundador / Emprendedor</h3>
+                                                <p class="text-base text-gray-600">Construyendo o escalando una startup</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                            <div class="radio-indicator w-3 h-3 bg-indigo-600 rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Investor Option -->
+                                <div class="step-option border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-300" data-value="investor">
+                                    <input type="radio" name="user_type" id="investor" value="investor" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-green-600 rounded-xl flex items-center justify-center">
+                                                <i class="fas fa-hand-holding-usd text-white text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-900 mb-1">Inversor / VC</h3>
+                                                <p class="text-base text-gray-600">Financiando innovación y crecimiento</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                            <div class="radio-indicator w-3 h-3 bg-indigo-600 rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Advisor Option -->
+                                <div class="step-option border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-300" data-value="advisor">
+                                    <input type="radio" name="user_type" id="advisor" value="advisor" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-xl flex items-center justify-center">
+                                                <i class="fas fa-user-tie text-white text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-900 mb-1">Asesor Estratégico</h3>
+                                                <p class="text-base text-gray-600">Mentoreando startups con expertise</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                            <div class="radio-indicator w-3 h-3 bg-indigo-600 rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Ecosystem Option -->
+                                <div class="step-option border-2 border-gray-200 rounded-xl p-6 hover:border-indigo-300" data-value="ecosystem">
+                                    <input type="radio" name="user_type" id="ecosystem" value="ecosystem" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-4">
+                                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
+                                                <i class="fas fa-network-wired text-white text-xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-xl font-bold text-gray-900 mb-1">Partner del Ecosistema</h3>
+                                                <p class="text-base text-gray-600">Proveedor de servicios o contribuidor</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                            <div class="radio-indicator w-3 h-3 bg-indigo-600 rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Profile -->
+                        <div id="step2" class="form-step hidden">
+                            <!-- User Profile Preview -->
+                            <div id="userProfilePreview" class="user-profile-card rounded-xl p-6 mb-8">
+                                <div class="flex items-center space-x-4">
+                                    <div class="profile-avatar w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                        <span id="profileInitials">U</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="text-xl font-bold text-gray-900 mb-1">
+                                            Creando tu perfil de <span id="profileRoleText">Profesional</span>
+                                        </h3>
+                                        <p class="text-base text-gray-600" id="profileDescription">
+                                            Construyendo tu presencia en el ecosistema
+                                        </p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                                            <span class="text-sm text-green-700 font-medium">Miembro del Ecosistema</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mb-10">
+                                <h2 class="text-3xl font-bold text-gray-900 mb-4">Perfil Profesional</h2>
+                                <p class="text-lg text-gray-600">Comparte tus datos profesionales</p>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="first_name" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Nombre *</label>
+                                        <input type="text" name="first_name" id="first_name" required
+                                               class="professional-input w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-indigo-600 transition-all duration-300"
+                                               placeholder="Juan">
+                                    </div>
+                                    <div>
+                                        <label for="last_name" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Apellido *</label>
+                                        <input type="text" name="last_name" id="last_name" required
+                                               class="professional-input w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-indigo-600 transition-all duration-300"
+                                               placeholder="Pérez">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="email" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Email Profesional *</label>
+                                    <input type="email" name="email" id="email" required
+                                           class="professional-input w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-indigo-600 transition-all duration-300"
+                                           placeholder="juan@tuempresa.com">
+                                    <p class="mt-2 text-sm text-gray-500">Tu dirección de email profesional</p>
+                                    <div id="emailValidation" class="hidden mt-2">
+                                        <p class="text-xs text-red-600">Por favor ingresa un email válido</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Account -->
+                        <div id="step3" class="form-step hidden">
+                            <!-- User Profile Preview -->
+                            <div id="userProfilePreview3" class="user-profile-card rounded-xl p-6 mb-8">
+                                <div class="flex items-center space-x-4">
+                                    <div class="profile-avatar w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                                        <span id="profileInitials3">U</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="text-xl font-bold text-gray-900 mb-1">
+                                            <span id="profileFullName">Tu Nombre</span> · <span id="profileRoleText3">Profesional</span>
+                                        </h3>
+                                        <p class="text-base text-gray-600" id="profileEmail3">tu@email.com</p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
+                                            <span class="text-sm text-green-700 font-medium">Casi listo para unirte</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mb-10">
+                                <h2 class="text-3xl font-bold text-gray-900 mb-4">Asegura tu Cuenta</h2>
+                                <p class="text-lg text-gray-600">Crea tus credenciales de acceso</p>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <label for="username" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Nombre de Usuario *</label>
+                                    <input type="text" name="username" id="username" required readonly
+                                           class="professional-input w-full px-4 py-4 border-2 border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed transition-all duration-300"
+                                           placeholder="Se generará desde tu email">
+                                    <p class="mt-2 text-sm text-gray-500">Se usará tu email como nombre de usuario</p>
+                                </div>
+                                
+                                <div>
+                                    <label for="password1" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Contraseña *</label>
+                                    <input type="password" name="password1" id="password1" required
+                                           class="professional-input w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-indigo-600 transition-all duration-300"
+                                           placeholder="••••••••">
+                                    <div id="passwordStrength" class="mt-3 hidden">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                                <div id="strengthBar" class="h-full transition-all duration-300 rounded-full"></div>
+                                            </div>
+                                            <span id="strengthText" class="text-sm font-medium"></span>
+                                        </div>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">Mínimo 8 caracteres</p>
+                                </div>
+                                
+                                <div>
+                                    <label for="password2" class="block text-sm font-bold text-gray-700 mb-3 uppercase tracking-wide">Confirmar Contraseña *</label>
+                                    <input type="password" name="password2" id="password2" required
+                                           class="professional-input w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:border-indigo-600 transition-all duration-300"
+                                           placeholder="••••••••">
+                                    <div id="passwordMatch" class="hidden mt-2">
+                                        <p class="text-xs text-red-600">Las contraseñas no coinciden</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded">
+                                    <div class="flex items-start">
+                                        <i class="fas fa-info-circle text-blue-500 mt-0.5 mr-3"></i>
+                                        <div class="text-sm text-blue-700">
+                                            <p class="font-medium mb-1">Requisitos de contraseña:</p>
+                                            <ul class="list-disc list-inside space-y-1 text-blue-600">
+                                                <li>Mínimo 8 caracteres</li>
+                                                <li>Al menos una letra mayúscula</li>
+                                                <li>Al menos un número</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Navigation Buttons -->
+                        <div class="mt-8 flex items-center justify-between">
+                            <button type="button" id="prevBtn" class="hidden px-6 py-3 border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all duration-300">
+                                <i class="fas fa-arrow-left mr-2"></i>
+                                Atrás
+                            </button>
+                            
+                            <div class="flex-1"></div>
+                            
+                            <button type="button" id="nextBtn" class="professional-button px-8 py-4 text-white font-bold rounded-xl">
+                                Siguiente
+                                <i class="fas fa-arrow-right ml-2"></i>
+                            </button>
+                            
+                            <button type="submit" id="submitBtn" class="hidden professional-button px-8 py-4 text-white font-bold rounded-xl">
+                                <i class="fas fa-check mr-2"></i>
+                                Crear Cuenta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Footer Links -->
+                <div class="mt-6 text-center text-sm text-gray-600">
+                    <p>Al registrarte, aceptas nuestros <a href="#" class="text-blue-600 hover:underline">Términos de Servicio</a> y <a href="#" class="text-blue-600 hover:underline">Política de Privacidad</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Multi-step form logic
+        let currentStep = 1;
+        const totalSteps = 3;
+        
+        // Role data
+        const roleData = {
+            founder: { text: 'Fundador', description: 'Construyendo startups innovadoras' },
+            investor: { text: 'Inversor', description: 'Financiando el futuro' },
+            advisor: { text: 'Asesor', description: 'Compartiendo experiencia' },
+            ecosystem: { text: 'Partner', description: 'Apoyando el ecosistema' }
+        };
+        
+        // Step option selection
+        document.querySelectorAll('.step-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.step-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                const input = this.querySelector('input[type="radio"]');
+                input.checked = true;
+                
+                // Update profile preview
+                const roleValue = this.dataset.value;
+                const roleInfo = roleData[roleValue];
+                document.getElementById('profileRoleText').textContent = roleInfo.text;
+                document.getElementById('profileDescription').textContent = roleInfo.description;
+            });
+        });
+        
+        // Navigation
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (validateCurrentStep()) {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            }
+        });
+        
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        });
+        
+        function showStep(step) {
+            // Hide all steps
+            document.querySelectorAll('.form-step').forEach(s => s.classList.add('hidden'));
+            
+            // Show current step
+            document.getElementById('step' + step).classList.remove('hidden');
+            
+            // Update indicators
+            for (let i = 1; i <= totalSteps; i++) {
+                const indicator = document.getElementById('step' + i + '-indicator');
+                const label = document.getElementById('step' + i + '-label');
+                
+                if (i < step) {
+                    indicator.className = 'step-indicator completed w-12 h-12 rounded-full flex items-center justify-center text-white font-bold';
+                    label.className = 'text-sm font-medium text-emerald-600';
+                } else if (i === step) {
+                    indicator.className = 'step-indicator active w-12 h-12 rounded-full flex items-center justify-center text-white font-bold';
+                    label.className = 'text-sm font-medium text-indigo-600';
+                } else {
+                    indicator.className = 'step-indicator future w-12 h-12 rounded-full flex items-center justify-center text-white font-bold';
+                    label.className = 'text-sm font-medium text-gray-500';
+                }
+            }
+            
+            // Update progress bars
+            for (let i = 1; i < totalSteps; i++) {
+                const progress = document.getElementById('progress' + i);
+                if (step > i) {
+                    progress.style.width = '100%';
+                } else if (step === i) {
+                    progress.style.width = '50%';
+                } else {
+                    progress.style.width = '0%';
+                }
+            }
+            
+            // Update buttons
+            document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
+            document.getElementById('nextBtn').classList.toggle('hidden', step === totalSteps);
+            document.getElementById('submitBtn').classList.toggle('hidden', step !== totalSteps);
+            
+            // Update profile preview for step 3
+            if (step === 3) {
+                const firstName = document.getElementById('first_name').value;
+                const lastName = document.getElementById('last_name').value;
+                const email = document.getElementById('email').value;
+                const userType = document.querySelector('input[name="user_type"]:checked');
+                
+                if (firstName && lastName) {
+                    document.getElementById('profileFullName').textContent = firstName + ' ' + lastName;
+                    document.getElementById('profileInitials3').textContent = firstName[0] + (lastName[0] || '');
+                }
+                
+                if (email) {
+                    document.getElementById('profileEmail3').textContent = email;
+                    // Autocomplete username with email
+                    document.getElementById('username').value = email;
+                }
+                
+                if (userType) {
+                    const roleInfo = roleData[userType.value];
+                    document.getElementById('profileRoleText3').textContent = roleInfo.text;
+                }
+            }
+        }
+        
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const userType = document.querySelector('input[name="user_type"]:checked');
+                if (!userType) {
+                    alert('Por favor selecciona un rol');
+                    return false;
+                }
+                
+                // Update profile
+                const firstName = document.getElementById('first_name').value || 'Usuario';
+                document.getElementById('profileInitials').textContent = firstName[0];
+            }
+            
+            if (currentStep === 2) {
+                const firstName = document.getElementById('first_name').value;
+                const lastName = document.getElementById('last_name').value;
+                const email = document.getElementById('email').value;
+                
+                if (!firstName || !lastName || !email) {
+                    alert('Por favor completa todos los campos requeridos');
+                    return false;
+                }
+                
+                if (!validateEmail(email)) {
+                    alert('Por favor ingresa un email válido');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+        
+        // Password strength
+        document.getElementById('password1').addEventListener('input', function() {
+            const password = this.value;
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            const strengthDiv = document.getElementById('passwordStrength');
+            
+            if (password.length > 0) {
+                strengthDiv.classList.remove('hidden');
+                
+                let strength = 0;
+                if (password.length >= 8) strength++;
+                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+                if (/\d/.test(password)) strength++;
+                if (/[^a-zA-Z\d]/.test(password)) strength++;
+                
+                const colors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-emerald-500'];
+                const texts = ['Débil', 'Media', 'Buena', 'Fuerte'];
+                
+                strengthBar.className = 'h-full transition-all duration-300 rounded-full ' + colors[strength - 1];
+                strengthBar.style.width = (strength * 25) + '%';
+                strengthText.textContent = texts[strength - 1];
+                strengthText.className = 'text-sm font-medium ' + (strength >= 3 ? 'text-emerald-600' : 'text-orange-600');
+            } else {
+                strengthDiv.classList.add('hidden');
+            }
+        });
+        
+        // Password match validation
+        document.getElementById('password2').addEventListener('input', function() {
+            const password1 = document.getElementById('password1').value;
+            const password2 = this.value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (password2.length > 0) {
+                if (password1 !== password2) {
+                    matchDiv.classList.remove('hidden');
+                    this.classList.add('field-invalid');
+                } else {
+                    matchDiv.classList.add('hidden');
+                    this.classList.remove('field-invalid');
+                    this.classList.add('field-valid');
+                }
+            }
+        });
+        
+        // Email validation and username sync
+        document.getElementById('email').addEventListener('blur', function() {
+            const email = this.value;
+            const validationDiv = document.getElementById('emailValidation');
+            
+            if (email && !validateEmail(email)) {
+                validationDiv.classList.remove('hidden');
+                this.classList.add('field-invalid');
+            } else {
+                validationDiv.classList.add('hidden');
+                this.classList.remove('field-invalid');
+                if (email) {
+                    this.classList.add('field-valid');
+                    // Auto-set username to email
+                    document.getElementById('username').value = email;
+                }
+            }
+        });
+        
+        // Also update username when email changes
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value;
+            if (email && validateEmail(email)) {
+                document.getElementById('username').value = email;
+            }
+        });
+    </script>
+</body>
+</html>
