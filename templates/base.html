@@ -710,6 +710,49 @@
                 
                 <div style="height: 1px; background: #f3f4f6; margin: 12px 0;"></div>
                 
+                <!-- AI Match Section -->
+                <div style="padding: 0 12px; margin: 8px 0;">
+                    <div class="sidebar-text text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">AI Tools</div>
+                </div>
+                
+                {% if user.profile.user_type == 'founder' %}
+                <a href="#" @click.prevent="openAIMatch()" class="menu-item relative overflow-hidden group">
+                    <span class="menu-icon">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text flex items-center justify-between flex-1">
+                        <span>Match con Inversores</span>
+                        <span class="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs rounded-full">AI</span>
+                    </span>
+                    <!-- Efecto de brillo en hover -->
+                    <span class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                </a>
+                {% endif %}
+                
+                {% if user.profile.user_type == 'investor' %}
+                <a href="#" @click.prevent="openAIMatch()" class="menu-item relative overflow-hidden group">
+                    <span class="menu-icon">
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="sidebar-text flex items-center justify-between flex-1">
+                        <span>Match con Startups</span>
+                        <span class="px-2 py-0.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white text-xs rounded-full">AI</span>
+                    </span>
+                    <!-- Efecto de brillo en hover -->
+                    <span class="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10 translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+                </a>
+                {% endif %}
+                
+                <div style="height: 1px; background: #f3f4f6; margin: 12px 0;"></div>
+                
                 <a href="{% url 'core:logout' %}" class="menu-item" style="color: #ef4444;">
                     <span class="menu-icon"><i class="fas fa-sign-out-alt"></i></span>
                     <span class="sidebar-text">Cerrar Sesión</span>
@@ -850,13 +893,27 @@
     <!-- AI Chatbot - Solo visible para usuarios autenticados -->
     {% if user.is_authenticated %}
     <div id="aiChatbot" x-data="chatbot()" x-cloak>
-        <!-- Botón Flotante -->
+        <!-- Botón Flotante Mejorado -->
         <button 
             @click="toggleChat()"
-            class="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-110 z-50 flex items-center justify-center group"
+            class="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-full shadow-2xl hover:shadow-purple-500/50 transition-all duration-300 transform hover:scale-110 z-50 flex items-center justify-center group overflow-hidden"
             :class="{ 'scale-0': isOpen }"
         >
-            <i class="fas fa-robot text-2xl group-hover:animate-pulse"></i>
+            <!-- Logo AI mejorado con efecto de brillo -->
+            <div class="relative">
+                <svg class="w-8 h-8 group-hover:scale-110 transition-transform" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Cerebro AI -->
+                    <path d="M12 2C10.3431 2 9 3.34315 9 5V6C7.34315 6 6 7.34315 6 9C6 9.7403 6.4022 10.3866 7 10.7324V14C7 15.6569 8.34315 17 10 17H14C15.6569 17 17 15.6569 17 14V10.7324C17.5978 10.3866 18 9.7403 18 9C18 7.34315 16.6569 6 15 6V5C15 3.34315 13.6569 2 12 2Z" fill="white" fill-opacity="0.9"/>
+                    <!-- Detalles circuitos -->
+                    <circle cx="10" cy="10" r="1.5" fill="currentColor" class="text-purple-300"/>
+                    <circle cx="14" cy="10" r="1.5" fill="currentColor" class="text-purple-300"/>
+                    <path d="M10 13H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="text-purple-300"/>
+                    <!-- Efecto sparkle -->
+                    <path d="M12 1L12 3M6 5L7 6M18 5L17 6" stroke="white" stroke-width="0.5" stroke-linecap="round" class="opacity-60 group-hover:opacity-100 transition-opacity"/>
+                </svg>
+                <!-- Punto de notificación pulsante -->
+                <span class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse border-2 border-white" x-show="!isOpen"></span>
+            </div>
             <span class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center animate-bounce" x-show="hasNewMessages">!</span>
         </button>
 
@@ -871,13 +928,31 @@
             x-transition:leave-end="opacity-0 transform translate-y-4"
             class="fixed bottom-6 right-6 w-96 h-[600px] bg-white rounded-2xl shadow-2xl z-50 flex flex-col overflow-hidden border border-gray-200"
         >
-            <!-- Header -->
+            <!-- Header Mejorado -->
             <div class="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-4 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                        <i class="fas fa-robot text-lg"></i>
+                    <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center ring-2 ring-white/30">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C10.3431 2 9 3.34315 9 5V6C7.34315 6 6 7.34315 6 9C6 9.7403 6.4022 10.3866 7 10.7324V14C7 15.6569 8.34315 17 10 17H14C15.6569 17 17 15.6569 17 14V10.7324C17.5978 10.3866 18 9.7403 18 9C18 7.34315 16.6569 6 15 6V5C15 3.34315 13.6569 2 12 2Z" fill="white" fill-opacity="0.95"/>
+                            <circle cx="10" cy="10" r="1.2" fill="currentColor" class="text-purple-300"/>
+                            <circle cx="14" cy="10" r="1.2" fill="currentColor" class="text-purple-300"/>
+                            <path d="M10 13H14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="text-purple-300"/>
+                        </svg>
                     </div>
                     <div>
+                        <h3 class="font-bold text-lg">AI Assistant</h3>
+                        <p class="text-xs text-purple-100">Siempre listo para ayudarte</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button @click="newConversation()" class="p-2 hover:bg-white/20 rounded-lg transition-colors" title="Nueva conversación">
+                        <i class="fas fa-plus text-sm"></i>
+                    </button>
+                    <button @click="toggleChat()" class="p-2 hover:bg-white/20 rounded-lg transition-colors">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
                         <h3 class="font-bold text-lg">Startup Advisor AI</h3>
                         <p class="text-xs text-purple-100">Tu asistente inteligente</p>
                     </div>
@@ -972,21 +1047,54 @@
     <script>
         function chatbot() {
             return {
-                isOpen: false,
+                isOpen: localStorage.getItem('chatbotOpen') === 'true',
                 isLoading: false,
                 hasNewMessages: false,
                 inputMessage: '',
                 messages: [],
-                currentConversationId: null,
+                currentConversationId: localStorage.getItem('currentConversationId') || null,
+
+                init() {
+                    // Cargar conversación actual al iniciar
+                    if (this.currentConversationId) {
+                        this.loadConversation(this.currentConversationId);
+                    }
+                },
 
                 toggleChat() {
                     this.isOpen = !this.isOpen;
+                    localStorage.setItem('chatbotOpen', this.isOpen);
                     if (this.isOpen) {
                         this.hasNewMessages = false;
                         this.$nextTick(() => {
                             this.scrollToBottom();
                         });
                     }
+                },
+
+                async loadConversation(conversationId) {
+                    try {
+                        const response = await fetch(`/chat/conversation/${conversationId}/`, {
+                            headers: {
+                                'X-CSRFToken': '{{ csrf_token }}'
+                            }
+                        });
+                        const data = await response.json();
+                        if (data.success) {
+                            this.messages = data.messages;
+                            this.$nextTick(() => {
+                                this.scrollToBottom();
+                            });
+                        }
+                    } catch (error) {
+                        console.error('Error cargando conversación:', error);
+                    }
+                },
+
+                async newConversation() {
+                    this.messages = [];
+                    this.currentConversationId = null;
+                    localStorage.removeItem('currentConversationId');
                 },
 
                 async sendMessage() {
@@ -1025,6 +1133,7 @@
                             // Actualizar conversation ID si es nueva
                             if (!this.currentConversationId) {
                                 this.currentConversationId = data.conversation_id;
+                                localStorage.setItem('currentConversationId', data.conversation_id);
                             }
 
                             // Simular efecto de escritura con la respuesta completa
@@ -1112,11 +1221,46 @@
                         hour: '2-digit', 
                         minute: '2-digit' 
                     });
+                },
+
+                openAIMatch() {
+                    // Abrir el chatbot
+                    this.isOpen = true;
+                    localStorage.setItem('chatbotOpen', 'true');
+                    
+                    // Mensaje predefinido según el tipo de usuario
+                    const userType = '{{ user.profile.user_type }}';
+                    let matchMessage = '';
+                    
+                    if (userType === 'founder') {
+                        matchMessage = 'Quiero encontrar inversores que sean compatibles con mi startup. Ayúdame a hacer un match basándote en mi perfil, industria, etapa de financiamiento y necesidades.';
+                    } else if (userType === 'investor') {
+                        matchMessage = 'Quiero encontrar startups que sean compatibles con mi perfil de inversión. Ayúdame a hacer un match basándote en mis criterios de inversión, industrias de interés y ticket de inversión.';
+                    }
+                    
+                    // Esperar a que se abra el chatbot y luego enviar el mensaje
+                    this.$nextTick(() => {
+                        this.inputMessage = matchMessage;
+                        // Auto-enviar el mensaje
+                        setTimeout(() => {
+                            this.sendMessage();
+                        }, 300);
+                    });
                 }
             }
         }
     </script>
     {% endif %}
+    
+    <script>
+        function openAIMatch() {
+            // Esta función se llama desde el sidebar cuando el chatbot no está inicializado
+            const chatbotElement = document.getElementById('aiChatbot');
+            if (chatbotElement && chatbotElement.__x) {
+                chatbotElement.__x.$data.openAIMatch();
+            }
+        }
+    </script>
     
     <script>
         function toggleMobileMenu() {
