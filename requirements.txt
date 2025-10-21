@@ -17,6 +17,9 @@ django-htmx==1.23.0
 # Environment
 python-dotenv==1.0.1
 
+# AI & Machine Learning
+google-generativeai==0.8.5
+
 # Forms & Fields
 django-multiselectfield==0.1.13
 
