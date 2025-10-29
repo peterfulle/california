@@ -3,15 +3,17 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, Http404
 from django.views.decorators.http import require_http_methods, require_POST
 from django.db.models import Q, Count, Sum, Avg
 from django.db import models
 from django.utils import timezone
+from django.core.exceptions import PermissionDenied
 import json
 from .models import (
     Contact, Industry, UserProfile, Startup, InvestorProfile, 
-    Event, EventRegistration, FounderProfile, EventComment, EventAttendance
+    Event, EventRegistration, FounderProfile, EventComment, EventAttendance,
+    ConnectionRequest, Conversation, Message, Notification
 )
 from .startup_forms import StartupForm
 
@@ -27,6 +29,222 @@ def home(request):
         'total_funding': '15M+'  # Hardcoded for now
     }
     return render(request, 'core/home.html', context)
+
+@login_required
+def create_event(request):
+    """Vista para crear un nuevo evento estilo Partiful"""
+    if request.method == 'POST':
+        try:
+            # Obtener datos del formulario
+            title = request.POST.get('title')
+            description = request.POST.get('description')
+            date = request.POST.get('date')
+            time = request.POST.get('time')
+            location = request.POST.get('location')
+            event_type = request.POST.get('event_type')
+            theme = request.POST.get('theme')
+            capacity = request.POST.get('capacity')
+            is_private = request.POST.get('is_private', False)
+
+            # Crear el evento
+            event = Event.objects.create(
+                creator=request.user,
+                title=title,
+                description=description,
+                date=date,
+                time=time,
+                location=location,
+                event_type=event_type,
+                theme=theme,
+                capacity=capacity,
+                is_private=is_private,
+                status='published'  # Por defecto publicado
+            )
+
+            messages.success(request, '¡Evento creado exitosamente!')
+            return redirect('event_detail', event_id=event.id)
+            
+        except Exception as e:
+            messages.error(request, f'Error al crear el evento: {str(e)}')
+            return redirect('create_event')
+
+    # GET request - mostrar formulario
+    context = {
+        'event_types': Event.EVENT_TYPES,
+        'themes': Event.THEME_CHOICES
+    }
+    return render(request, 'core/event_create.html', context)
+
+@login_required
+def edit_event(request, event_id):
+    """Vista para editar un evento existente"""
+    # Obtener el evento o devolver 404
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Verificar que el usuario sea el creador
+    if event.creator != request.user:
+        raise PermissionDenied
+    
+    if request.method == 'POST':
+        try:
+            # Actualizar datos del evento
+            event.title = request.POST.get('title')
+            event.description = request.POST.get('description')
+            event.date = request.POST.get('date')
+            event.time = request.POST.get('time')
+            event.location = request.POST.get('location')
+            event.event_type = request.POST.get('event_type')
+            event.theme = request.POST.get('theme')
+            event.capacity = request.POST.get('capacity')
+            event.is_private = request.POST.get('is_private', False)
+            
+            event.save()
+            messages.success(request, '¡Evento actualizado exitosamente!')
+            return redirect('event_detail', event_id=event.id)
+            
+        except Exception as e:
+            messages.error(request, f'Error al actualizar el evento: {str(e)}')
+            
+    # GET request - mostrar formulario con datos actuales
+    context = {
+        'event': event,
+        'event_types': Event.EVENT_TYPES,
+        'themes': Event.THEME_CHOICES
+    }
+    return render(request, 'core/event_edit.html', context)
+
+def events_list(request):
+    """Vista para listar todos los eventos"""
+    # Obtener parámetros de filtrado
+    event_type = request.GET.get('type')
+    date_filter = request.GET.get('date')  # 'upcoming', 'past', 'all'
+    search = request.GET.get('search')
+    
+    # Query base
+    events = Event.objects.all()
+    
+    # Aplicar filtros
+    if event_type:
+        events = events.filter(event_type=event_type)
+    
+    if date_filter == 'upcoming':
+        events = events.filter(date__gte=timezone.now().date())
+    elif date_filter == 'past':
+        events = events.filter(date__lt=timezone.now().date())
+        
+    if search:
+        events = events.filter(
+            Q(title__icontains=search) |
+            Q(description__icontains=search) |
+            Q(location__icontains=search)
+        )
+    
+    # Si el usuario no está autenticado, solo mostrar eventos públicos
+    if not request.user.is_authenticated:
+        events = events.filter(is_private=False)
+    
+    # Ordenar por fecha
+    events = events.order_by('date', 'time')
+    
+    context = {
+        'events': events,
+        'event_types': Event.EVENT_TYPES,
+        'current_type': event_type,
+        'current_date_filter': date_filter,
+        'search_query': search
+    }
+    return render(request, 'core/events_list.html', context)
+
+def event_detail(request, event_id):
+    """Vista de detalle de un evento"""
+    # Obtener el evento o devolver 404
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Si el evento es privado, verificar acceso
+    if event.is_private and request.user != event.creator:
+        if not request.user.is_authenticated:
+            return redirect('login')
+        else:
+            raise Http404("Evento no encontrado")
+    
+    # Obtener comentarios y asistentes
+    comments = event.eventcomment_set.all().order_by('-created_at')
+    attendees = event.eventattendance_set.all()
+    
+    context = {
+        'event': event,
+        'comments': comments,
+        'attendees': attendees,
+        'total_attendees': attendees.count(),
+    }
+    return render(request, 'core/event_detail.html', context)
+
+@login_required
+def toggle_event_attendance(request, event_id):
+    """Vista para confirmar/cancelar asistencia a un evento"""
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Verificar si el usuario ya está registrado
+    attendance, created = EventAttendance.objects.get_or_create(
+        event=event,
+        user=request.user
+    )
+    
+    if not created:
+        # Si ya existía la asistencia, la eliminamos
+        attendance.delete()
+        status = 'cancelled'
+    else:
+        status = 'confirmed'
+    
+    return JsonResponse({
+        'status': 'success',
+        'attendance': status
+    })
+
+@login_required
+def add_event_comment(request, event_id):
+    """Vista para agregar un comentario a un evento"""
+    if request.method != 'POST':
+        return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+    
+    event = get_object_or_404(Event, id=event_id)
+    data = json.loads(request.body)
+    content = data.get('content')
+    
+    if not content:
+        return JsonResponse({'status': 'error', 'message': 'El comentario no puede estar vacío'}, status=400)
+    
+    comment = EventComment.objects.create(
+        event=event,
+        user=request.user,
+        content=content
+    )
+    
+    return JsonResponse({
+        'status': 'success',
+        'comment': {
+            'id': comment.id,
+            'content': comment.content,
+            'created_at': comment.created_at.isoformat(),
+            'user': {
+                'name': comment.user.get_full_name(),
+                'avatar': comment.user.userprofile.avatar.url if comment.user.userprofile.avatar else None
+            }
+        }
+    })
+
+@login_required
+def delete_event_comment(request, comment_id):
+    """Vista para eliminar un comentario de un evento"""
+    comment = get_object_or_404(EventComment, id=comment_id)
+    
+    # Solo el creador del comentario o el creador del evento puede eliminarlo
+    if request.user != comment.user and request.user != comment.event.creator:
+        raise PermissionDenied
+    
+    comment.delete()
+    return JsonResponse({'status': 'success'})
 
 def register(request):
     """Registro de nuevos usuarios con selección de tipo"""
@@ -318,62 +536,56 @@ def investor_create(request):
         pass
     
     if request.method == 'POST':
-        # Get form data
-        fund_name = request.POST.get('fund_name')
-        investor_type = request.POST.get('investor_type')
+        # Get form data matching actual model fields
+        fund_name = request.POST.get('fund_name', '')
+        investor_type = request.POST.get('investor_type', 'angel')
         fund_size = request.POST.get('fund_size')
-        investment_stage = request.POST.get('investment_stage')
-        investment_range_min = request.POST.get('investment_range_min')
-        investment_range_max = request.POST.get('investment_range_max')
-        bio = request.POST.get('bio')
-        website = request.POST.get('website')
-        linkedin_profile = request.POST.get('linkedin_profile')
-        location = request.POST.get('location')
-        investment_thesis = request.POST.get('investment_thesis')
+        min_investment = request.POST.get('min_investment') or request.POST.get('investment_range_min')
+        max_investment = request.POST.get('max_investment') or request.POST.get('investment_range_max')
+        typical_investment = request.POST.get('typical_investment')
+        thesis = request.POST.get('thesis') or request.POST.get('investment_thesis', '')
+        sweet_spot = request.POST.get('sweet_spot', '')
         geographic_focus = request.POST.get('geographic_focus')
         portfolio_companies_count = request.POST.get('portfolio_companies_count')
-        years_of_experience = request.POST.get('years_of_experience')
-        notable_investments = request.POST.get('notable_investments')
-        is_actively_investing = 'is_actively_investing' in request.POST
-        industries_of_interest = request.POST.getlist('industries_of_interest')
+        investments_per_year = request.POST.get('investments_per_year')
+        notable_investments = request.POST.get('notable_investments', '')
+        is_active = request.POST.get('is_active', 'on') == 'on'
+        is_accepting_pitches = request.POST.get('is_accepting_pitches', 'on') == 'on'
         
-        # Create investor profile
+        # Get investment stages as list
+        investment_stages = request.POST.getlist('investment_stages')
+        
+        # Create investor profile with correct field names
         investor_profile = InvestorProfile.objects.create(
             user=request.user,
-            fund_name=fund_name if fund_name else None,
-            investor_type=investor_type if investor_type else None,
+            fund_name=fund_name if fund_name else f"{request.user.get_full_name()} Fund",
+            investor_type=investor_type,
             fund_size=float(fund_size) if fund_size else None,
-            investment_stage=investment_stage if investment_stage else None,
-            investment_range_min=float(investment_range_min) if investment_range_min else None,
-            investment_range_max=float(investment_range_max) if investment_range_max else None,
-            bio=bio if bio else None,
-            website=website if website else None,
-            linkedin_profile=linkedin_profile if linkedin_profile else None,
-            location=location if location else None,
-            investment_thesis=investment_thesis if investment_thesis else None,
+            min_investment=float(min_investment) if min_investment else None,
+            max_investment=float(max_investment) if max_investment else None,
+            typical_investment=float(typical_investment) if typical_investment else None,
+            thesis=thesis,
+            sweet_spot=sweet_spot,
             geographic_focus=geographic_focus if geographic_focus else None,
             portfolio_companies_count=int(portfolio_companies_count) if portfolio_companies_count else None,
-            years_of_experience=int(years_of_experience) if years_of_experience else None,
-            notable_investments=notable_investments if notable_investments else None,
-            is_actively_investing=is_actively_investing
+            investments_per_year=int(investments_per_year) if investments_per_year else None,
+            notable_investments=notable_investments,
+            investment_stages=investment_stages if investment_stages else [],
+            is_active=is_active,
+            is_accepting_pitches=is_accepting_pitches
         )
-        
-        # Add industries of interest
-        if industries_of_interest:
-            for industry_id in industries_of_interest:
-                try:
-                    industry = Industry.objects.get(id=industry_id)
-                    investor_profile.industries_of_interest.add(industry)
-                except Industry.DoesNotExist:
-                    pass
         
         return redirect('core:dashboard')
     
-    # Get industries for the form
+    # Get choices from model for the form
+    investor_types = InvestorProfile.INVESTOR_TYPES
+    geographic_focus = InvestorProfile.GEOGRAPHIC_FOCUS
     industries = Industry.objects.all()
     
     context = {
         'industries': industries,
+        'investor_types': investor_types,
+        'geographic_focus': geographic_focus,
     }
     
     return render(request, 'core/investor_create.html', context)
@@ -411,42 +623,40 @@ def startup_detail(request, startup_id):
     return render(request, 'core/startup_detail.html', context)
 
 
-def investor_directory(request):
-    search_query = request.GET.get('search', '')
-    investors = InvestorProfile.objects.all()
-    
-    if search_query:
-        investors = investors.filter(
-            Q(user__first_name__icontains=search_query) |
-            Q(user__last_name__icontains=search_query) |
-            Q(fund_name__icontains=search_query) |
-            Q(bio__icontains=search_query) |
-            Q(investment_thesis__icontains=search_query) |
-            Q(industries_of_interest__name__icontains=search_query)
-        ).distinct()
-    
-    investors = investors.order_by('-created_at')
-    
-    context = {
-        'investors': investors,
-        'search_query': search_query,
-    }
-    
-    return render(request, 'core/investor_directory.html', context)
-
-
 def investor_detail(request, investor_id):
     investor = get_object_or_404(InvestorProfile, id=investor_id)
     
+    # Verificar si existe una conexión o solicitud
+    connection_request = None
+    is_connected = False
+    can_request_connection = False
+    
+    if request.user.is_authenticated:
+        # Verificar si hay una solicitud pendiente o aceptada
+        connection_request = ConnectionRequest.objects.filter(
+            (Q(sender=request.user, receiver=investor.user) | 
+             Q(sender=investor.user, receiver=request.user))
+        ).first()
+        
+        if connection_request and connection_request.status == 'accepted':
+            is_connected = True
+        elif not connection_request or connection_request.status in ['rejected', 'cancelled']:
+            can_request_connection = True
+    
     context = {
         'investor': investor,
+        'connection_request': connection_request,
+        'is_connected': is_connected,
+        'can_request_connection': can_request_connection,
     }
     
     return render(request, 'core/investor_detail.html', context)
 
 def startup_directory(request):
     """Directorio público de startups con scores dinámicos"""
+    print("Entrando a startup_directory")
     startups = Startup.objects.filter(is_public=True).order_by('-created_at')
+    print(f"Startups encontradas: {startups.count()}")
     
     # Filtros básicos
     search_query = request.GET.get('search')
@@ -460,14 +670,27 @@ def startup_directory(request):
     # Agregar scores calculados dinámicamente a cada startup
     startups_with_scores = []
     for startup in startups:
-        startup_data = {
-            'startup': startup,
-            'growth_score': startup.calculate_growth_score(),
-            'heat_score': startup.calculate_heat_score(),
-            'cb_rank': startup.calculate_cb_rank(),
-            'ranking_percentile': startup.get_ranking_percentile()
-        }
-        startups_with_scores.append(startup_data)
+        try:
+            print(f"Procesando startup: {startup.company_name}")
+            startup_data = {
+                'startup': startup,
+                'growth_score': 50,  # Valor fijo para pruebas
+                'heat_score': 75,    # Valor fijo para pruebas
+                'cb_rank': 100,      # Valor fijo para pruebas
+                'ranking_percentile': 80  # Valor fijo para pruebas
+            }
+            startups_with_scores.append(startup_data)
+            print(f"Startup procesada exitosamente: {startup.company_name}")
+        except Exception as e:
+            print(f"Error processing startup {startup.company_name}: {str(e)}")
+            startup_data = {
+                'startup': startup,
+                'growth_score': 0,
+                'heat_score': 0,
+                'cb_rank': 999,
+                'ranking_percentile': 0
+            }
+            startups_with_scores.append(startup_data)
     
     # Ordenar por Growth Score descendente por defecto
     sort_by = request.GET.get('sort', 'growth_score')
@@ -494,14 +717,21 @@ def startup_directory(request):
 def investor_directory(request):
     """Directorio público de inversores"""
     investors = InvestorProfile.objects.filter(is_active=True).order_by('-created_at')
+    print(f"DEBUG: Total inversores encontrados: {investors.count()}")
+    for inv in investors:
+        print(f"  - {inv.fund_name} (activo: {inv.is_active})")
     
     # Filtros básicos
     search_query = request.GET.get('search')
     if search_query:
         investors = investors.filter(
             Q(fund_name__icontains=search_query) |
-            Q(thesis__icontains=search_query)
+            Q(thesis__icontains=search_query) |
+            Q(user__first_name__icontains=search_query) |
+            Q(user__last_name__icontains=search_query) |
+            Q(investor_type__icontains=search_query)
         )
+        print(f"DEBUG: Después del filtro de búsqueda: {investors.count()}")
     
     context = {
         'investors': investors,
@@ -1730,3 +1960,269 @@ def get_conversations(request):
         print(f"Error en get_conversations: {str(e)}")
         return JsonResponse({'error': 'Error al cargar conversaciones'}, status=500)
 
+
+# =====================================================
+# SISTEMA DE CONEXIONES Y MENSAJERÍA
+# =====================================================
+
+@login_required
+def send_connection_request(request, user_id):
+    """Enviar solicitud de conexión a un usuario"""
+    if request.method == 'POST':
+        receiver = get_object_or_404(User, id=user_id)
+        
+        # Verificar que no sea el mismo usuario
+        if receiver == request.user:
+            messages.error(request, "No puedes enviarte una solicitud a ti mismo")
+            return redirect(request.META.get('HTTP_REFERER', 'core:home'))
+        
+        # Verificar si ya existe una solicitud
+        existing_request = ConnectionRequest.objects.filter(
+            Q(sender=request.user, receiver=receiver) | 
+            Q(sender=receiver, receiver=request.user)
+        ).first()
+        
+        if existing_request:
+            if existing_request.status == 'pending':
+                messages.warning(request, "Ya existe una solicitud pendiente")
+            elif existing_request.status == 'accepted':
+                messages.info(request, "Ya están conectados")
+            else:
+                # Reactivar solicitud rechazada/cancelada
+                existing_request.status = 'pending'
+                existing_request.sender = request.user
+                existing_request.receiver = receiver
+                existing_request.message = request.POST.get('message', '')
+                existing_request.save()
+                messages.success(request, "Solicitud de conexión enviada")
+        else:
+            # Crear nueva solicitud
+            ConnectionRequest.objects.create(
+                sender=request.user,
+                receiver=receiver,
+                message=request.POST.get('message', '')
+            )
+            messages.success(request, "Solicitud de conexión enviada exitosamente")
+        
+        return redirect(request.META.get('HTTP_REFERER', 'core:home'))
+    
+    return redirect('core:home')
+
+
+@login_required
+def connection_requests_list(request):
+    """Lista de solicitudes de conexión recibidas y enviadas"""
+    received_requests = ConnectionRequest.objects.filter(
+        receiver=request.user,
+        status='pending'
+    ).select_related('sender', 'sender__profile')
+    
+    sent_requests = ConnectionRequest.objects.filter(
+        sender=request.user,
+        status='pending'
+    ).select_related('receiver', 'receiver__profile')
+    
+    context = {
+        'received_requests': received_requests,
+        'sent_requests': sent_requests,
+    }
+    
+    return render(request, 'core/connection_requests.html', context)
+
+
+@login_required
+@require_POST
+def accept_connection_request(request, request_id):
+    """Aceptar solicitud de conexión"""
+    connection_request = get_object_or_404(
+        ConnectionRequest, 
+        id=request_id, 
+        receiver=request.user,
+        status='pending'
+    )
+    
+    connection_request.accept()
+    messages.success(request, f"Ahora estás conectado con {connection_request.sender.get_full_name()}")
+    
+    return redirect('core:connection_requests')
+
+
+@login_required
+@require_POST
+def reject_connection_request(request, request_id):
+    """Rechazar solicitud de conexión"""
+    connection_request = get_object_or_404(
+        ConnectionRequest, 
+        id=request_id, 
+        receiver=request.user,
+        status='pending'
+    )
+    
+    connection_request.reject()
+    messages.info(request, "Solicitud rechazada")
+    
+    return redirect('core:connection_requests')
+
+
+@login_required
+@require_POST
+def cancel_connection_request(request, request_id):
+    """Cancelar solicitud de conexión enviada"""
+    connection_request = get_object_or_404(
+        ConnectionRequest, 
+        id=request_id, 
+        sender=request.user,
+        status='pending'
+    )
+    
+    connection_request.cancel()
+    messages.info(request, "Solicitud cancelada")
+    
+    return redirect('core:connection_requests')
+
+
+@login_required
+def messages_inbox(request):
+    """Bandeja de entrada de mensajes - Lista de conversaciones"""
+    # Obtener todas las conversaciones del usuario
+    conversations = Conversation.objects.filter(
+        Q(participant1=request.user) | Q(participant2=request.user)
+    ).select_related('participant1', 'participant2', 'participant1__profile', 'participant2__profile')
+    
+    # Agregar info adicional a cada conversación
+    conversations_data = []
+    for conv in conversations:
+        other_user = conv.get_other_participant(request.user)
+        unread_count = conv.get_unread_count(request.user)
+        last_message = conv.messages.last()
+        
+        conversations_data.append({
+            'conversation': conv,
+            'other_user': other_user,
+            'unread_count': unread_count,
+            'last_message': last_message,
+        })
+    
+    context = {
+        'conversations': conversations_data,
+    }
+    
+    return render(request, 'core/messages_inbox.html', context)
+
+
+@login_required
+def conversation_detail(request, conversation_id):
+    """Vista de una conversación específica"""
+    conversation = get_object_or_404(
+        Conversation,
+        Q(participant1=request.user) | Q(participant2=request.user),
+        id=conversation_id
+    )
+    
+    # Marcar como leída
+    conversation.mark_as_read(request.user)
+    
+    # Obtener mensajes
+    messages_list = conversation.messages.select_related('sender')
+    
+    # Procesar envío de nuevo mensaje
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content:
+            Message.objects.create(
+                conversation=conversation,
+                sender=request.user,
+                content=content
+            )
+            messages.success(request, "Mensaje enviado")
+            return redirect('core:conversation_detail', conversation_id=conversation.id)
+    
+    other_user = conversation.get_other_participant(request.user)
+    
+    context = {
+        'conversation': conversation,
+        'messages': messages_list,
+        'other_user': other_user,
+    }
+    
+    return render(request, 'core/conversation_detail.html', context)
+
+
+@login_required
+def my_connections(request):
+    """Lista de todas las conexiones aceptadas del usuario"""
+    # Obtener todas las conexiones aceptadas
+    accepted_connections = ConnectionRequest.objects.filter(
+        Q(sender=request.user) | Q(receiver=request.user),
+        status='accepted'
+    ).select_related('sender', 'receiver', 'sender__profile', 'receiver__profile')
+    
+    # Extraer los usuarios conectados
+    connections = []
+    for conn in accepted_connections:
+        other_user = conn.receiver if conn.sender == request.user else conn.sender
+        
+        # Verificar si hay conversación
+        conversation = Conversation.objects.filter(
+            Q(participant1=request.user, participant2=other_user) |
+            Q(participant1=other_user, participant2=request.user)
+        ).first()
+        
+        connections.append({
+            'user': other_user,
+            'connection': conn,
+            'conversation': conversation,
+        })
+    
+    context = {
+        'connections': connections,
+    }
+    
+    return render(request, 'core/my_connections.html', context)
+
+
+# =====================================================
+# VISTAS PARA CENTRO DE NOTIFICACIONES
+# =====================================================
+
+@login_required
+def notifications_list(request):
+    """Centro de notificaciones del usuario"""
+    notifications = Notification.objects.filter(
+        user=request.user
+    ).select_related('message__sender', 'conversation').order_by('-created_at')
+    
+    context = {
+        'notifications': notifications,
+    }
+    
+    return render(request, 'core/notifications.html', context)
+
+
+@login_required
+@require_POST
+def mark_notification_read(request, notification_id):
+    """Marcar una notificación como leída"""
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.mark_as_read()
+    
+    return JsonResponse({'success': True})
+
+
+@login_required
+@require_POST
+def delete_notification(request, notification_id):
+    """Eliminar una notificación"""
+    notification = get_object_or_404(Notification, id=notification_id, user=request.user)
+    notification.delete()
+    
+    return JsonResponse({'success': True})
+
+
+@login_required
+@require_POST
+def mark_all_notifications_read(request):
+    """Marcar todas las notificaciones como leídas"""
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+    
+    return JsonResponse({'success': True})

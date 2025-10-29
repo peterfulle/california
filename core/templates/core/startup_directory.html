@@ -2,8 +2,23 @@
 
 {% block title %}Directorio de Startups - StartupConnect{% endblock %}
 
-{% block public_content %}
 {% block content %}
+<!-- Debug info -->
+<div class="bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded relative" role="alert">
+    <strong class="font-bold">Debug Info:</strong>
+    <span class="block sm:inline">
+        {% if startups_with_scores %}
+            Número de startups: {{ startups_with_scores|length }}
+            <ul>
+            {% for item in startups_with_scores %}
+                <li>{{ item.startup.company_name }} (Growth: {{ item.growth_score }})</li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            No se encontraron startups
+        {% endif %}
+    </span>
+</div>
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
     <!-- Header -->
     <div class="mb-6 sm:mb-8">
@@ -164,5 +179,4 @@
         </div>
     {% endif %}
 </div>
-{% endblock %}
 {% endblock %}

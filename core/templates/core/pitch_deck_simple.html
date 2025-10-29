@@ -1,0 +1,283 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Pitch Deck Generator - {{ startup.company_name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .slide-preview {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        padding: 3rem;
+        min-height: 400px;
+    }
+    
+    .generate-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    
+    .slide-nav-item {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .slide-nav-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    
+    .slide-nav-item:hover {
+        background: #f3f4f6;
+    }
+    
+    .slide-nav-item.active:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+</style>
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">
+                        <i class="fas fa-magic text-indigo-600 mr-3"></i>
+                        AI Pitch Deck Generator
+                    </h1>
+                    <p class="text-lg text-gray-600">
+                        {{ startup.company_name }}
+                    </p>
+                </div>
+                <a href="{% url 'core:startup_profile' startup.id %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Volver
+                </a>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Slide Preview -->
+            <div class="lg:col-span-2">
+                <div class="slide-preview" id="slideContent">
+                    <div class="text-center py-16">
+                        <p class="text-gray-500">Selecciona un slide o genera contenido</p>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <button onclick="app.previousSlide()" class="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i> Anterior
+                    </button>
+                    <button onclick="app.nextSlide()" class="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">Slides</h3>
+                    
+                    <div id="slideNav" class="space-y-2 mb-6">
+                        <!-- Se llenará con JS -->
+                    </div>
+                    
+                    <button onclick="app.generateSlide()" class="generate-btn w-full py-3 px-6 text-white rounded-lg font-semibold mb-4">
+                        <i class="fas fa-magic mr-2"></i>
+                        Generar Este Slide
+                    </button>
+                    
+                    <textarea 
+                        id="customInstructions"
+                        rows="4"
+                        class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg mb-4"
+                        placeholder="Instrucciones personalizadas..."></textarea>
+                    
+                    <div class="text-sm text-gray-600">
+                        Progreso: <span id="progress">0/11</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const app = {
+    currentSlide: 0,
+    slides: [
+        { type: 'company_purpose', title: 'Company Purpose', content: null },
+        { type: 'problem', title: 'Problem', content: null },
+        { type: 'solution', title: 'Solution', content: null },
+        { type: 'market_opportunity', title: 'Market', content: null },
+        { type: 'product', title: 'Product', content: null },
+        { type: 'business_model', title: 'Business Model', content: null },
+        { type: 'traction', title: 'Traction', content: null },
+        { type: 'competition', title: 'Competition', content: null },
+        { type: 'team', title: 'Team', content: null },
+        { type: 'financials', title: 'Financials', content: null },
+        { type: 'ask', title: 'The Ask', content: null }
+    ],
+    
+    init() {
+        this.loadFromStorage();
+        this.renderNav();
+        this.renderSlide();
+    },
+    
+    loadFromStorage() {
+        const saved = localStorage.getItem('pitch_deck_{{ startup.id }}');
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                data.forEach((saved, i) => {
+                    if (this.slides[i] && saved.content) {
+                        this.slides[i].content = saved.content;
+                    }
+                });
+                console.log('✅ Loaded from storage');
+            } catch (e) {
+                console.error('Error loading:', e);
+            }
+        }
+    },
+    
+    saveToStorage() {
+        localStorage.setItem('pitch_deck_{{ startup.id }}', JSON.stringify(this.slides));
+        console.log('💾 Saved');
+    },
+    
+    renderNav() {
+        const nav = document.getElementById('slideNav');
+        nav.innerHTML = this.slides.map((slide, i) => `
+            <div onclick="app.goToSlide(${i})" 
+                 class="slide-nav-item px-4 py-2 rounded-lg text-sm font-medium ${i === this.currentSlide ? 'active' : 'bg-gray-50'}">
+                ${slide.title}
+                ${slide.content ? '<span class="ml-2 text-green-500">✓</span>' : ''}
+            </div>
+        `).join('');
+        
+        const completed = this.slides.filter(s => s.content).length;
+        document.getElementById('progress').textContent = `${completed}/11`;
+    },
+    
+    renderSlide() {
+        const slide = this.slides[this.currentSlide];
+        const content = document.getElementById('slideContent');
+        
+        if (!slide.content) {
+            content.innerHTML = `
+                <div class="text-center py-16">
+                    <i class="fas fa-file-powerpoint text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Este slide no ha sido generado</h3>
+                    <p class="text-gray-500">Haz clic en "Generar Este Slide"</p>
+                </div>
+            `;
+            return;
+        }
+        
+        // Renderizar según el tipo
+        if (slide.type === 'market_opportunity') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold mb-6 text-blue-600">${slide.content.title || 'Market Opportunity'}</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-blue-50 p-6 rounded-lg text-center">
+                        <div class="text-sm font-medium text-blue-600 mb-2">TAM</div>
+                        <div class="text-gray-800 text-sm">${slide.content.tam || 'N/A'}</div>
+                    </div>
+                    <div class="bg-indigo-50 p-6 rounded-lg text-center">
+                        <div class="text-sm font-medium text-indigo-600 mb-2">SAM</div>
+                        <div class="text-gray-800 text-sm">${slide.content.sam || 'N/A'}</div>
+                    </div>
+                    <div class="bg-purple-50 p-6 rounded-lg text-center">
+                        <div class="text-sm font-medium text-purple-600 mb-2">SOM</div>
+                        <div class="text-gray-800 text-sm">${slide.content.som || 'N/A'}</div>
+                    </div>
+                </div>
+                <div class="bg-blue-100 p-4 rounded-lg mb-4">
+                    <p class="font-semibold text-blue-900 mb-2">Growth Rate</p>
+                    <p class="text-blue-800">${slide.content.growth_rate || 'N/A'}</p>
+                </div>
+                <div class="bg-white border-2 border-blue-200 p-4 rounded-lg">
+                    <p class="text-gray-700">${slide.content.insight || ''}</p>
+                </div>
+            `;
+        } else {
+            // Default view - mostrar JSON
+            content.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4">${slide.title}</h2>
+                <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">${JSON.stringify(slide.content, null, 2)}</pre>
+            `;
+        }
+        
+        this.renderNav();
+    },
+    
+    goToSlide(index) {
+        this.currentSlide = index;
+        this.renderSlide();
+    },
+    
+    nextSlide() {
+        if (this.currentSlide < this.slides.length - 1) {
+            this.currentSlide++;
+            this.renderSlide();
+        }
+    },
+    
+    previousSlide() {
+        if (this.currentSlide > 0) {
+            this.currentSlide--;
+            this.renderSlide();
+        }
+    },
+    
+    async generateSlide() {
+        const slide = this.slides[this.currentSlide];
+        const instructions = document.getElementById('customInstructions').value;
+        
+        const content = document.getElementById('slideContent');
+        content.innerHTML = '<div class="text-center py-16"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div><p class="mt-4 text-gray-600">Generando...</p></div>';
+        
+        try {
+            const response = await fetch('{% url "core:generate_pitch_deck_slide" startup.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    slide_type: slide.type,
+                    custom_instructions: instructions
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                slide.content = data.content;
+                this.saveToStorage();
+                this.renderSlide();
+            } else {
+                alert('Error: ' + data.error);
+                this.renderSlide();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al generar el slide');
+            this.renderSlide();
+        }
+    }
+};
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => app.init());
+</script>
+{% endblock %}

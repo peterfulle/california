@@ -55,6 +55,102 @@ class UserProfile(models.Model):
     class Meta:
         ordering = ['-created_at']
 
+# MODELO DE EVENTOS
+class Event(models.Model):
+    """Modelo para eventos estilo Partiful"""
+    EVENT_TYPES = [
+        ('networking', 'Networking'),
+        ('workshop', 'Workshop'),
+        ('conference', 'Conference'),
+        ('hackathon', 'Hackathon'),
+    ]
+    
+    THEME_CHOICES = [
+        ('modern', 'Modern'),
+        ('classic', 'Classic'),
+        ('tech', 'Tech'),
+        ('corporate', 'Corporate'),
+    ]
+    
+    STATUS_CHOICES = [
+        ('draft', 'Draft'),
+        ('published', 'Published'),
+        ('cancelled', 'Cancelled'),
+    ]
+
+    # Campos básicos
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPES)
+    creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name='created_events')
+    
+    # Fecha y hora
+    date = models.DateField()
+    time = models.TimeField()
+    
+    # Ubicación
+    location = models.CharField(max_length=200)
+    
+    # Estilo y tema
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES)
+    
+    # Configuración
+    capacity = models.IntegerField(null=True, blank=True)
+    is_private = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    
+    # Registro y búsqueda
+    search_vector = models.TextField(null=True, blank=True)  # Para búsqueda full-text si se implementa
+    
+    # Relaciones
+    attendees = models.ManyToManyField(User, through='EventAttendance', related_name='events_attending')
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Campos básicos
+    creator = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    event_type = models.CharField(max_length=20, choices=EVENT_TYPES)
+    
+    # Fecha y hora
+    date = models.DateField()
+    time = models.TimeField()
+    
+    # Ubicación
+    location = models.CharField(max_length=200)
+    
+    # Estilo y tema
+    theme = models.CharField(max_length=20, choices=THEME_CHOICES)
+    
+    # Configuración
+    capacity = models.IntegerField(null=True, blank=True)
+    is_private = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='draft')
+    
+    # Registro y búsqueda
+    search_vector = models.TextField(null=True, blank=True)  # Para búsqueda full-text si se implementa
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-date', '-time']
+        
+    def __str__(self):
+        return self.title
+    
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('event_detail', kwargs={'event_id': self.id})
+    
+    def is_past_event(self):
+        from django.utils import timezone
+        return timezone.now().date() > self.date
+
 # MODELO DE STARTUP COMPLETO
 class Startup(models.Model):
     """Modelo principal para startups en la plataforma"""
@@ -444,6 +540,15 @@ class Event(models.Model):
         ('investor_day', 'Investor Day'),
         ('conference', 'Conference'),
         ('webinar', 'Webinar'),
+    ]
+    
+    THEME_CHOICES = [
+        (1, 'Gradiente Moderno'),
+        (2, 'Noche Estrellada'),
+        (3, 'Aurora Boreal'),
+        (4, 'Atardecer'),
+        (5, 'Tech Minimal'),
+        (6, 'Neón'),
     ]
     
     EVENT_STATUS = [
@@ -996,3 +1101,164 @@ class ChatMessage(models.Model):
     
     def __str__(self):
         return f"{self.role}: {self.content[:50]}..."
+
+
+# =====================================================
+# SISTEMA DE CONEXIONES Y MENSAJERÍA
+# =====================================================
+
+class ConnectionRequest(models.Model):
+    """Solicitudes de conexión entre startups e inversores (estilo LinkedIn)"""
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
+        ('rejected', 'Rejected'),
+        ('cancelled', 'Cancelled'),
+    ]
+    
+    # Quien envía y quien recibe (puede ser startup->inversor o inversor->startup)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_connection_requests')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_connection_requests')
+    
+    # Contexto
+    message = models.TextField(max_length=500, blank=True, help_text="Mensaje personalizado de la solicitud")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['sender', 'receiver']
+        indexes = [
+            models.Index(fields=['sender', 'status']),
+            models.Index(fields=['receiver', 'status']),
+        ]
+    
+    def __str__(self):
+        return f"{self.sender.get_full_name()} -> {self.receiver.get_full_name()} ({self.status})"
+    
+    def accept(self):
+        """Acepta la solicitud y crea una conversación automáticamente"""
+        self.status = 'accepted'
+        self.save()
+        
+        # Crear conversación automática
+        Conversation.objects.create(
+            participant1=self.sender,
+            participant2=self.receiver
+        )
+    
+    def reject(self):
+        """Rechaza la solicitud"""
+        self.status = 'rejected'
+        self.save()
+    
+    def cancel(self):
+        """Cancela la solicitud"""
+        self.status = 'cancelled'
+        self.save()
+
+
+class Conversation(models.Model):
+    """Conversaciones 1-a-1 entre usuarios conectados"""
+    participant1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations_as_p1')
+    participant2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name='conversations_as_p2')
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    # Estado de lectura
+    p1_last_read = models.DateTimeField(null=True, blank=True)
+    p2_last_read = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        ordering = ['-updated_at']
+        indexes = [
+            models.Index(fields=['participant1', 'participant2']),
+            models.Index(fields=['-updated_at']),
+        ]
+    
+    def __str__(self):
+        return f"Conversación: {self.participant1.get_full_name()} - {self.participant2.get_full_name()}"
+    
+    def get_other_participant(self, user):
+        """Obtiene el otro participante de la conversación"""
+        return self.participant2 if self.participant1 == user else self.participant1
+    
+    def get_unread_count(self, user):
+        """Cuenta mensajes no leídos para un usuario específico"""
+        last_read = self.p1_last_read if self.participant1 == user else self.p2_last_read
+        
+        if last_read:
+            return self.messages.filter(
+                created_at__gt=last_read
+            ).exclude(sender=user).count()
+        else:
+            return self.messages.exclude(sender=user).count()
+    
+    def mark_as_read(self, user):
+        """Marca la conversación como leída para un usuario"""
+        from django.utils import timezone
+        now = timezone.now()
+        
+        if self.participant1 == user:
+            self.p1_last_read = now
+        else:
+            self.p2_last_read = now
+        self.save(update_fields=['p1_last_read' if self.participant1 == user else 'p2_last_read'])
+
+
+class Message(models.Model):
+    """Mensajes dentro de una conversación"""
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_messages')
+    
+    # Contenido
+    content = models.TextField()
+    
+    # Archivos adjuntos (opcional)
+    attachment = models.FileField(upload_to='message_attachments/', blank=True, null=True)
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    
+    class Meta:
+        ordering = ['created_at']
+        indexes = [
+            models.Index(fields=['conversation', 'created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.sender.get_full_name()}: {self.content[:50]}"
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Actualizar timestamp de la conversación
+        self.conversation.save()
+
+
+class Notification(models.Model):
+    """Notificación interna del sistema (no push)"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    message = models.ForeignKey(Message, on_delete=models.CASCADE, null=True, blank=True)
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, null=True, blank=True)
+    content = models.CharField(max_length=255)  # Preview del mensaje
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Notificación'
+        verbose_name_plural = 'Notificaciones'
+    
+    def __str__(self):
+        return f"Notificación para {self.user.username}: {self.content[:50]}"
+    
+    def mark_as_read(self):
+        """Marca la notificación como leída"""
+        self.is_read = True
+        self.save()

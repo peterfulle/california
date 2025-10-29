@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Conexiones - StartupConnect{% endblock %}
+
+{% block dashboard_content %}
+{% block public_content %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <i class="fas fa-users text-blue-600"></i>
+            Mis Conexiones
+            {% if connections %}
+                <span class="text-sm bg-blue-600 text-white px-2.5 py-0.5 rounded-full">{{ connections|length }}</span>
+            {% endif %}
+        </h1>
+        <div class="flex gap-3">
+            <a href="{% url 'core:connection_requests' %}" 
+               class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-inbox mr-2"></i> Solicitudes
+            </a>
+            <a href="{% url 'core:messages_inbox' %}" 
+               class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-comments mr-2"></i> Mensajes
+            </a>
+        </div>
+    </div>
+
+    {% if connections %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for conn_data in connections %}
+                <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:border-blue-500 hover:shadow-md transition-all">
+                    <!-- Avatar y nombre -->
+                    <div class="text-center mb-4">
+                        {% if conn_data.user.profile.profile_image %}
+                            <img src="{{ conn_data.user.profile.profile_image.url }}" 
+                                 alt="{{ conn_data.user.get_full_name }}"
+                                 class="w-20 h-20 rounded-full object-cover mx-auto mb-3 border-2 border-gray-200">
+                        {% else %}
+                            <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 border-2 border-gray-200">
+                                <i class="fas fa-user text-white text-2xl"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <h3 class="font-bold text-lg text-gray-900 mb-1">{{ conn_data.user.get_full_name }}</h3>
+                        <p class="text-sm text-gray-600 mb-2">
+                            {% if conn_data.user.profile.user_type == 'founder' %}
+                                <i class="fas fa-rocket mr-1"></i> Founder
+                            {% elif conn_data.user.profile.user_type == 'investor' %}
+                                <i class="fas fa-user-tie mr-1"></i> Investor
+                            {% else %}
+                                {{ conn_data.user.profile.get_user_type_display }}
+                            {% endif %}
+                        </p>
+                        
+                        {% if conn_data.user.profile.bio %}
+                            <p class="text-xs text-gray-600 mb-4">{{ conn_data.user.profile.bio|truncatewords:15 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Información adicional -->
+                    <div class="border-t border-gray-200 pt-4 mb-4">
+                        <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+                            <span>Conectados desde:</span>
+                            <span class="font-medium">{{ conn_data.connection.created_at|date:"M Y" }}</span>
+                        </div>
+                        {% if conn_data.user.profile.location %}
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="fas fa-map-marker-alt mr-2"></i>
+                                {{ conn_data.user.profile.location }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Acciones -->
+                    <div class="flex gap-2">
+                        {% if conn_data.conversation %}
+                            <a href="{% url 'core:conversation_detail' conn_data.conversation.id %}" 
+                               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition-colors text-center text-sm">
+                                <i class="fas fa-comment mr-1"></i> Mensaje
+                            </a>
+                        {% else %}
+                            <span class="flex-1 bg-gray-100 text-gray-400 py-2 rounded-lg text-center text-sm cursor-not-allowed">
+                                <i class="fas fa-comment mr-1"></i> Sin chat
+                            </span>
+                        {% endif %}
+                        
+                        <a href="{% if conn_data.user.profile.user_type == 'investor' %}{% url 'core:investor_detail' conn_data.user.investorprofile.id %}{% else %}{% url 'core:startup_directory' %}{% endif %}" 
+                           class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg transition-colors text-center text-sm">
+                            <i class="fas fa-user mr-1"></i> Perfil
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl p-12 border border-gray-200 shadow-sm text-center">
+            <i class="fas fa-users text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">No tienes conexiones aún</h3>
+            <p class="text-gray-600 mb-6">Empieza a conectar con inversores y founders</p>
+            <div class="flex gap-4 justify-center">
+                <a href="{% url 'core:investor_directory' %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-user-tie mr-2"></i> Buscar Inversores
+                </a>
+                <a href="{% url 'core:startup_directory' %}" 
+                   class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg transition-colors">
+                    <i class="fas fa-rocket mr-2"></i> Buscar Startups
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% endblock %}
+{% endblock %}

@@ -25,14 +25,17 @@ if RENDER_EXTERNAL_HOSTNAME:
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',  # Debe estar PRIMERO para WebSockets
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',  # Para filtros como intcomma
     
     # Aplicaciones de terceros
+    'channels',  # Para WebSockets en tiempo real
     'compressor',
     'django_htmx',
     
@@ -66,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.notifications_context',  # Contador de notificaciones
             ],
         },
     },
@@ -181,3 +185,25 @@ LOGGING = {
         },
     },
 }
+
+# ===================================
+# DJANGO CHANNELS CONFIGURATION
+# ===================================
+ASGI_APPLICATION = 'mydevsite.asgi.application'
+
+# Channel layers para Redis (en desarrollo usaremos in-memory)
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer'
+    }
+}
+
+# Para producción, usar Redis:
+# CHANNEL_LAYERS = {
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }

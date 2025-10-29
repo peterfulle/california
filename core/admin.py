@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import (
     Contact, Industry, UserProfile, Startup, InvestorProfile, Event, EventRegistration, FounderProfile,
-    InvestorAccessRequest, StartupFinancials, StartupPeople, StartupNews, StartupTechnology, PrivateDataAccess
+    InvestorAccessRequest, StartupFinancials, StartupPeople, StartupNews, StartupTechnology, PrivateDataAccess,
+    ConnectionRequest, Conversation, Message, Notification
 )
 
 @admin.register(Contact)
@@ -162,3 +163,51 @@ class ChatMessageAdmin(admin.ModelAdmin):
     def content_preview(self, obj):
         return obj.content[:100] + '...' if len(obj.content) > 100 else obj.content
     content_preview.short_description = 'Contenido'
+
+
+# =====================================================
+# ADMIN PARA SISTEMA DE CONEXIONES Y MENSAJERÍA
+# =====================================================
+
+@admin.register(ConnectionRequest)
+class ConnectionRequestAdmin(admin.ModelAdmin):
+    list_display = ['sender', 'receiver', 'status', 'created_at']
+    search_fields = ['sender__first_name', 'sender__last_name', 'receiver__first_name', 'receiver__last_name']
+    list_filter = ['status', 'created_at']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['status']
+
+
+@admin.register(Conversation)
+class ConversationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'participant1', 'participant2', 'created_at', 'updated_at']
+    search_fields = ['participant1__first_name', 'participant1__last_name', 'participant2__first_name', 'participant2__last_name']
+    list_filter = ['created_at', 'updated_at']
+    readonly_fields = ['created_at', 'updated_at']
+
+
+@admin.register(Message)
+class MessageAdmin(admin.ModelAdmin):
+    list_display = ['conversation', 'sender', 'content_preview', 'created_at', 'is_read']
+    search_fields = ['conversation__id', 'sender__first_name', 'sender__last_name', 'content']
+    list_filter = ['is_read', 'created_at']
+    readonly_fields = ['created_at']
+    list_editable = ['is_read']
+    
+    def content_preview(self, obj):
+        return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
+    content_preview.short_description = 'Mensaje'
+
+
+@admin.register(Notification)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['user', 'content_preview', 'is_read', 'created_at']
+    search_fields = ['user__username', 'user__first_name', 'user__last_name', 'content']
+    list_filter = ['is_read', 'created_at']
+    readonly_fields = ['created_at']
+    list_editable = ['is_read']
+    
+    def content_preview(self, obj):
+        return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
+    content_preview.short_description = 'Contenido'
+

@@ -3,74 +3,314 @@
 {% block title %}Crear Perfil de Inversor - StartupConnect{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold mb-2">Crear Perfil de Inversor</h1>
-        <p class="text-gray-400">Comparte información sobre tu fondo o perfil de inversión</p>
-    </div>
-
-    <form method="post" class="space-y-6">
-        {% csrf_token %}
-        
-        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
-            <h2 class="text-xl font-bold mb-4">Información del Fondo</h2>
-            
-            <div class="grid md:grid-cols-2 gap-6">
+<div class="min-h-screen bg-gray-50 py-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-10">
+            <div class="flex items-center mb-4">
+                <div class="bg-gradient-to-br from-blue-500 to-purple-600 p-3 rounded-xl mr-4">
+                    <i class="fas fa-user-tie text-white text-2xl"></i>
+                </div>
                 <div>
-                    <label for="fund_name" class="block text-sm font-medium text-gray-300 mb-2">
-                        Nombre del fondo/empresa *
-                    </label>
-                    <input type="text" name="fund_name" required 
-                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <h1 class="text-4xl font-bold text-gray-900">Crear Perfil de Inversor</h1>
+                    <p class="text-gray-600 mt-1">Comparte información sobre tu fondo o perfil de inversión</p>
+                </div>
+            </div>
+            <div class="h-1 w-24 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"></div>
+        </div>
+
+        <form method="post" class="space-y-8">
+            {% csrf_token %}
+            
+            <!-- Información Básica -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-building text-blue-600 text-xl mr-3"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Información Básica</h2>
                 </div>
                 
-                <div>
-                    <label for="investor_type" class="block text-sm font-medium text-gray-300 mb-2">
-                        Tipo de inversor *
-                    </label>
-                    <select name="investor_type" required 
-                            class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Selecciona el tipo</option>
-                        {% for type_value, type_name in investor_types %}
-                            <option value="{{ type_value }}">{{ type_name }}</option>
-                        {% endfor %}
-                    </select>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="fund_name" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Nombre del fondo/empresa <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                               id="fund_name"
+                               name="fund_name" 
+                               required 
+                               placeholder="ej: TechAngel Ventures"
+                               class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    </div>
+                    
+                    <div>
+                        <label for="investor_type" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Tipo de inversor <span class="text-red-500">*</span>
+                        </label>
+                        <select name="investor_type" 
+                                id="investor_type"
+                                required 
+                                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">Selecciona el tipo</option>
+                            {% for type_value, type_name in investor_types %}
+                                <option value="{{ type_value }}">{{ type_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="geographic_focus" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Foco geográfico <span class="text-red-500">*</span>
+                        </label>
+                        <select name="geographic_focus"
+                                id="geographic_focus"
+                                required
+                                class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            <option value="">Selecciona la región</option>
+                            {% for geo_value, geo_name in geographic_focus %}
+                                <option value="{{ geo_value }}">{{ geo_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">
+                            Estado del perfil
+                        </label>
+                        <div class="flex items-center space-x-6 pt-2">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" 
+                                       name="is_active" 
+                                       checked
+                                       class="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-gray-700">Perfil activo</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="checkbox" 
+                                       name="is_accepting_pitches" 
+                                       checked
+                                       class="w-5 h-5 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                <span class="ml-2 text-gray-700">Aceptando pitches</span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="mt-4">
-                <label for="geographic_focus" class="block text-sm font-medium text-gray-300 mb-2">
-                    Foco geográfico
-                </label>
-                <select name="geographic_focus"
-                        class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="">Selecciona la región</option>
-                    {% for geo_value, geo_name in geographic_focus %}
-                        <option value="{{ geo_value }}">{{ geo_name }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            
-            <div class="mt-4">
-                <label for="thesis" class="block text-sm font-medium text-gray-300 mb-2">
-                    Tesis de inversión
-                </label>
-                <textarea name="thesis" rows="4"
-                          class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                          placeholder="Describe tu enfoque de inversión, sectores de interés, etapas preferidas..."></textarea>
-            </div>
-        </div>
 
-        <div class="flex justify-end space-x-4">
-            <a href="{% url 'core:dashboard' %}" 
-               class="px-6 py-2 border border-gray-600 text-gray-400 rounded-lg hover:bg-gray-700 transition">
-                Cancelar
-            </a>
-            <button type="submit" 
-                    class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition">
-                Crear Perfil
-            </button>
+            <!-- Tesis de Inversión -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-lightbulb text-purple-600 text-xl mr-3"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Enfoque de Inversión</h2>
+                </div>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label for="thesis" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Tesis de inversión <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="thesis" 
+                                  id="thesis"
+                                  rows="4"
+                                  required
+                                  placeholder="Describe tu enfoque de inversión, sectores de interés, criterios de selección..."
+                                  class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Ejemplo: Inversiones estratégicas en tecnología médica y biotecnología</p>
+                    </div>
+
+                    <div>
+                        <label for="sweet_spot" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Sweet Spot de inversión
+                        </label>
+                        <textarea name="sweet_spot" 
+                                  id="sweet_spot"
+                                  rows="3"
+                                  placeholder="Describe tu sweet spot ideal: etapa, tamaño, características..."
+                                  class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Ejemplo: Series B+, empresas con productos validados clínicamente</p>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Etapas de inversión preferidas
+                        </label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all">
+                                <input type="checkbox" name="investment_stages" value="Pre_Seed" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Pre-Seed</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all">
+                                <input type="checkbox" name="investment_stages" value="Seed" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Seed</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all">
+                                <input type="checkbox" name="investment_stages" value="Series_A" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Series A</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all">
+                                <input type="checkbox" name="investment_stages" value="Series_B" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Series B</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all">
+                                <input type="checkbox" name="investment_stages" value="Series_C" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Series C+</span>
+                            </label>
+                            <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-blue-50 hover:border-blue-300 cursor-pointer transition-all">
+                                <input type="checkbox" name="investment_stages" value="Growth" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                <span class="ml-2 text-sm text-gray-700">Growth</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información Financiera -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-dollar-sign text-green-600 text-xl mr-3"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Información Financiera</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="fund_size" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Tamaño del fondo (USD)
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <input type="number" 
+                                   id="fund_size"
+                                   name="fund_size" 
+                                   step="1000"
+                                   placeholder="100000000"
+                                   class="w-full pl-8 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Ejemplo: 100000000 = $100M</p>
+                    </div>
+
+                    <div>
+                        <label for="typical_investment" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Inversión típica (USD)
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <input type="number" 
+                                   id="typical_investment"
+                                   name="typical_investment" 
+                                   step="1000"
+                                   placeholder="3000000"
+                                   class="w-full pl-8 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Ejemplo: 3000000 = $3M</p>
+                    </div>
+
+                    <div>
+                        <label for="min_investment" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Inversión mínima (USD)
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <input type="number" 
+                                   id="min_investment"
+                                   name="min_investment" 
+                                   step="1000"
+                                   placeholder="1000000"
+                                   class="w-full pl-8 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="max_investment" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Inversión máxima (USD)
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">$</span>
+                            <input type="number" 
+                                   id="max_investment"
+                                   name="max_investment" 
+                                   step="1000"
+                                   placeholder="10000000"
+                                   class="w-full pl-8 pr-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Portfolio -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
+                <div class="flex items-center mb-6">
+                    <i class="fas fa-briefcase text-indigo-600 text-xl mr-3"></i>
+                    <h2 class="text-2xl font-bold text-gray-900">Portfolio e Historial</h2>
+                </div>
+                
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="portfolio_companies_count" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Número de empresas en portfolio
+                        </label>
+                        <input type="number" 
+                               id="portfolio_companies_count"
+                               name="portfolio_companies_count" 
+                               min="0"
+                               placeholder="12"
+                               class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                    </div>
+
+                    <div>
+                        <label for="investments_per_year" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Inversiones por año
+                        </label>
+                        <input type="number" 
+                               id="investments_per_year"
+                               name="investments_per_year" 
+                               min="0"
+                               placeholder="4"
+                               class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="notable_investments" class="block text-sm font-semibold text-gray-700 mb-2">
+                            Inversiones destacadas
+                        </label>
+                        <textarea name="notable_investments" 
+                                  id="notable_investments"
+                                  rows="3"
+                                  placeholder="Oscar Health (Series C), 23andMe (Series D), etc."
+                                  class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"></textarea>
+                        <p class="text-xs text-gray-500 mt-1">Menciona las inversiones más destacadas de tu portfolio</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="flex justify-end space-x-4 pt-4">
+                <a href="{% url 'core:dashboard' %}" 
+                   class="px-8 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all">
+                    <i class="fas fa-times mr-2"></i>
+                    Cancelar
+                </a>
+                <button type="submit" 
+                        class="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all transform hover:scale-105">
+                    <i class="fas fa-check mr-2"></i>
+                    Crear Perfil de Inversor
+                </button>
+            </div>
+        </form>
+
+        <!-- Información adicional -->
+        <div class="mt-8 bg-blue-50 border border-blue-200 rounded-xl p-6">
+            <div class="flex items-start">
+                <i class="fas fa-info-circle text-blue-600 text-xl mr-3 mt-1"></i>
+                <div>
+                    <h3 class="font-semibold text-blue-900 mb-2">Información importante</h3>
+                    <ul class="text-sm text-blue-800 space-y-1">
+                        <li>• Todos los campos marcados con <span class="text-red-500">*</span> son obligatorios</li>
+                        <li>• Tu perfil será visible para todos los founders en la plataforma</li>
+                        <li>• Podrás editar esta información en cualquier momento desde tu dashboard</li>
+                        <li>• Un perfil completo aumenta las posibilidades de recibir propuestas de calidad</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

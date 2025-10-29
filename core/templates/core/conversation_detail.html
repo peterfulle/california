@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat con {{ other_user.get_full_name }} - StartupConnect{% endblock %}
+
+{% block dashboard_content %}
+{% block public_content %}
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <!-- Header del chat con estado online/offline -->
+    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{% url 'core:messages_inbox' %}" 
+                   class="text-gray-600 hover:text-gray-900 transition-all hover:scale-110">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                
+                <!-- Avatar con indicador de estado -->
+                <div class="relative">
+                    {% if other_user.profile.profile_image %}
+                        <img src="{{ other_user.profile.profile_image.url }}" 
+                             alt="{{ other_user.get_full_name }}"
+                             class="w-14 h-14 rounded-full object-cover border-2 border-gray-200">
+                    {% else %}
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-gray-200">
+                            <i class="fas fa-user text-white text-xl"></i>
+                        </div>
+                    {% endif %}
+                    <!-- Indicador de estado online/offline -->
+                    <div id="onlineIndicator" class="absolute bottom-0 right-0 w-4 h-4 bg-gray-400 rounded-full border-2 border-white transition-all"></div>
+                </div>
+                
+                <div>
+                    <h2 class="font-bold text-xl text-gray-900">{{ other_user.get_full_name }}</h2>
+                    <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">
+                            {% if other_user.profile.user_type == 'founder' %}
+                                <i class="fas fa-rocket mr-1"></i> Founder
+                            {% elif other_user.profile.user_type == 'investor' %}
+                                <i class="fas fa-user-tie mr-1"></i> Investor
+                            {% else %}
+                                {{ other_user.profile.get_user_type_display }}
+                            {% endif %}
+                        </p>
+                        <!-- Indicador de "está escribiendo..." -->
+                        <span id="typingIndicator" class="text-xs text-blue-600 font-medium hidden">
+                            <i class="fas fa-circle-notch fa-spin mr-1"></i> escribiendo...
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <a href="{% if other_user.profile.user_type == 'investor' %}{% url 'core:investor_detail' other_user.investorprofile.id %}{% else %}{% url 'core:startup_directory' %}{% endif %}" 
+                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all hover:scale-105 text-sm font-medium">
+                    <i class="fas fa-external-link-alt mr-2"></i> Ver perfil
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Área de mensajes con diseño mejorado -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <div id="messagesContainer" class="p-6 space-y-4 overflow-y-auto" style="height: 550px; scroll-behavior: smooth;">
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flex {% if msg.sender == user %}justify-end{% else %}justify-start{% endif %} animate-fadeIn message-item" data-message-id="{{ msg.id }}">
+                        <div class="max-w-xs lg:max-w-md">
+                            {% if msg.sender != user %}
+                                <div class="flex items-start gap-2 mb-2">
+                                    {% if msg.sender.profile.profile_image %}
+                                        <img src="{{ msg.sender.profile.profile_image.url }}" 
+                                             class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                    {% else %}
+                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border border-gray-200">
+                                            <i class="fas fa-user text-white text-xs"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <p class="text-xs font-medium text-gray-700">{{ msg.sender.get_full_name }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="{% if msg.sender == user %}bg-gradient-to-br from-blue-600 to-blue-700{% else %}bg-gray-100{% endif %} rounded-2xl p-4 border {% if msg.sender == user %}border-blue-600 shadow-lg{% else %}border-gray-200{% endif %} transition-all hover:shadow-xl">
+                                <p class="{% if msg.sender == user %}text-white{% else %}text-gray-900{% endif %} whitespace-pre-line leading-relaxed">{{ msg.content }}</p>
+                                <div class="flex items-center justify-between mt-3">
+                                    <p class="text-xs {% if msg.sender == user %}text-blue-100{% else %}text-gray-500{% endif %} font-medium">
+                                        {{ msg.created_at|date:"H:i" }}
+                                    </p>
+                                    {% if msg.sender == user %}
+                                        <span class="text-xs text-blue-100">
+                                            {% if msg.is_read %}
+                                                <i class="fas fa-check-double"></i> Leído
+                                            {% else %}
+                                                <i class="fas fa-check"></i> Enviado
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-16" id="emptyState">
+                    <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-comment-dots text-5xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">No hay mensajes aún</h3>
+                    <p class="text-gray-600">¡Inicia la conversación y empieza a conectar!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Formulario de envío mejorado -->
+        <div class="border-t border-gray-200 p-6 bg-gray-50">
+            <form id="chatForm" class="flex gap-4">
+                {% csrf_token %}
+                <div class="flex-1">
+                    <textarea id="messageInput" 
+                              rows="2" 
+                              placeholder="Escribe tu mensaje... (Enter para enviar, Shift+Enter para nueva línea)"
+                              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all"></textarea>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span id="charCount">0 caracteres</span>
+                            <span class="mx-1">•</span>
+                            <span id="connectionStatus" class="flex items-center gap-1">
+                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                Conectado
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" 
+                        id="sendButton"
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl transition-all hover:scale-105 shadow-lg hover:shadow-xl self-start font-medium">
+                    <i class="fas fa-paper-plane mr-2"></i> Enviar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos personalizados -->
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .animate-slideIn {
+        animation: slideIn 0.4s ease-out;
+    }
+
+    #messagesContainer::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #messagesContainer::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    #messagesContainer::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    #messagesContainer::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
+
+<!-- WebSocket JavaScript -->
+<script>
+    // ⛔ BLOQUEAR COMPLETAMENTE LAS NOTIFICACIONES PUSH DEL NAVEGADOR
+    if ('Notification' in window) {
+        // Sobrescribir el constructor de Notification para que no haga nada
+        window.Notification = function() {
+            console.log('🚫 Notificaciones push bloqueadas - Usando sistema interno');
+            return {
+                close: function() {},
+                addEventListener: function() {}
+            };
+        };
+        // Bloquear el método estático requestPermission
+        window.Notification.requestPermission = function() {
+            console.log('🚫 Permisos de notificación bloqueados - Usando sistema interno');
+            return Promise.resolve('denied');
+        };
+        window.Notification.permission = 'denied';
+        
+        console.log('✅ Sistema de notificaciones internas activo');
+    }
+    
+    const conversationId = {{ conversation.id }};
+    const currentUserId = {{ user.id }};
+    const otherUserId = {{ other_user.id }};
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/chat/${conversationId}/`;
+    
+    let chatSocket = null;
+    let typingTimeout = null;
+    let isTyping = false;
+    
+    // Conectar al WebSocket
+    function connectWebSocket() {
+        chatSocket = new WebSocket(wsUrl);
+        
+        chatSocket.onopen = function(e) {
+            console.log('✅ WebSocket conectado');
+            updateConnectionStatus(true);
+        };
+        
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            if (data.type === 'chat_message') {
+                if (data.sender_id !== currentUserId) {
+                    addMessageToChat(data);
+                    // Notificación interna se crea automáticamente en el backend
+                }
+            } else if (data.type === 'typing') {
+                showTypingIndicator(data.is_typing);
+            } else if (data.type === 'user_status') {
+                updateOnlineStatus(data.status);
+            }
+        };
+        
+        chatSocket.onclose = function(e) {
+            console.log('❌ WebSocket desconectado');
+            updateConnectionStatus(false);
+            // Intentar reconectar después de 3 segundos
+            setTimeout(connectWebSocket, 3000);
+        };
+        
+        chatSocket.onerror = function(e) {
+            console.error('Error en WebSocket:', e);
+            updateConnectionStatus(false);
+        };
+    }
+    
+    // Enviar mensaje
+    document.getElementById('chatForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if (message && chatSocket.readyState === WebSocket.OPEN) {
+            // Enviar por WebSocket
+            chatSocket.send(JSON.stringify({
+                'type': 'chat_message',
+                'message': message
+            }));
+            
+            // Agregar mensaje propio al chat
+            addOwnMessage(message);
+            
+            // Limpiar input
+            messageInput.value = '';
+            updateCharCount();
+            
+            // Detener indicador de escritura
+            if (isTyping) {
+                sendTypingIndicator(false);
+            }
+        }
+    });
+    
+    // Detectar Enter para enviar
+    document.getElementById('messageInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+        }
+    });
+    
+    // Detectar cuando el usuario está escribiendo
+    document.getElementById('messageInput').addEventListener('input', function() {
+        updateCharCount();
+        
+        if (!isTyping) {
+            isTyping = true;
+            sendTypingIndicator(true);
+        }
+        
+        // Resetear timeout
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            isTyping = false;
+            sendTypingIndicator(false);
+        }, 2000);
+    });
+    
+    // Enviar indicador de escritura
+    function sendTypingIndicator(typing) {
+        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({
+                'type': 'typing',
+                'is_typing': typing
+            }));
+        }
+    }
+    
+    // Mostrar indicador de escritura
+    function showTypingIndicator(isTyping) {
+        const indicator = document.getElementById('typingIndicator');
+        if (isTyping) {
+            indicator.classList.remove('hidden');
+        } else {
+            indicator.classList.add('hidden');
+        }
+    }
+    
+    // Actualizar estado de conexión
+    function updateConnectionStatus(connected) {
+        const status = document.getElementById('connectionStatus');
+        if (connected) {
+            status.innerHTML = '<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Conectado';
+        } else {
+            status.innerHTML = '<span class="w-2 h-2 bg-red-500 rounded-full"></span> Desconectado';
+        }
+    }
+    
+    // Actualizar estado online/offline
+    function updateOnlineStatus(status) {
+        const indicator = document.getElementById('onlineIndicator');
+        if (status === 'online') {
+            indicator.classList.remove('bg-gray-400');
+            indicator.classList.add('bg-green-500');
+        } else {
+            indicator.classList.remove('bg-green-500');
+            indicator.classList.add('bg-gray-400');
+        }
+    }
+    
+    // Agregar mensaje al chat
+    function addMessageToChat(data) {
+        const container = document.getElementById('messagesContainer');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        const messageHtml = `
+            <div class="flex justify-start animate-slideIn message-item" data-message-id="${data.message_id}">
+                <div class="max-w-xs lg:max-w-md">
+                    <div class="flex items-start gap-2 mb-2">
+                        ${data.avatar_url ? 
+                            `<img src="${data.avatar_url}" class="w-8 h-8 rounded-full object-cover border border-gray-200">` :
+                            `<div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border border-gray-200">
+                                <i class="fas fa-user text-white text-xs"></i>
+                            </div>`
+                        }
+                        <div>
+                            <p class="text-xs font-medium text-gray-700">${data.sender_name}</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 rounded-2xl p-4 border border-gray-200 transition-all hover:shadow-xl">
+                        <p class="text-gray-900 whitespace-pre-line leading-relaxed">${data.message}</p>
+                        <p class="text-xs text-gray-500 font-medium mt-3">${data.timestamp}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', messageHtml);
+        scrollToBottom();
+    }
+    
+    // Agregar mensaje propio
+    function addOwnMessage(message) {
+        const container = document.getElementById('messagesContainer');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        const now = new Date();
+        const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        
+        const messageHtml = `
+            <div class="flex justify-end animate-fadeIn message-item">
+                <div class="max-w-xs lg:max-w-md">
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-4 border border-blue-600 shadow-lg transition-all hover:shadow-xl">
+                        <p class="text-white whitespace-pre-line leading-relaxed">${message}</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <p class="text-xs text-blue-100 font-medium">${timestamp}</p>
+                            <span class="text-xs text-blue-100">
+                                <i class="fas fa-check"></i> Enviado
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', messageHtml);
+        scrollToBottom();
+    }
+    
+    // Scroll al final
+    function scrollToBottom() {
+        const container = document.getElementById('messagesContainer');
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    // Contador de caracteres
+    function updateCharCount() {
+        const input = document.getElementById('messageInput');
+        const count = document.getElementById('charCount');
+        count.textContent = `${input.value.length} caracteres`;
+    }
+    
+    // Inicializar al cargar la página
+    window.addEventListener('load', function() {
+        scrollToBottom();
+        connectWebSocket();
+    });
+</script>
+{% endblock %}
+{% endblock %}
+{% endblock %}

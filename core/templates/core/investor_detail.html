@@ -1,206 +1,289 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
-{% block title %}{{ investor.user.get_full_name }} - StartupConnect{% endblock %}
+{% block title %}{{ investor.user.get_full_name }} - Perfil de Inversor{% endblock %}
 
 {% block dashboard_content %}
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+{% block public_content %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
     <!-- Breadcrumb -->
-    <nav class="mb-8">
-        <a href="{% url 'core:investor_directory' %}" class="text-blue-400 hover:text-blue-300">
+    <nav class="mb-6">
+        <a href="{% url 'core:investor_directory' %}" class="text-blue-600 hover:text-blue-700 font-medium">
             <i class="fas fa-arrow-left mr-2"></i> Volver al directorio
         </a>
     </nav>
 
-    <!-- Header -->
-    <div class="bg-gray-800 rounded-xl p-8 mb-8 border border-gray-700">
+    <!-- Header Card -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-8">
         <div class="flex items-start gap-6">
-            {% if investor.profile_picture %}
-                <img src="{{ investor.profile_picture.url }}" 
-                     alt="{{ investor.user.get_full_name }}" 
-                     class="w-24 h-24 rounded-full object-cover">
+            {% if investor.user.profile.profile_image %}
+                <img src="{{ investor.user.profile.profile_image.url }}" alt="{{ investor.user.get_full_name }}" 
+                     class="w-24 h-24 rounded-xl object-cover border-2 border-gray-200">
             {% else %}
-                <div class="w-24 h-24 bg-green-600 rounded-full flex items-center justify-center">
-                    <i class="fas fa-user text-white text-2xl"></i>
+                <div class="w-24 h-24 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl flex items-center justify-center border-2 border-gray-200">
+                    <i class="fas fa-user-tie text-white text-3xl"></i>
                 </div>
             {% endif %}
             
             <div class="flex-1">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h1 class="text-3xl font-bold mb-2">{{ investor.user.get_full_name }}</h1>
+                        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ investor.user.get_full_name }}</h1>
                         {% if investor.fund_name %}
-                            <p class="text-xl text-gray-300 mb-2">{{ investor.fund_name }}</p>
+                            <p class="text-xl text-gray-600 mb-3">{{ investor.fund_name }}</p>
                         {% endif %}
-                        <div class="flex items-center gap-4">
-                            {% if investor.investment_stage %}
-                                <span class="text-sm bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full">
-                                    {{ investor.get_investment_stage_display }}
+                        <div class="flex items-center gap-3 flex-wrap">
+                            {% if investor.investor_type %}
+                                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">
+                                    {{ investor.get_investor_type_display }}
                                 </span>
                             {% endif %}
-                            {% if investor.investor_type %}
-                                <span class="text-sm bg-purple-600/20 text-purple-400 px-3 py-1 rounded-full">
-                                    {{ investor.get_investor_type_display }}
+                            {% if investor.geographic_focus %}
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">
+                                    {{ investor.get_geographic_focus_display }}
+                                </span>
+                            {% endif %}
+                            {% if investor.is_accepting_pitches %}
+                                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                                    <i class="fas fa-check-circle mr-1"></i> Aceptando Pitches
                                 </span>
                             {% endif %}
                         </div>
                     </div>
                     
-                    {% if user.is_authenticated and user.profile.user_type == 'founder' %}
-                        <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium transition">
-                            <i class="fas fa-envelope mr-2"></i> Contactar
-                        </button>
+                    <!-- Botones de acción según estado de conexión -->
+                    {% if user.is_authenticated and user != investor.user %}
+                        {% if is_connected %}
+                            <!-- Ya conectados - Botón para enviar mensaje -->
+                            <a href="{% url 'core:messages_inbox' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-comment mr-2"></i> Enviar Mensaje
+                            </a>
+                        {% elif connection_request and connection_request.status == 'pending' %}
+                            <!-- Solicitud pendiente -->
+                            {% if connection_request.receiver == user %}
+                                <!-- El usuario recibió la solicitud -->
+                                <div class="flex gap-2">
+                                    <form action="{% url 'core:accept_connection' connection_request.id %}" method="post" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                            <i class="fas fa-check mr-2"></i> Aceptar
+                                        </button>
+                                    </form>
+                                    <form action="{% url 'core:reject_connection' connection_request.id %}" method="post" class="inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-3 rounded-lg font-medium transition-colors">
+                                            <i class="fas fa-times mr-2"></i> Rechazar
+                                        </button>
+                                    </form>
+                                </div>
+                            {% else %}
+                                <!-- El usuario envió la solicitud -->
+                                <button class="bg-gray-100 text-gray-500 px-6 py-3 rounded-lg font-medium cursor-not-allowed" disabled>
+                                    <i class="fas fa-clock mr-2"></i> Solicitud Pendiente
+                                </button>
+                            {% endif %}
+                        {% elif can_request_connection %}
+                            <!-- Puede solicitar conexión -->
+                            <button onclick="document.getElementById('connectionModal').classList.remove('hidden')" 
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-user-plus mr-2"></i> Solicitar Conexión
+                            </button>
+                        {% endif %}
                     {% endif %}
                 </div>
             </div>
         </div>
         
-        {% if investor.bio %}
-            <p class="text-gray-300 leading-relaxed">{{ investor.bio }}</p>
+        {% if investor.thesis %}
+            <p class="text-gray-700 leading-relaxed mt-6 border-t border-gray-200 pt-6">{{ investor.thesis }}</p>
         {% endif %}
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-8">
+    <div class="grid lg:grid-cols-3 gap-6">
         <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-8">
-            <!-- Investment Focus -->
-            {% if investor.investment_thesis %}
-                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h2 class="text-xl font-bold mb-4">Tesis de Inversión</h2>
-                    <p class="text-gray-300 leading-relaxed">{{ investor.investment_thesis }}</p>
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Investment Thesis & Sweet Spot -->
+            {% if investor.sweet_spot %}
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Enfoque de Inversión</h2>
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold text-yellow-600 mb-2">Sweet Spot</h3>
+                        <p class="text-gray-700 whitespace-pre-line">{{ investor.sweet_spot }}</p>
+                    </div>
                 </div>
             {% endif %}
 
-            <!-- Industries of Interest -->
-            {% if investor.industries_of_interest.all %}
-                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h2 class="text-xl font-bold mb-4">Sectores de Interés</h2>
+            <!-- Investment Stages -->
+            {% if investor.investment_stages %}
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Etapas de Inversión</h2>
                     <div class="flex flex-wrap gap-2">
-                        {% for industry in investor.industries_of_interest.all %}
-                            <span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full text-sm">
-                                {{ industry.name }}
+                        {% for stage in investor.investment_stages %}
+                            <span class="px-4 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-lg font-medium">
+                                {{ stage|title }}
                             </span>
                         {% endfor %}
                     </div>
                 </div>
             {% endif %}
 
-            <!-- Investment Criteria -->
-            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h2 class="text-xl font-bold mb-4">Criterios de Inversión</h2>
-                <div class="grid md:grid-cols-2 gap-6">
-                    {% if investor.investment_range_min and investor.investment_range_max %}
-                        <div>
-                            <h3 class="text-lg font-semibold text-green-400 mb-2">Rango de Inversión</h3>
-                            <p class="text-gray-300">
-                                ${{ investor.investment_range_min|floatformat:0 }}k - ${{ investor.investment_range_max|floatformat:0 }}k
-                            </p>
-                        </div>
-                    {% endif %}
-                    
-                    {% if investor.preferred_stages.all %}
-                        <div>
-                            <h3 class="text-lg font-semibold text-blue-400 mb-2">Etapas Preferidas</h3>
-                            <div class="flex flex-wrap gap-1">
-                                {% for stage in investor.preferred_stages.all %}
-                                    <span class="text-sm bg-gray-700 text-gray-300 px-2 py-1 rounded">
-                                        {{ stage }}
-                                    </span>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Geographic Focus -->
-            {% if investor.geographic_focus %}
-                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h2 class="text-xl font-bold mb-4">Enfoque Geográfico</h2>
-                    <p class="text-gray-300">{{ investor.geographic_focus }}</p>
+            <!-- Notable Investments -->
+            {% if investor.notable_investments %}
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Inversiones Destacadas</h2>
+                    <p class="text-gray-700 whitespace-pre-line">{{ investor.notable_investments }}</p>
                 </div>
             {% endif %}
+
+            <!-- Investor Profile -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <h2 class="text-xl font-bold text-gray-900 mb-4">Perfil del Inversor</h2>
+                <div class="flex items-center">
+                    {% if investor.user.profile.profile_image %}
+                        <img src="{{ investor.user.profile.profile_image.url }}" 
+                             alt="{{ investor.user.get_full_name }}" 
+                             class="w-16 h-16 rounded-full mr-4 object-cover border-2 border-gray-200">
+                    {% else %}
+                        <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mr-4 border-2 border-gray-200">
+                            <i class="fas fa-user text-white text-xl"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="font-bold text-lg text-gray-900">{{ investor.user.get_full_name }}</h3>
+                        <p class="text-gray-600">Inversor</p>
+                        {% if investor.user.profile.bio %}
+                            <p class="text-sm text-gray-700 mt-1">{{ investor.user.profile.bio|truncatechars:100 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Sidebar -->
         <div class="space-y-6">
-            <!-- Fund Information -->
-            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h3 class="font-bold text-lg mb-4">Información del Fondo</h3>
+            <!-- Key Metrics -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <h3 class="font-bold text-lg text-gray-900 mb-4">Métricas Clave</h3>
                 <div class="space-y-3">
+                    {% if investor.min_investment and investor.max_investment %}
+                        <div class="flex justify-between items-start">
+                            <span class="text-gray-600">Rango de Check:</span>
+                            <span class="font-semibold text-gray-900 text-right text-sm">${{ investor.min_investment|floatformat:0|intcomma }} - ${{ investor.max_investment|floatformat:0|intcomma }}</span>
+                        </div>
+                    {% endif %}
+                    {% if investor.typical_investment %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-600">Inversión Típica:</span>
+                            <span class="font-semibold text-gray-900">${{ investor.typical_investment|floatformat:0|intcomma }}</span>
+                        </div>
+                    {% endif %}
                     {% if investor.fund_size %}
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Tamaño del Fondo:</span>
-                            <span class="font-semibold">${{ investor.fund_size|floatformat:0 }}M</span>
+                            <span class="text-gray-600">Tamaño del Fondo:</span>
+                            <span class="font-semibold text-gray-900">${{ investor.fund_size|floatformat:0|intcomma }}</span>
                         </div>
                     {% endif %}
                     {% if investor.portfolio_companies_count %}
                         <div class="flex justify-between">
-                            <span class="text-gray-400">Portfolio:</span>
-                            <span class="font-semibold">{{ investor.portfolio_companies_count }} empresas</span>
+                            <span class="text-gray-600">Portfolio:</span>
+                            <span class="font-semibold text-gray-900">{{ investor.portfolio_companies_count }} empresas</span>
                         </div>
                     {% endif %}
-                    {% if investor.years_of_experience %}
-                        <div class="flex justify-between">
-                            <span class="text-gray-400">Experiencia:</span>
-                            <span class="font-semibold">{{ investor.years_of_experience }} años</span>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm p-6">
+                <h3 class="font-bold text-lg text-gray-900 mb-4">Información de Contacto</h3>
+                <div class="space-y-3">
+                    {% if investor.user.profile.linkedin_url %}
+                        <a href="{{ investor.user.profile.linkedin_url }}" target="_blank" 
+                           class="flex items-center text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-linkedin mr-2"></i> LinkedIn
+                        </a>
+                    {% endif %}
+                    {% if investor.user.profile.twitter_url %}
+                        <a href="{{ investor.user.profile.twitter_url }}" target="_blank" 
+                           class="flex items-center text-blue-600 hover:text-blue-700">
+                            <i class="fab fa-twitter mr-2"></i> Twitter
+                        </a>
+                    {% endif %}
+                    {% if investor.user.profile.website_url %}
+                        <a href="{{ investor.user.profile.website_url }}" target="_blank" 
+                           class="flex items-center text-blue-600 hover:text-blue-700">
+                            <i class="fas fa-globe mr-2"></i> Sitio Web
+                        </a>
+                    {% endif %}
+                    {% if investor.user.profile.location %}
+                        <div class="flex items-center text-gray-700">
+                            <i class="fas fa-map-marker-alt mr-2"></i> {{ investor.user.profile.location }}
                         </div>
                     {% endif %}
-                    <div class="flex justify-between">
-                        <span class="text-gray-400">Miembro desde:</span>
-                        <span class="font-semibold">{{ investor.created_at|date:"M Y" }}</span>
+                    <div class="flex items-center text-gray-700">
+                        <i class="fas fa-calendar mr-2"></i> 
+                        Miembro desde {{ investor.user.date_joined|date:"M Y" }}
                     </div>
                 </div>
             </div>
 
-            <!-- Contact Information -->
-            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h3 class="font-bold text-lg mb-4">Información de Contacto</h3>
-                <div class="space-y-3">
-                    {% if investor.website %}
-                        <a href="{{ investor.website }}" target="_blank" 
-                           class="flex items-center text-blue-400 hover:text-blue-300">
-                            <i class="fas fa-globe mr-2"></i> Sitio Web
-                        </a>
-                    {% endif %}
-                    {% if investor.linkedin_profile %}
-                        <a href="{{ investor.linkedin_profile }}" target="_blank" 
-                           class="flex items-center text-blue-400 hover:text-blue-300">
-                            <i class="fab fa-linkedin mr-2"></i> LinkedIn
-                        </a>
-                    {% endif %}
-                    {% if investor.location %}
-                        <div class="flex items-center text-gray-300">
-                            <i class="fas fa-map-marker-alt mr-2"></i> {{ investor.location }}
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Investment Activity -->
-            {% if investor.is_actively_investing %}
-                <div class="bg-green-600/20 border border-green-500/30 rounded-xl p-6">
-                    <h3 class="font-bold text-lg mb-4 text-green-400">
-                        <i class="fas fa-check-circle mr-2"></i> Invirtiendo Activamente
+            <!-- Accepting Pitches -->
+            {% if investor.is_accepting_pitches and user.is_authenticated and user.profile.user_type == 'founder' %}
+                <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                    <h3 class="font-bold text-lg mb-4 text-green-700">
+                        <i class="fas fa-check-circle mr-2"></i> Aceptando Pitches
                     </h3>
-                    <p class="text-gray-300 text-sm mb-3">
-                        Este inversor está buscando activamente nuevas oportunidades de inversión.
+                    <p class="text-gray-700 mb-3">
+                        {{ investor.user.get_full_name }} está abierto a recibir propuestas
                     </p>
-                    {% if user.is_authenticated and user.profile.user_type == 'founder' %}
-                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition">
-                            Enviar Pitch
+                    {% if is_connected %}
+                        <a href="{% url 'core:messages_inbox' %}" 
+                           class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition-colors block text-center">
+                            Enviar Propuesta
+                        </a>
+                    {% else %}
+                        <button onclick="document.getElementById('connectionModal').classList.remove('hidden')" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition-colors">
+                            Conectar para Enviar Pitch
                         </button>
                     {% endif %}
-                </div>
-            {% endif %}
-
-            <!-- Notable Investments -->
-            {% if investor.notable_investments %}
-                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h3 class="font-bold text-lg mb-4">Inversiones Destacadas</h3>
-                    <p class="text-gray-300 text-sm">{{ investor.notable_investments }}</p>
                 </div>
             {% endif %}
         </div>
     </div>
 </div>
+
+<!-- Modal de Solicitud de Conexión -->
+<div id="connectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-xl p-8 max-w-md w-full mx-4 border border-gray-200 shadow-xl">
+        <h3 class="text-2xl font-bold text-gray-900 mb-4">Solicitar Conexión</h3>
+        <p class="text-gray-700 mb-6">Envía una solicitud de conexión a {{ investor.user.get_full_name }}</p>
+        
+        <form action="{% url 'core:send_connection_request' investor.user.id %}" method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                    Mensaje personalizado (opcional)
+                </label>
+                <textarea name="message" id="message" rows="4" 
+                          class="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Cuéntale por qué quieres conectar..."></textarea>
+            </div>
+            
+            <div class="flex gap-3">
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-paper-plane mr-2"></i> Enviar Solicitud
+                </button>
+                <button type="button" 
+                        onclick="document.getElementById('connectionModal').classList.add('hidden')"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg font-medium transition-colors">
+                    Cancelar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% endblock %}
 {% endblock %}

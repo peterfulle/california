@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Mensajes - StartupConnect{% endblock %}
+
+{% block dashboard_content %}
+{% block public_content %}
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+    <div class="flex items-center justify-between">
+        <h1 class="text-3xl font-bold text-gray-900 flex items-center gap-2">
+            <i class="fas fa-comments text-blue-600"></i>
+            Mensajes
+        </h1>
+        <a href="{% url 'core:my_connections' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+            <i class="fas fa-users mr-2"></i> Ver Conexiones
+        </a>
+    </div>
+
+    {% if conversations %}
+        <div class="space-y-4">
+            {% for conv_data in conversations %}
+                <a href="{% url 'core:conversation_detail' conv_data.conversation.id %}" 
+                   class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:border-blue-500 hover:shadow-md transition-all block">
+                    <div class="flex items-start gap-4">
+                        <!-- Avatar del otro usuario -->
+                        {% if conv_data.other_user.profile.profile_image %}
+                            <img src="{{ conv_data.other_user.profile.profile_image.url }}" 
+                                 alt="{{ conv_data.other_user.get_full_name }}"
+                                 class="w-16 h-16 rounded-full object-cover border-2 border-gray-200">
+                        {% else %}
+                            <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center border-2 border-gray-200">
+                                <i class="fas fa-user text-white text-xl"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between mb-2">
+                                <div class="flex-1">
+                                    <h3 class="font-bold text-lg text-gray-900 flex items-center gap-2">
+                                        {{ conv_data.other_user.get_full_name }}
+                                        {% if conv_data.unread_count > 0 %}
+                                            <span class="bg-blue-600 text-white text-xs px-2 py-1 rounded-full">
+                                                {{ conv_data.unread_count }}
+                                            </span>
+                                        {% endif %}
+                                    </h3>
+                                    <p class="text-sm text-gray-600">
+                                        {% if conv_data.other_user.profile.user_type == 'founder' %}
+                                            <i class="fas fa-rocket mr-1"></i> Founder
+                                        {% elif conv_data.other_user.profile.user_type == 'investor' %}
+                                            <i class="fas fa-user-tie mr-1"></i> Investor
+                                        {% else %}
+                                            {{ conv_data.other_user.profile.get_user_type_display }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                <span class="text-xs text-gray-500">
+                                    {% if conv_data.last_message %}
+                                        hace {{ conv_data.last_message.created_at|timesince }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            
+                            {% if conv_data.last_message %}
+                                <p class="text-gray-700 text-sm truncate">
+                                    {% if conv_data.last_message.sender == user %}
+                                        <span class="text-gray-500 font-medium">Tú:</span>
+                                    {% endif %}
+                                    {{ conv_data.last_message.content|truncatewords:15 }}
+                                </p>
+                            {% else %}
+                                <p class="text-gray-500 text-sm italic">No hay mensajes aún</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="bg-white rounded-xl p-12 border border-gray-200 shadow-sm text-center">
+            <i class="fas fa-comments text-6xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">No tienes conversaciones</h3>
+            <p class="text-gray-600 mb-6">Conecta con inversores o startups para comenzar a chatear</p>
+            <a href="{% url 'core:investor_directory' %}" 
+               class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
+                <i class="fas fa-search mr-2"></i> Buscar Inversores
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+{% endblock %}
+{% endblock %}

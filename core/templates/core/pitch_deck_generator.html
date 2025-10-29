@@ -11,308 +11,97 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         padding: 3rem;
         min-height: 400px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .slide-preview::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-    }
-    
-    .slide-nav-btn {
-        transition: all 0.3s ease;
-    }
-    
-    .slide-nav-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-    }
-    
-    .slide-nav-btn.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
     }
     
     .generate-btn {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        transition: all 0.3s ease;
     }
     
-    .generate-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    .slide-nav-item {
+        cursor: pointer;
+        transition: all 0.2s;
     }
     
-    .loading-spinner {
-        border: 3px solid #f3f4f6;
-        border-top: 3px solid #667eea;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
+    .slide-nav-item.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
     }
     
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .slide-nav-item:hover {
+        background: #f3f4f6;
     }
     
-    .slide-content {
-        animation: fadeIn 0.5s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+    .slide-nav-item.active:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 </style>
 {% endblock %}
 
 {% block dashboard_content %}
-<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8" x-data="pitchDeckGenerator()" x-init="loadFromLocalStorage()">
+<div class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Header -->
         <div class="mb-8">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-4xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent mb-2">
+                    <h1 class="text-4xl font-bold text-gray-900 mb-2">
                         <i class="fas fa-magic text-indigo-600 mr-3"></i>
                         AI Pitch Deck Generator
                     </h1>
                     <p class="text-lg text-gray-600">
-                        Crea un pitch deck profesional estilo Sequoia Capital para <span class="font-semibold text-indigo-600">{{ startup.company_name }}</span>
+                        {{ startup.company_name }}
                     </p>
                 </div>
-                <div class="flex space-x-3">
-                    <a href="{% url 'core:startup_profile' startup.id %}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Volver al Perfil
-                    </a>
-                    <button @click="exportToPDF()" class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:shadow-lg transition-all">
-                        <i class="fas fa-file-pdf mr-2"></i>
-                        Export PDF
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Slide Navigation -->
-        <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 mb-8 shadow-lg">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-lg font-semibold text-gray-800">Slides del Pitch Deck</h2>
-                <div class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium">
-                    <span x-text="completedSlides()"></span>/<span x-text="slides.length"></span> completadas
-                </div>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-                <template x-for="(slide, index) in slides" :key="slide.type">
-                    <button 
-                        @click="currentSlide = index"
-                        :class="{'active': currentSlide === index, 'border-green-400 bg-green-50': slide.content !== null}"
-                        class="slide-nav-btn px-4 py-3 rounded-lg border-2 border-gray-200 text-sm font-medium hover:border-indigo-500 transition-all relative">
-                        <div class="flex flex-col items-center">
-                            <i :class="slide.icon" class="text-xl mb-2"></i>
-                            <span x-text="slide.title"></span>
-                            <!-- Checkmark para slides completadas -->
-                            <i x-show="slide.content !== null" class="fas fa-check-circle absolute top-1 right-1 text-green-500 text-xs"></i>
-                        </div>
-                    </button>
-                </template>
+                <a href="{% url 'core:startup_profile' startup.id %}" class="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Volver
+                </a>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            <!-- Slide Preview (Left/Center - 2/3) -->
+            <!-- Slide Preview -->
             <div class="lg:col-span-2">
-                <div class="slide-preview">
-                    <!-- Loading State -->
-                    <div x-show="isLoading" class="flex flex-col items-center justify-center h-full">
-                        <div class="loading-spinner"></div>
-                        <p class="mt-4 text-gray-600">Generando contenido con IA...</p>
-                    </div>
-                    
-                    <!-- Slide Content -->
-                    <div x-show="!isLoading" class="slide-content">
-                        <template x-if="getCurrentSlide().content">
-                            <!-- Company Purpose Slide -->
-                            <div x-show="getCurrentSlide().type === 'company_purpose'">
-                                <div class="text-center mb-8">
-                                    <div class="inline-block px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium mb-4">
-                                        {{ startup.company_name }}
-                                    </div>
-                                </div>
-                                <h2 class="text-4xl font-bold text-center mb-4" x-text="getCurrentSlide().content?.headline || 'Headline'"></h2>
-                                <p class="text-xl text-gray-600 text-center mb-8" x-text="getCurrentSlide().content?.subheadline || 'Subheadline'"></p>
-                                <div class="space-y-4 max-w-2xl mx-auto">
-                                    <template x-for="bullet in getCurrentSlide().content?.bullets || []">
-                                        <div class="flex items-start">
-                                            <i class="fas fa-check-circle text-indigo-600 mt-1 mr-3"></i>
-                                            <span class="text-lg text-gray-700" x-text="bullet"></span>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                            
-                            <!-- Problem Slide -->
-                            <div x-show="getCurrentSlide().type === 'problem'">
-                                <h2 class="text-3xl font-bold mb-6 text-red-600" x-text="getCurrentSlide().content?.title || 'The Problem'"></h2>
-                                <p class="text-lg text-gray-700 mb-6" x-text="getCurrentSlide().content?.problem_statement"></p>
-                                <div class="space-y-3 mb-6">
-                                    <template x-for="point in getCurrentSlide().content?.pain_points || []">
-                                        <div class="flex items-start">
-                                            <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-3"></i>
-                                            <span class="text-gray-700" x-text="point"></span>
-                                        </div>
-                                    </template>
-                                </div>
-                                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
-                                    <p class="font-semibold text-red-800" x-text="getCurrentSlide().content?.market_impact"></p>
-                                </div>
-                            </div>
-                            
-                            <!-- Solution Slide -->
-                            <div x-show="getCurrentSlide().type === 'solution'">
-                                <h2 class="text-3xl font-bold mb-6 text-green-600" x-text="getCurrentSlide().content?.title || 'Our Solution'"></h2>
-                                <p class="text-lg text-gray-700 mb-6" x-text="getCurrentSlide().content?.solution_overview"></p>
-                                <div class="grid grid-cols-2 gap-4 mb-6">
-                                    <template x-for="feature in getCurrentSlide().content?.key_features || []">
-                                        <div class="bg-green-50 p-4 rounded-lg">
-                                            <i class="fas fa-star text-green-600 mb-2"></i>
-                                            <p class="text-gray-700" x-text="feature"></p>
-                                        </div>
-                                    </template>
-                                </div>
-                                <div class="bg-gradient-to-r from-green-100 to-emerald-100 p-4 rounded-lg">
-                                    <p class="font-semibold text-green-800" x-text="getCurrentSlide().content?.differentiator"></p>
-                                </div>
-                            </div>
-                            
-                            <!-- Default Content for other slides -->
-                            <div x-show="!['company_purpose', 'problem', 'solution'].includes(getCurrentSlide().type)">
-                                <h2 class="text-3xl font-bold mb-6" x-text="getCurrentSlide().content?.title || getCurrentSlide().title"></h2>
-                                <div class="prose max-w-none">
-                                    <pre x-text="JSON.stringify(getCurrentSlide().content, null, 2)" class="bg-gray-100 p-4 rounded text-sm overflow-auto"></pre>
-                                </div>
-                            </div>
-                        </template>
-                        
-                        <!-- Empty State -->
-                        <template x-if="!getCurrentSlide().content">
-                            <div class="text-center py-16">
-                                <i class="fas fa-file-powerpoint text-6xl text-gray-300 mb-4"></i>
-                                <h3 class="text-xl font-semibold text-gray-600 mb-2">Este slide aún no ha sido generado</h3>
-                                <p class="text-gray-500 mb-6">Haz clic en "Generar Slide" para crear el contenido con IA</p>
-                            </div>
-                        </template>
+                <div class="slide-preview" id="slideContent">
+                    <div class="text-center py-16">
+                        <p class="text-gray-500">Selecciona un slide o genera contenido</p>
                     </div>
                 </div>
                 
-                <!-- Navigation Buttons -->
                 <div class="flex justify-between mt-6">
-                    <button 
-                        @click="previousSlide()"
-                        :disabled="currentSlide === 0"
-                        :class="{'opacity-50 cursor-not-allowed': currentSlide === 0}"
-                        class="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium hover:border-indigo-500 transition-all">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Anterior
+                    <button onclick="app.previousSlide()" class="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium">
+                        <i class="fas fa-arrow-left mr-2"></i> Anterior
                     </button>
-                    <button 
-                        @click="nextSlide()"
-                        :disabled="currentSlide === slides.length - 1"
-                        :class="{'opacity-50 cursor-not-allowed': currentSlide === slides.length - 1}"
-                        class="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium hover:border-indigo-500 transition-all">
-                        Siguiente
-                        <i class="fas fa-arrow-right ml-2"></i>
+                    <button onclick="app.nextSlide()" class="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-medium">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
                     </button>
                 </div>
             </div>
             
-            <!-- Controls Panel (Right - 1/3) -->
+            <!-- Controls -->
             <div class="lg:col-span-1">
-                <div class="bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg sticky top-8">
-                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
-                        <i class="fas fa-cog mr-2 text-indigo-600"></i>
-                        Controles
-                    </h3>
+                <div class="bg-white rounded-2xl p-6 shadow-lg">
+                    <h3 class="text-xl font-bold mb-4">Slides</h3>
                     
-                    <!-- Generate Button -->
-                    <button 
-                        @click="generateSlide()"
-                        :disabled="isLoading"
-                        class="generate-btn w-full py-3 px-6 text-white rounded-lg font-semibold mb-4 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <div id="slideNav" class="space-y-2 mb-6">
+                        <!-- Se llenará con JS -->
+                    </div>
+                    
+                    <button onclick="app.generateSlide()" class="generate-btn w-full py-3 px-6 text-white rounded-lg font-semibold mb-4">
                         <i class="fas fa-magic mr-2"></i>
                         Generar Este Slide
                     </button>
                     
-                    <!-- Generate All Button -->
-                    <button 
-                        @click="generateAllSlides()"
-                        :disabled="isLoading"
-                        class="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg font-semibold mb-4 hover:shadow-lg transition-all disabled:opacity-50">
-                        <i class="fas fa-bolt mr-2"></i>
-                        Generar Todos los Slides
-                    </button>
+                    <textarea 
+                        id="customInstructions"
+                        rows="4"
+                        class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg mb-4"
+                        placeholder="Instrucciones personalizadas..."></textarea>
                     
-                    <!-- Clear Button -->
-                    <button 
-                        @click="clearLocalStorage()"
-                        :disabled="isLoading"
-                        class="w-full py-2 px-4 bg-red-50 text-red-600 border border-red-200 rounded-lg font-medium mb-6 hover:bg-red-100 transition-all disabled:opacity-50">
-                        <i class="fas fa-trash-alt mr-2"></i>
-                        Borrar Todas las Slides
-                    </button>
-                    
-                    <!-- Custom Instructions -->
-                    <div class="mb-6">
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Instrucciones Personalizadas (Opcional)
-                        </label>
-                        <textarea 
-                            x-model="customInstructions"
-                            rows="4"
-                            class="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors"
-                            placeholder="Ej: Enfócate en el aspecto social, menciona nuestra tecnología patentada..."></textarea>
-                        <p class="text-xs text-gray-500 mt-1">El AI usará esto para personalizar el contenido</p>
-                    </div>
-                    
-                    <!-- Slide Info -->
-                    <div class="bg-indigo-50 rounded-lg p-4 mb-4">
-                        <h4 class="font-semibold text-indigo-900 mb-2" x-text="getCurrentSlide().title"></h4>
-                        <p class="text-sm text-indigo-700" x-text="getCurrentSlide().description"></p>
-                    </div>
-                    
-                    <!-- Progress -->
-                    <div class="mb-4">
-                        <div class="flex justify-between text-sm text-gray-600 mb-2">
-                            <span>Progreso</span>
-                            <span x-text="`${completedSlides()}/${slides.length}`"></span>
-                        </div>
-                        <div class="w-full bg-gray-200 rounded-full h-2">
-                            <div 
-                                class="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full transition-all duration-300"
-                                :style="`width: ${(completedSlides() / slides.length) * 100}%`">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Tips -->
-                    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                        <div class="flex">
-                            <i class="fas fa-lightbulb text-yellow-600 mt-1 mr-3"></i>
-                            <div>
-                                <h4 class="font-semibold text-yellow-900 text-sm mb-1">💡 Tip</h4>
-                                <p class="text-xs text-yellow-800">Usa instrucciones personalizadas para que el AI ajuste el contenido a tu visión específica.</p>
-                            </div>
-                        </div>
+                    <div class="text-sm text-gray-600">
+                        Progreso: <span id="progress">0/11</span>
                     </div>
                 </div>
             </div>
@@ -321,198 +110,400 @@
 </div>
 
 <script>
-function pitchDeckGenerator() {
-    return {
-        currentSlide: 0,
-        isLoading: false,
-        customInstructions: '',
-        slides: [
-            {
-                type: 'company_purpose',
-                title: 'Company Purpose',
-                icon: 'fas fa-bullseye',
-                description: 'La razón de ser de tu startup - por qué existe',
-                content: null
-            },
-            {
-                type: 'problem',
-                title: 'Problem',
-                icon: 'fas fa-exclamation-triangle',
-                description: 'El problema que estás resolviendo',
-                content: null
-            },
-            {
-                type: 'solution',
-                title: 'Solution',
-                icon: 'fas fa-lightbulb',
-                description: 'Cómo resuelves el problema',
-                content: null
-            },
-            {
-                type: 'market_opportunity',
-                title: 'Market',
-                icon: 'fas fa-chart-line',
-                description: 'Tamaño y oportunidad del mercado',
-                content: null
-            },
-            {
-                type: 'product',
-                title: 'Product',
-                icon: 'fas fa-box',
-                description: 'Tu producto o servicio',
-                content: null
-            },
-            {
-                type: 'business_model',
-                title: 'Business Model',
-                icon: 'fas fa-dollar-sign',
-                description: 'Cómo generas dinero',
-                content: null
-            },
-            {
-                type: 'traction',
-                title: 'Traction',
-                icon: 'fas fa-rocket',
-                description: 'Métricas y logros',
-                content: null
-            },
-            {
-                type: 'competition',
-                title: 'Competition',
-                icon: 'fas fa-chess',
-                description: 'Landscape competitivo',
-                content: null
-            },
-            {
-                type: 'team',
-                title: 'Team',
-                icon: 'fas fa-users',
-                description: 'Tu equipo y experiencia',
-                content: null
-            },
-            {
-                type: 'financials',
-                title: 'Financials',
-                icon: 'fas fa-chart-bar',
-                description: 'Proyecciones financieras',
-                content: null
-            },
-            {
-                type: 'ask',
-                title: 'The Ask',
-                icon: 'fas fa-handshake',
-                description: 'Qué estás buscando',
-                content: null
-            }
-        ],
-        
-        loadFromLocalStorage() {
-            const storageKey = 'pitch_deck_{{ startup.id }}';
-            const savedData = localStorage.getItem(storageKey);
-            
-            if (savedData) {
-                try {
-                    const parsed = JSON.parse(savedData);
-                    // Restaurar solo el contenido de cada slide
-                    parsed.forEach((savedSlide, index) => {
-                        if (this.slides[index] && savedSlide.content) {
-                            this.slides[index].content = savedSlide.content;
-                        }
-                    });
-                    console.log('✅ Slides cargadas desde localStorage:', this.completedSlides(), 'slides');
-                } catch (error) {
-                    console.error('Error al cargar slides:', error);
-                }
-            }
-        },
-        
-        saveToLocalStorage() {
-            const storageKey = 'pitch_deck_{{ startup.id }}';
-            localStorage.setItem(storageKey, JSON.stringify(this.slides));
-            console.log('💾 Slides guardadas en localStorage');
-        },
-        
-        clearLocalStorage() {
-            if (confirm('¿Borrar todos los slides guardados? Esta acción no se puede deshacer.')) {
-                const storageKey = 'pitch_deck_{{ startup.id }}';
-                localStorage.removeItem(storageKey);
-                this.slides.forEach(slide => slide.content = null);
-                alert('✅ Slides borradas');
-            }
-        },
-        
-        getCurrentSlide() {
-            return this.slides[this.currentSlide];
-        },
-        
-        nextSlide() {
-            if (this.currentSlide < this.slides.length - 1) {
-                this.currentSlide++;
-            }
-        },
-        
-        previousSlide() {
-            if (this.currentSlide > 0) {
-                this.currentSlide--;
-            }
-        },
-        
-        completedSlides() {
-            return this.slides.filter(s => s.content !== null).length;
-        },
-        
-        async generateSlide() {
-            const slide = this.getCurrentSlide();
-            this.isLoading = true;
-            
+const app = {
+    currentSlide: 0,
+    slides: [
+        { type: 'company_purpose', title: 'Company Purpose', content: null },
+        { type: 'problem', title: 'Problem', content: null },
+        { type: 'solution', title: 'Solution', content: null },
+        { type: 'market_opportunity', title: 'Market', content: null },
+        { type: 'product', title: 'Product', content: null },
+        { type: 'business_model', title: 'Business Model', content: null },
+        { type: 'traction', title: 'Traction', content: null },
+        { type: 'competition', title: 'Competition', content: null },
+        { type: 'team', title: 'Team', content: null },
+        { type: 'financials', title: 'Financials', content: null },
+        { type: 'ask', title: 'The Ask', content: null }
+    ],
+    
+    init() {
+        this.loadFromStorage();
+        this.renderNav();
+        this.renderSlide();
+    },
+    
+    loadFromStorage() {
+        const saved = localStorage.getItem('pitch_deck_{{ startup.id }}');
+        if (saved) {
             try {
-                const response = await fetch('{% url "core:generate_pitch_deck_slide" startup.id %}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': '{{ csrf_token }}'
-                    },
-                    body: JSON.stringify({
-                        slide_type: slide.type,
-                        custom_instructions: this.customInstructions
-                    })
+                const data = JSON.parse(saved);
+                data.forEach((saved, i) => {
+                    if (this.slides[i] && saved.content) {
+                        this.slides[i].content = saved.content;
+                    }
                 });
-                
-                const data = await response.json();
-                
-                if (data.success) {
-                    slide.content = data.content;
-                    this.saveToLocalStorage(); // Guardar después de generar
-                    console.log('Slide generado:', data);
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error al generar el slide');
-            } finally {
-                this.isLoading = false;
+                console.log('✅ Loaded from storage');
+            } catch (e) {
+                console.error('Error loading:', e);
             }
-        },
+        }
+    },
+    
+    saveToStorage() {
+        localStorage.setItem('pitch_deck_{{ startup.id }}', JSON.stringify(this.slides));
+        console.log('💾 Saved');
+    },
+    
+    renderNav() {
+        const nav = document.getElementById('slideNav');
+        nav.innerHTML = this.slides.map((slide, i) => `
+            <div onclick="app.goToSlide(${i})" 
+                 class="slide-nav-item px-4 py-2 rounded-lg text-sm font-medium ${i === this.currentSlide ? 'active' : 'bg-gray-50'}">
+                ${slide.title}
+                ${slide.content ? '<span class="ml-2 text-green-500">✓</span>' : ''}
+            </div>
+        `).join('');
         
-        async generateAllSlides() {
-            if (!confirm('¿Generar todos los slides? Esto puede tomar algunos minutos.')) {
-                return;
-            }
-            
-            for (let i = 0; i < this.slides.length; i++) {
-                this.currentSlide = i;
-                await this.generateSlide();
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Delay between slides
-            }
-            
-            alert('✅ Todos los slides han sido generados!');
-        },
+        const completed = this.slides.filter(s => s.content).length;
+        document.getElementById('progress').textContent = `${completed}/11`;
+    },
+    
+    renderSlide() {
+        const slide = this.slides[this.currentSlide];
+        const content = document.getElementById('slideContent');
         
-        exportToPDF() {
-            alert('Exportación a PDF en desarrollo. Por ahora puedes usar Imprimir (Ctrl+P) para cada slide.');
+        console.log('🎯 Rendering slide:', this.currentSlide, slide.type);
+        console.log('📦 Slide content:', slide.content);
+        
+        if (!slide.content) {
+            console.log('⚠️ No content for this slide');
+            content.innerHTML = `
+                <div class="text-center py-16">
+                    <i class="fas fa-file-powerpoint text-6xl text-gray-300 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Este slide no ha sido generado</h3>
+                    <p class="text-gray-500">Haz clic en "Generar Este Slide"</p>
+                </div>
+            `;
+            return;
+        }
+        
+        console.log('✅ Rendering content for type:', slide.type);
+        
+        // Renderizar según el tipo
+        if (slide.type === 'company_purpose') {
+            content.innerHTML = `
+                <div class="text-center mb-8">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-4">${slide.content.title || 'Company Purpose'}</h2>
+                    <p class="text-xl text-gray-700 leading-relaxed">${slide.content.mission || ''}</p>
+                </div>
+                <div class="border-t-2 border-gray-200 pt-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-3">Vision</h3>
+                    <p class="text-gray-700">${slide.content.vision || ''}</p>
+                </div>
+            `;
+        } else if (slide.type === 'problem') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Problem'}</h2>
+                <div class="bg-gray-50 border-l-4 border-gray-900 p-6 mb-6">
+                    <p class="text-lg text-gray-800 leading-relaxed">${slide.content.problem_statement || ''}</p>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Pain Points</h3>
+                <div class="space-y-3">
+                    ${(slide.content.pain_points || []).map(point => `
+                        <div class="flex items-start">
+                            <span class="text-gray-900 font-bold mr-3">•</span>
+                            <p class="text-gray-700">${point}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                ${slide.content.market_impact ? `
+                    <div class="mt-6 bg-white border-2 border-gray-200 p-4 rounded-lg">
+                        <p class="text-sm font-semibold text-gray-900 mb-2">Market Impact</p>
+                        <p class="text-gray-700">${slide.content.market_impact}</p>
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'solution') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Solution'}</h2>
+                <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <p class="text-lg text-gray-800 leading-relaxed">${slide.content.solution_overview || ''}</p>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">Key Features</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${(slide.content.key_features || []).map(feature => `
+                        <div class="bg-white border border-gray-200 p-4 rounded-lg">
+                            <p class="text-gray-800">${feature}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                ${slide.content.unique_value_proposition ? `
+                    <div class="mt-6 bg-gray-900 text-white p-6 rounded-lg">
+                        <p class="text-sm font-semibold mb-2">Unique Value Proposition</p>
+                        <p class="text-lg">${slide.content.unique_value_proposition}</p>
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'market_opportunity') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Market Opportunity'}</h2>
+                <div class="grid grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gray-50 p-6 rounded-lg text-center border-2 border-gray-200">
+                        <div class="text-sm font-bold text-gray-900 mb-2">TAM</div>
+                        <div class="text-2xl font-bold text-gray-800">${slide.content.tam || 'N/A'}</div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg text-center border-2 border-gray-200">
+                        <div class="text-sm font-bold text-gray-900 mb-2">SAM</div>
+                        <div class="text-2xl font-bold text-gray-800">${slide.content.sam || 'N/A'}</div>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-lg text-center border-2 border-gray-200">
+                        <div class="text-sm font-bold text-gray-900 mb-2">SOM</div>
+                        <div class="text-2xl font-bold text-gray-800">${slide.content.som || 'N/A'}</div>
+                    </div>
+                </div>
+                ${slide.content.growth_rate ? `
+                    <div class="bg-gray-50 border-l-4 border-gray-900 p-4 mb-4">
+                        <p class="font-semibold text-gray-900 mb-2">Growth Rate</p>
+                        <p class="text-gray-800">${slide.content.growth_rate}</p>
+                    </div>
+                ` : ''}
+                ${slide.content.insight ? `
+                    <div class="bg-white border-2 border-gray-200 p-4 rounded-lg">
+                        <p class="text-gray-700">${slide.content.insight}</p>
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'product') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Product'}</h2>
+                <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <p class="text-lg text-gray-800">${slide.content.product_description || ''}</p>
+                </div>
+                ${slide.content.key_capabilities ? `
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Key Capabilities</h3>
+                    <div class="space-y-3 mb-6">
+                        ${(slide.content.key_capabilities || []).map(cap => `
+                            <div class="bg-white border-l-4 border-gray-900 p-4">
+                                <p class="text-gray-800">${cap}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                ${slide.content.technology_stack ? `
+                    <div class="bg-gray-900 text-white p-6 rounded-lg">
+                        <p class="text-sm font-semibold mb-2">Technology Stack</p>
+                        <p>${slide.content.technology_stack}</p>
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'business_model') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Business Model'}</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    ${slide.content.revenue_streams ? `
+                        <div class="bg-gray-50 p-6 rounded-lg border-2 border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-3">Revenue Streams</h3>
+                            <div class="space-y-2">
+                                ${(slide.content.revenue_streams || []).map(stream => `
+                                    <p class="text-gray-700">• ${stream}</p>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    ${slide.content.pricing_strategy ? `
+                        <div class="bg-gray-50 p-6 rounded-lg border-2 border-gray-200">
+                            <h3 class="text-lg font-bold text-gray-900 mb-3">Pricing Strategy</h3>
+                            <p class="text-gray-700">${slide.content.pricing_strategy}</p>
+                        </div>
+                    ` : ''}
+                </div>
+                ${slide.content.unit_economics ? `
+                    <div class="bg-white border-2 border-gray-900 p-6 rounded-lg">
+                        <h3 class="text-lg font-bold text-gray-900 mb-3">Unit Economics</h3>
+                        <p class="text-gray-700">${slide.content.unit_economics}</p>
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'traction') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Traction'}</h2>
+                ${slide.content.key_metrics ? `
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        ${(slide.content.key_metrics || []).map(metric => `
+                            <div class="bg-gray-50 p-4 rounded-lg text-center border-2 border-gray-200">
+                                <p class="text-sm text-gray-600 mb-1">${metric.label || ''}</p>
+                                <p class="text-2xl font-bold text-gray-900">${metric.value || ''}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                ${slide.content.milestones ? `
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Milestones</h3>
+                    <div class="space-y-3">
+                        ${(slide.content.milestones || []).map(milestone => `
+                            <div class="bg-white border-l-4 border-gray-900 p-4">
+                                <p class="text-gray-800">${milestone}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'competition') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Competition'}</h2>
+                ${slide.content.competitive_advantage ? `
+                    <div class="bg-gray-900 text-white p-6 rounded-lg mb-6">
+                        <h3 class="text-lg font-semibold mb-3">Competitive Advantage</h3>
+                        <p class="text-lg">${slide.content.competitive_advantage}</p>
+                    </div>
+                ` : ''}
+                ${slide.content.competitors ? `
+                    <h3 class="text-xl font-semibold text-gray-900 mb-4">Key Competitors</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${(slide.content.competitors || []).map(comp => `
+                            <div class="bg-gray-50 border border-gray-200 p-4 rounded-lg">
+                                <p class="font-semibold text-gray-900 mb-2">${comp.name || ''}</p>
+                                <p class="text-sm text-gray-700">${comp.weakness || ''}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'team') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Team'}</h2>
+                ${slide.content.team_members ? `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        ${(slide.content.team_members || []).map(member => `
+                            <div class="bg-gray-50 p-6 rounded-lg border-2 border-gray-200">
+                                <h3 class="text-lg font-bold text-gray-900 mb-1">${member.name || ''}</h3>
+                                <p class="text-sm font-semibold text-gray-600 mb-3">${member.role || ''}</p>
+                                <p class="text-gray-700 text-sm">${member.background || ''}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'financials') {
+            content.innerHTML = `
+                <h2 class="text-3xl font-bold text-gray-900 mb-6">${slide.content.title || 'Financials'}</h2>
+                ${slide.content.projections ? `
+                    <div class="bg-gray-50 p-6 rounded-lg mb-6 border-2 border-gray-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Projections</h3>
+                        <div class="space-y-3">
+                            ${(slide.content.projections || []).map(proj => `
+                                <div class="flex justify-between items-center bg-white p-3 rounded">
+                                    <span class="font-semibold text-gray-900">${proj.year || ''}</span>
+                                    <span class="text-lg font-bold text-gray-900">${proj.revenue || ''}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                ${slide.content.use_of_funds ? `
+                    <div class="bg-white border-2 border-gray-900 p-6 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-3">Use of Funds</h3>
+                        <div class="space-y-2">
+                            ${(slide.content.use_of_funds || []).map(item => `
+                                <p class="text-gray-700">• ${item}</p>
+                            `).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        } else if (slide.type === 'ask') {
+            content.innerHTML = `
+                <div class="text-center">
+                    <h2 class="text-4xl font-bold text-gray-900 mb-8">${slide.content.title || 'The Ask'}</h2>
+                    ${slide.content.funding_amount ? `
+                        <div class="bg-gray-900 text-white p-8 rounded-lg mb-6">
+                            <p class="text-sm font-semibold mb-2">Seeking</p>
+                            <p class="text-5xl font-bold">${slide.content.funding_amount}</p>
+                        </div>
+                    ` : ''}
+                    ${slide.content.purpose ? `
+                        <div class="bg-gray-50 p-6 rounded-lg mb-6 border-2 border-gray-200">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Purpose</h3>
+                            <p class="text-gray-700">${slide.content.purpose}</p>
+                        </div>
+                    ` : ''}
+                    ${slide.content.timeline ? `
+                        <div class="bg-white border-2 border-gray-200 p-6 rounded-lg">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Timeline</h3>
+                            <p class="text-gray-700">${slide.content.timeline}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        } else {
+            // Default view - mostrar JSON
+            content.innerHTML = `
+                <h2 class="text-2xl font-bold mb-4">${slide.title}</h2>
+                <pre class="bg-gray-100 p-4 rounded text-sm overflow-auto">${JSON.stringify(slide.content, null, 2)}</pre>
+            `;
+        }
+        
+        this.renderNav();
+    },
+    
+    goToSlide(index) {
+        this.currentSlide = index;
+        this.renderSlide();
+    },
+    
+    nextSlide() {
+        if (this.currentSlide < this.slides.length - 1) {
+            this.currentSlide++;
+            this.renderSlide();
+        }
+    },
+    
+    previousSlide() {
+        if (this.currentSlide > 0) {
+            this.currentSlide--;
+            this.renderSlide();
+        }
+    },
+    
+    async generateSlide() {
+        const slide = this.slides[this.currentSlide];
+        const instructions = document.getElementById('customInstructions').value;
+        
+        const content = document.getElementById('slideContent');
+        content.innerHTML = '<div class="text-center py-16"><div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div><p class="mt-4 text-gray-600">Generando...</p></div>';
+        
+        try {
+            const response = await fetch('{% url "core:generate_pitch_deck_slide" startup.id %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    slide_type: slide.type,
+                    custom_instructions: instructions
+                })
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                slide.content = data.content;
+                this.saveToStorage();
+                this.renderSlide();
+            } else {
+                alert('Error: ' + data.error);
+                this.renderSlide();
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al generar el slide');
+            this.renderSlide();
         }
     }
-}
+};
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => app.init());
 </script>
 {% endblock %}
