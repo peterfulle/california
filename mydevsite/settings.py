@@ -191,19 +191,23 @@ LOGGING = {
 # ===================================
 ASGI_APPLICATION = 'mydevsite.asgi.application'
 
-# Channel layers para Redis (en desarrollo usaremos in-memory)
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer'
-    }
-}
+# Channel layers - Redis en producción, InMemory en desarrollo
+REDIS_URL = os.getenv('REDIS_URL', None)
 
-# Para producción, usar Redis:
-# CHANNEL_LAYERS = {
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)],
-#         },
-#     },
-# }
+if REDIS_URL:
+    # Producción (Render con Redis)
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels_redis.core.RedisChannelLayer',
+            'CONFIG': {
+                "hosts": [REDIS_URL],
+            },
+        },
+    }
+else:
+    # Desarrollo (InMemory)
+    CHANNEL_LAYERS = {
+        'default': {
+            'BACKEND': 'channels.layers.InMemoryChannelLayer'
+        }
+    }
