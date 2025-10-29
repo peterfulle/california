@@ -71,4 +71,10 @@ urlpatterns = [
     path('notifications/read/<int:notification_id>/', views.mark_notification_read, name='mark_notification_read'),
     path('notifications/delete/<int:notification_id>/', views.delete_notification, name='delete_notification'),
     path('notifications/mark-all-read/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
+    
+    # Google Meet Integration
+    path('messages/<int:conversation_id>/meet/toggle/', views.toggle_meet_in_conversation, name='toggle_meet'),
+    path('messages/<int:conversation_id>/meet/create/', views.create_meet_link, name='create_meet_link'),
+    path('messages/<int:conversation_id>/meet/join/', views.join_meet, name='join_meet'),
+    path('messages/<int:conversation_id>/meet/end/', views.end_meet, name='end_meet'),
 ]

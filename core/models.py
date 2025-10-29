@@ -1174,6 +1174,12 @@ class Conversation(models.Model):
     p1_last_read = models.DateTimeField(null=True, blank=True)
     p2_last_read = models.DateTimeField(null=True, blank=True)
     
+    # Google Meet Integration
+    meet_enabled = models.BooleanField(default=False, verbose_name="Videollamadas habilitadas")
+    meet_link = models.URLField(blank=True, null=True, verbose_name="Enlace de Google Meet")
+    meet_created_at = models.DateTimeField(null=True, blank=True)
+    meet_created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_meets')
+    
     class Meta:
         ordering = ['-updated_at']
         indexes = [

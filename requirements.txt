@@ -20,6 +20,12 @@ python-dotenv==1.0.1
 # AI & Machine Learning
 google-generativeai==0.8.5
 
+# Google Workspace APIs
+google-auth==2.42.0
+google-auth-oauthlib==1.2.1
+google-auth-httplib2==0.2.0
+google-api-python-client==2.185.0
+
 # Forms & Fields
 django-multiselectfield==0.1.13
 

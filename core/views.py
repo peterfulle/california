@@ -2226,3 +2226,119 @@ def mark_all_notifications_read(request):
     Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     
     return JsonResponse({'success': True})
+
+
+# ==========================================
+# GOOGLE MEET INTEGRATION
+# ==========================================
+
+@login_required
+@require_POST
+def toggle_meet_in_conversation(request, conversation_id):
+    """Habilitar/deshabilitar Google Meet en una conversación"""
+    conversation = get_object_or_404(
+        Conversation,
+        Q(participant1=request.user) | Q(participant2=request.user),
+        id=conversation_id
+    )
+    
+    # Toggle del estado
+    conversation.meet_enabled = not conversation.meet_enabled
+    conversation.save()
+    
+    return JsonResponse({
+        'success': True,
+        'meet_enabled': conversation.meet_enabled,
+        'message': 'Videollamadas habilitadas' if conversation.meet_enabled else 'Videollamadas deshabilitadas'
+    })
+
+
+@login_required
+@require_POST
+def create_meet_link(request, conversation_id):
+    """Crear un enlace de Google Meet para una conversación"""
+    from .google_meet_service import GoogleMeetService
+    
+    conversation = get_object_or_404(
+        Conversation,
+        Q(participant1=request.user) | Q(participant2=request.user),
+        id=conversation_id
+    )
+    
+    # Verificar que Meet esté habilitado
+    if not conversation.meet_enabled:
+        return JsonResponse({
+            'success': False,
+            'error': 'Las videollamadas no están habilitadas en esta conversación'
+        }, status=400)
+    
+    # Crear servicio de Meet
+    meet_service = GoogleMeetService()
+    
+    # Generar enlace de Meet instantáneo (método simple sin OAuth)
+    meet_link = meet_service.create_instant_meet(conversation)
+    
+    # Guardar en la conversación
+    conversation.meet_link = meet_link
+    conversation.meet_created_at = timezone.now()
+    conversation.meet_created_by = request.user
+    conversation.save()
+    
+    # Obtener el otro participante
+    other_participant = conversation.get_other_participant(request.user)
+    
+    # Crear notificación para el otro participante
+    Notification.objects.create(
+        user=other_participant,
+        notification_type='meet_invite',
+        title='Nueva videollamada disponible',
+        message=f'{request.user.get_full_name()} ha iniciado una videollamada',
+        link=f'/messages/{conversation.id}/',
+        related_user=request.user
+    )
+    
+    return JsonResponse({
+        'success': True,
+        'meet_link': meet_link,
+        'message': 'Enlace de videollamada creado exitosamente'
+    })
+
+
+@login_required
+def join_meet(request, conversation_id):
+    """Redirigir al usuario al enlace de Google Meet"""
+    conversation = get_object_or_404(
+        Conversation,
+        Q(participant1=request.user) | Q(participant2=request.user),
+        id=conversation_id
+    )
+    
+    if not conversation.meet_link:
+        messages.error(request, 'No hay una videollamada activa en esta conversación')
+        return redirect('messages_detail', conversation_id=conversation_id)
+    
+    # Redirigir a Google Meet
+    return redirect(conversation.meet_link)
+
+
+@login_required
+@require_POST
+def end_meet(request, conversation_id):
+    """Finalizar la reunión de Google Meet"""
+    conversation = get_object_or_404(
+        Conversation,
+        Q(participant1=request.user) | Q(participant2=request.user),
+        id=conversation_id
+    )
+    
+    # Limpiar datos de Meet
+    conversation.meet_link = None
+    conversation.meet_created_at = None
+    conversation.meet_created_by = None
+    conversation.save()
+    
+    return JsonResponse({
+        'success': True,
+        'message': 'Videollamada finalizada'
+    })
+
