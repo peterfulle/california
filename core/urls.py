@@ -77,4 +77,12 @@ urlpatterns = [
     path('messages/<int:conversation_id>/meet/create/', views.create_meet_link, name='create_meet_link'),
     path('messages/<int:conversation_id>/meet/join/', views.join_meet, name='join_meet'),
     path('messages/<int:conversation_id>/meet/end/', views.end_meet, name='end_meet'),
+    
+    # Meet Requests (Solicitudes de videollamada)
+    path('meet-request/<int:request_id>/accept/', views.accept_meet_request, name='accept_meet_request'),
+    path('meet-request/<int:request_id>/reject/', views.reject_meet_request, name='reject_meet_request'),
+    
+    # Google OAuth
+    path('google/authorize/', views.google_oauth_authorize, name='google_oauth_authorize'),
+    path('oauth2callback', views.google_oauth_callback, name='google_oauth_callback'),
 ]

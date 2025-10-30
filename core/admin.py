@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import (
     Contact, Industry, UserProfile, Startup, InvestorProfile, Event, EventRegistration, FounderProfile,
     InvestorAccessRequest, StartupFinancials, StartupPeople, StartupNews, StartupTechnology, PrivateDataAccess,
-    ConnectionRequest, Conversation, Message, Notification
+    ConnectionRequest, Conversation, Message, Notification, MeetRequest
 )
 
 @admin.register(Contact)
@@ -211,3 +211,11 @@ class NotificationAdmin(admin.ModelAdmin):
         return obj.content[:50] + '...' if len(obj.content) > 50 else obj.content
     content_preview.short_description = 'Contenido'
 
+
+@admin.register(MeetRequest)
+class MeetRequestAdmin(admin.ModelAdmin):
+    list_display = ['conversation', 'requester', 'receiver', 'status', 'created_at', 'responded_at']
+    search_fields = ['requester__username', 'receiver__username', 'conversation__id']
+    list_filter = ['status', 'created_at']
+    readonly_fields = ['created_at', 'responded_at']
+    list_editable = ['status']

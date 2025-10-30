@@ -1217,6 +1217,52 @@ class Conversation(models.Model):
         self.save(update_fields=['p1_last_read' if self.participant1 == user else 'p2_last_read'])
 
 
+class MeetRequest(models.Model):
+    """Solicitudes de videollamada de Google Meet"""
+    STATUS_CHOICES = [
+        ('pending', 'Pendiente'),
+        ('accepted', 'Aceptada'),
+        ('rejected', 'Rechazada'),
+        ('expired', 'Expirada'),
+    ]
+    
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='meet_requests')
+    requester = models.ForeignKey(User, on_delete=models.CASCADE, related_name='meet_requests_sent')
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name='meet_requests_received')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    
+    # Metadata
+    created_at = models.DateTimeField(auto_now_add=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
+    
+    # Meet link (se crea solo cuando se acepta)
+    meet_link = models.URLField(blank=True, null=True)
+    calendar_event_id = models.CharField(max_length=255, blank=True, null=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['conversation', 'status', '-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"Solicitud de {self.requester.get_full_name()} a {self.receiver.get_full_name()} - {self.status}"
+    
+    def accept(self):
+        """Acepta la solicitud"""
+        from django.utils import timezone
+        self.status = 'accepted'
+        self.responded_at = timezone.now()
+        self.save()
+    
+    def reject(self):
+        """Rechaza la solicitud"""
+        from django.utils import timezone
+        self.status = 'rejected'
+        self.responded_at = timezone.now()
+        self.save()
+
+
 class Message(models.Model):
     """Mensajes dentro de una conversación"""
     conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
@@ -1268,3 +1314,44 @@ class Notification(models.Model):
         """Marca la notificación como leída"""
         self.is_read = True
         self.save()
+
+
+class GoogleOAuthCredential(models.Model):
+    """Almacena las credenciales OAuth de Google para cada usuario"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='google_credentials')
+    
+    # Tokens OAuth
+    access_token = models.TextField()
+    refresh_token = models.TextField(null=True, blank=True)
+    token_uri = models.CharField(max_length=255, default='https://oauth2.googleapis.com/token')
+    
+    # Metadata
+    scopes = models.JSONField(default=list)  # Lista de scopes autorizados
+    expires_at = models.DateTimeField(null=True, blank=True)
+    
+    # Timestamps
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = 'Credencial OAuth de Google'
+        verbose_name_plural = 'Credenciales OAuth de Google'
+    
+    def __str__(self):
+        return f"Google OAuth - {self.user.username}"
+    
+    def is_valid(self):
+        """Verifica si el token aún es válido"""
+        from django.utils import timezone
+        if not self.expires_at:
+            return False
+        return timezone.now() < self.expires_at
+    
+    def to_dict(self):
+        """Convierte las credenciales a formato dict para google-auth"""
+        return {
+            'token': self.access_token,
+            'refresh_token': self.refresh_token,
+            'token_uri': self.token_uri,
+            'scopes': self.scopes
+        }

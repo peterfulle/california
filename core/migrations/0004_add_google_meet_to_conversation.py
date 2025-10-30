@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('core', '0001_initial'),  # Ajustar al número de la última migración
+        ('core', '0003_notification'),  # Depende de la última migración existente
     ]
 
     operations = [

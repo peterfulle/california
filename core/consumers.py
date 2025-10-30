@@ -25,6 +25,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f'chat_{self.conversation_id}'
         self.user = self.scope['user']
         
+        # Verificar que el usuario esté autenticado
+        if not self.user.is_authenticated:
+            await self.close()
+            return
+        
         # Unirse al grupo de la conversación
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -46,16 +51,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
     
     async def disconnect(self, close_code):
         """Cuando un usuario se desconecta"""
-        # Notificar que el usuario se desconectó
-        await self.channel_layer.group_send(
-            self.room_group_name,
-            {
-                'type': 'user_status',
-                'user_id': self.user.id,
-                'status': 'offline',
-                'username': self.user.get_full_name()
-            }
-        )
+        # Verificar que el usuario esté autenticado antes de notificar
+        if self.user.is_authenticated:
+            # Notificar que el usuario se desconectó
+            await self.channel_layer.group_send(
+                self.room_group_name,
+                {
+                    'type': 'user_status',
+                    'user_id': self.user.id,
+                    'status': 'offline',
+                    'username': self.user.get_full_name()
+                }
+            )
         
         # Salir del grupo
         await self.channel_layer.group_discard(
@@ -141,6 +148,50 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'user_id': event['user_id'],
             'username': event['username'],
             'status': event['status'],
+        }))
+    
+    async def meet_started(self, event):
+        """Enviar notificación de videollamada iniciada"""
+        await self.send(text_data=json.dumps({
+            'type': 'meet_started',
+            'meet_link': event['meet_link'],
+            'creator_id': event['creator_id'],
+            'creator_name': event['creator_name'],
+            'conversation_id': event['conversation_id'],
+        }))
+    
+    async def meet_request_sent(self, event):
+        """Enviar notificación de solicitud de videollamada enviada"""
+        await self.send(text_data=json.dumps({
+            'type': 'meet_request_sent',
+            'request_id': event['request_id'],
+            'requester_id': event['requester_id'],
+            'requester_name': event['requester_name'],
+            'receiver_id': event['receiver_id'],
+            'conversation_id': event['conversation_id'],
+        }))
+    
+    async def meet_request_accepted(self, event):
+        """Enviar notificación de solicitud de videollamada aceptada"""
+        await self.send(text_data=json.dumps({
+            'type': 'meet_request_accepted',
+            'request_id': event['request_id'],
+            'meet_link': event['meet_link'],
+            'acceptor_id': event['acceptor_id'],
+            'acceptor_name': event['acceptor_name'],
+            'requester_id': event['requester_id'],
+            'conversation_id': event['conversation_id'],
+        }))
+    
+    async def meet_request_rejected(self, event):
+        """Enviar notificación de solicitud de videollamada rechazada"""
+        await self.send(text_data=json.dumps({
+            'type': 'meet_request_rejected',
+            'request_id': event['request_id'],
+            'rejecter_id': event['rejecter_id'],
+            'rejecter_name': event['rejecter_name'],
+            'requester_id': event['requester_id'],
+            'conversation_id': event['conversation_id'],
         }))
     
     @database_sync_to_async

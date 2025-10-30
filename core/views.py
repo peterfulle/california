@@ -2125,6 +2125,14 @@ def conversation_detail(request, conversation_id):
     # Obtener mensajes
     messages_list = conversation.messages.select_related('sender')
     
+    # NUEVO: Obtener solicitudes de videollamada pendientes para este usuario
+    from .models import MeetRequest
+    pending_meet_requests = MeetRequest.objects.filter(
+        conversation=conversation,
+        receiver=request.user,
+        status='pending'
+    ).select_related('requester')
+    
     # Procesar envío de nuevo mensaje
     if request.method == 'POST':
         content = request.POST.get('content')
@@ -2143,6 +2151,7 @@ def conversation_detail(request, conversation_id):
         'conversation': conversation,
         'messages': messages_list,
         'other_user': other_user,
+        'pending_meet_requests': pending_meet_requests,  # NUEVO
     }
     
     return render(request, 'core/conversation_detail.html', context)
@@ -2254,54 +2263,225 @@ def toggle_meet_in_conversation(request, conversation_id):
 
 
 @login_required
+@login_required
 @require_POST
 def create_meet_link(request, conversation_id):
-    """Crear un enlace de Google Meet para una conversación"""
-    from .google_meet_service import GoogleMeetService
+    """Crear solicitud de videollamada de Google Meet con aprobación"""
+    from .models import MeetRequest
+    from django.utils import timezone
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
     
-    conversation = get_object_or_404(
-        Conversation,
-        Q(participant1=request.user) | Q(participant2=request.user),
-        id=conversation_id
-    )
-    
-    # Verificar que Meet esté habilitado
-    if not conversation.meet_enabled:
+    try:
+        conversation = get_object_or_404(
+            Conversation,
+            Q(participant1=request.user) | Q(participant2=request.user),
+            id=conversation_id
+        )
+        
+        other_participant = conversation.get_other_participant(request.user)
+        
+        # VALIDACIÓN 1: Verificar que AMBOS usuarios tengan Meet ON
+        if not conversation.meet_enabled:
+            return JsonResponse({
+                'success': False,
+                'error': 'meet_disabled_requester',
+                'message': f'Primero debes activar Meet en esta conversación',
+                'other_user': other_participant.get_full_name()
+            }, status=400)
+        
+        # Verificar si el otro usuario tiene Meet habilitado en SU conversación
+        # Nota: En una conversación 1:1, ambos comparten el mismo meet_enabled
+        # Pero si el otro usuario tiene Meet OFF en SU vista, no puede recibir solicitudes
+        
+        # VALIDACIÓN 2: Verificar OAuth del solicitante
+        try:
+            from .models import GoogleOAuthCredential
+            oauth_creds = GoogleOAuthCredential.objects.get(user=request.user)
+            if not oauth_creds.is_valid():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'oauth_expired',
+                    'message': 'Tu sesión de Google ha expirado'
+                }, status=401)
+        except GoogleOAuthCredential.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'oauth_required',
+                'message': 'Necesitas conectar tu cuenta de Google primero'
+            }, status=401)
+        
+        # VALIDACIÓN 3: No permitir solicitudes duplicadas pendientes
+        existing_request = MeetRequest.objects.filter(
+            conversation=conversation,
+            requester=request.user,
+            status='pending'
+        ).first()
+        
+        if existing_request:
+            return JsonResponse({
+                'success': False,
+                'error': 'request_pending',
+                'message': 'Ya tienes una solicitud de videollamada pendiente'
+            }, status=400)
+        
+        # Crear solicitud de videollamada
+        meet_request = MeetRequest.objects.create(
+            conversation=conversation,
+            requester=request.user,
+            receiver=other_participant,
+            status='pending'
+        )
+        
+        # Enviar notificación por WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'chat_{conversation.id}',
+            {
+                'type': 'meet_request_sent',
+                'request_id': meet_request.id,
+                'requester_id': request.user.id,
+                'requester_name': request.user.get_full_name(),
+                'receiver_id': other_participant.id,
+                'conversation_id': conversation.id,
+            }
+        )
+        
+        # Crear notificación en base de datos
+        Notification.objects.create(
+            user=other_participant,
+            conversation=conversation,
+            content=f'{request.user.get_full_name()} ha solicitado una videollamada de Google Meet'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'request_id': meet_request.id,
+            'message': 'Solicitud de videollamada enviada'
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
         return JsonResponse({
             'success': False,
-            'error': 'Las videollamadas no están habilitadas en esta conversación'
+            'error': str(e)
         }, status=400)
-    
-    # Crear servicio de Meet
-    meet_service = GoogleMeetService()
-    
-    # Generar enlace de Meet instantáneo (método simple sin OAuth)
-    meet_link = meet_service.create_instant_meet(conversation)
-    
-    # Guardar en la conversación
-    conversation.meet_link = meet_link
-    conversation.meet_created_at = timezone.now()
-    conversation.meet_created_by = request.user
-    conversation.save()
-    
-    # Obtener el otro participante
-    other_participant = conversation.get_other_participant(request.user)
-    
-    # Crear notificación para el otro participante
-    Notification.objects.create(
-        user=other_participant,
-        notification_type='meet_invite',
-        title='Nueva videollamada disponible',
-        message=f'{request.user.get_full_name()} ha iniciado una videollamada',
-        link=f'/messages/{conversation.id}/',
-        related_user=request.user
-    )
-    
-    return JsonResponse({
-        'success': True,
-        'meet_link': meet_link,
-        'message': 'Enlace de videollamada creado exitosamente'
-    })
+        
+        # Reconstruir credenciales de Google
+        credentials = Credentials(
+            token=oauth_creds.access_token,
+            refresh_token=oauth_creds.refresh_token,
+            token_uri=oauth_creds.token_uri,
+            client_id=os.getenv('GOOGLE_MEET_CLIENT_ID'),
+            client_secret=os.getenv('GOOGLE_MEET_CLIENT_SECRET'),
+            scopes=oauth_creds.scopes
+        )
+        
+        # Construir servicio de Google Calendar
+        service = build('calendar', 'v3', credentials=credentials)
+        
+        # Configurar tiempo de inicio y fin (reunión de 1 hora)
+        now = datetime.utcnow()
+        start_time = now.isoformat() + 'Z'
+        end_time = (now + timedelta(hours=1)).isoformat() + 'Z'
+        
+        # Obtener el otro participante
+        other_participant = conversation.get_other_participant(request.user)
+        
+        # Preparar asistentes (emails de ambos participantes)
+        attendees = []
+        if request.user.email:
+            attendees.append({'email': request.user.email})
+        if other_participant.email:
+            attendees.append({'email': other_participant.email})
+        
+        # Crear evento de calendario con Google Meet
+        event = {
+            'summary': f'Reunión: {request.user.get_full_name()} y {other_participant.get_full_name()}',
+            'description': f'Videollamada generada desde Silicon Founder\nConversación ID: {conversation.id}',
+            'start': {
+                'dateTime': start_time,
+                'timeZone': 'UTC',
+            },
+            'end': {
+                'dateTime': end_time,
+                'timeZone': 'UTC',
+            },
+            'attendees': attendees,
+            'conferenceData': {
+                'createRequest': {
+                    'requestId': f'silicon-founder-{conversation.id}-{int(now.timestamp())}',
+                    'conferenceSolutionKey': {
+                        'type': 'hangoutsMeet'
+                    }
+                }
+            },
+            'reminders': {
+                'useDefault': False,
+                'overrides': [
+                    {'method': 'popup', 'minutes': 5},
+                ],
+            },
+        }
+        
+        # Insertar evento en Google Calendar
+        event_result = service.events().insert(
+            calendarId='primary',
+            body=event,
+            conferenceDataVersion=1,
+            sendUpdates='all' if attendees else 'none'
+        ).execute()
+        
+        # Extraer enlace REAL de Google Meet
+        meet_link = event_result.get('hangoutLink')
+        
+        if not meet_link:
+            return JsonResponse({
+                'success': False,
+                'error': 'No se pudo generar el enlace de Google Meet'
+            }, status=400)
+        
+        # Guardar en la conversación
+        conversation.meet_link = meet_link
+        conversation.meet_created_at = timezone.now()
+        conversation.meet_created_by = request.user
+        conversation.save()
+        
+        # Crear notificación para el otro participante
+        Notification.objects.create(
+            user=other_participant,
+            conversation=conversation,
+            content=f'{request.user.get_full_name()} ha iniciado una videollamada'
+        )
+        
+        # Enviar notificación WebSocket en tiempo real
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'chat_{conversation.id}',
+            {
+                'type': 'meet_started',
+                'meet_link': meet_link,
+                'creator_id': request.user.id,
+                'creator_name': request.user.get_full_name(),
+                'conversation_id': conversation.id,
+            }
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'meet_link': meet_link,
+            'event_id': event_result.get('id'),
+            'message': 'Videollamada creada exitosamente'
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
 
 
 @login_required
@@ -2325,20 +2505,374 @@ def join_meet(request, conversation_id):
 @require_POST
 def end_meet(request, conversation_id):
     """Finalizar la reunión de Google Meet"""
-    conversation = get_object_or_404(
-        Conversation,
-        Q(participant1=request.user) | Q(participant2=request.user),
-        id=conversation_id
+    try:
+        conversation = get_object_or_404(
+            Conversation,
+            Q(participant1=request.user) | Q(participant2=request.user),
+            id=conversation_id
+        )
+        
+        # Limpiar datos de Meet
+        conversation.meet_link = None
+        conversation.meet_created_at = None
+        conversation.meet_created_by = None
+        conversation.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Videollamada finalizada'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+# ========== GOOGLE OAUTH PARA MEET ==========
+
+@login_required
+def google_oauth_authorize(request):
+    """Iniciar flujo OAuth de Google para Meet"""
+    import os
+    from google_auth_oauthlib.flow import Flow
+    
+    # IMPORTANTE: Permitir HTTP en desarrollo local
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    
+    # Configuración OAuth
+    client_config = {
+        "web": {
+            "client_id": os.getenv('GOOGLE_MEET_CLIENT_ID'),
+            "client_secret": os.getenv('GOOGLE_MEET_CLIENT_SECRET'),
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+        }
+    }
+    
+    # Determinar redirect_uri basado en el entorno
+    if request.is_secure() or 'render.com' in request.get_host():
+        redirect_uri = f"https://{request.get_host()}/oauth2callback"
+    else:
+        redirect_uri = f"http://{request.get_host()}/oauth2callback"
+    
+    # Scopes necesarios para Google Calendar y Meet
+    scopes = [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events'
+    ]
+    
+    # Crear flujo OAuth
+    flow = Flow.from_client_config(
+        client_config,
+        scopes=scopes,
+        redirect_uri=redirect_uri
     )
     
-    # Limpiar datos de Meet
-    conversation.meet_link = None
-    conversation.meet_created_at = None
-    conversation.meet_created_by = None
-    conversation.save()
+    # Generar URL de autorización
+    authorization_url, state = flow.authorization_url(
+        access_type='offline',
+        include_granted_scopes='true',
+        prompt='consent'
+    )
     
-    return JsonResponse({
-        'success': True,
-        'message': 'Videollamada finalizada'
-    })
+    # Guardar state en sesión para validación
+    request.session['oauth_state'] = state
+    
+    # Redirigir a Google para autorización
+    return redirect(authorization_url)
 
+
+@login_required
+def google_oauth_callback(request):
+    """Callback después de autorización OAuth"""
+    import os
+    from google_auth_oauthlib.flow import Flow
+    from .models import GoogleOAuthCredential
+    from datetime import datetime, timedelta
+    
+    # Verificar state
+    state = request.session.get('oauth_state')
+    if not state:
+        messages.error(request, 'Error de seguridad OAuth')
+        return redirect('core:messages_inbox')
+    
+    # Configuración OAuth
+    client_config = {
+        "web": {
+            "client_id": os.getenv('GOOGLE_MEET_CLIENT_ID'),
+            "client_secret": os.getenv('GOOGLE_MEET_CLIENT_SECRET'),
+            "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            "token_uri": "https://oauth2.googleapis.com/token",
+        }
+    }
+    
+    # Determinar redirect_uri
+    if request.is_secure() or 'render.com' in request.get_host():
+        redirect_uri = f"https://{request.get_host()}/oauth2callback"
+    else:
+        redirect_uri = f"http://{request.get_host()}/oauth2callback"
+    
+    scopes = [
+        'https://www.googleapis.com/auth/calendar',
+        'https://www.googleapis.com/auth/calendar.events'
+    ]
+    
+    try:
+        # Crear flujo OAuth
+        flow = Flow.from_client_config(
+            client_config,
+            scopes=scopes,
+            state=state,
+            redirect_uri=redirect_uri
+        )
+        
+        # IMPORTANTE: Permitir HTTP en desarrollo local
+        import os
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+        
+        # Intercambiar código por token
+        flow.fetch_token(authorization_response=request.build_absolute_uri())
+        
+        credentials = flow.credentials
+        
+        # Calcular fecha de expiración
+        expires_at = datetime.now() + timedelta(seconds=credentials.expiry.timestamp() - datetime.now().timestamp()) if credentials.expiry else None
+        
+        # Guardar o actualizar credenciales
+        GoogleOAuthCredential.objects.update_or_create(
+            user=request.user,
+            defaults={
+                'access_token': credentials.token,
+                'refresh_token': credentials.refresh_token,
+                'token_uri': credentials.token_uri,
+                'scopes': list(credentials.scopes),
+                'expires_at': expires_at
+            }
+        )
+        
+        messages.success(request, '✅ Google Meet conectado exitosamente')
+        return redirect('core:messages_inbox')
+        
+    except Exception as e:
+        messages.error(request, f'Error al conectar con Google: {str(e)}')
+        return redirect('core:messages_inbox')
+
+
+@login_required
+@require_POST
+def accept_meet_request(request, request_id):
+    """Aceptar solicitud de videollamada y crear el enlace de Google Meet"""
+    import os
+    from datetime import datetime, timedelta
+    from google.oauth2.credentials import Credentials
+    from googleapiclient.discovery import build
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+    from .models import MeetRequest, GoogleOAuthCredential
+    
+    try:
+        # Obtener solicitud
+        meet_request = get_object_or_404(
+            MeetRequest,
+            id=request_id,
+            receiver=request.user,
+            status='pending'
+        )
+        
+        conversation = meet_request.conversation
+        requester = meet_request.requester
+        
+        # Verificar OAuth del RECEPTOR (quien acepta)
+        try:
+            oauth_creds = GoogleOAuthCredential.objects.get(user=request.user)
+            if not oauth_creds.is_valid():
+                return JsonResponse({
+                    'success': False,
+                    'error': 'oauth_expired',
+                    'message': 'Tu sesión de Google ha expirado. Por favor, vuelve a conectar.'
+                }, status=401)
+        except GoogleOAuthCredential.DoesNotExist:
+            return JsonResponse({
+                'success': False,
+                'error': 'oauth_required',
+                'message': 'Necesitas conectar tu cuenta de Google para aceptar videollamadas'
+            }, status=401)
+        
+        # Reconstruir credenciales de Google
+        credentials = Credentials(
+            token=oauth_creds.access_token,
+            refresh_token=oauth_creds.refresh_token,
+            token_uri=oauth_creds.token_uri,
+            client_id=os.getenv('GOOGLE_MEET_CLIENT_ID'),
+            client_secret=os.getenv('GOOGLE_MEET_CLIENT_SECRET'),
+            scopes=oauth_creds.scopes
+        )
+        
+        # Construir servicio de Google Calendar
+        service = build('calendar', 'v3', credentials=credentials)
+        
+        # Configurar tiempo de inicio y fin (reunión de 1 hora)
+        now = datetime.utcnow()
+        start_time = now.isoformat() + 'Z'
+        end_time = (now + timedelta(hours=1)).isoformat() + 'Z'
+        
+        # Preparar asistentes
+        attendees = []
+        if request.user.email:
+            attendees.append({'email': request.user.email})
+        if requester.email:
+            attendees.append({'email': requester.email})
+        
+        # Crear evento de calendario con Google Meet
+        event = {
+            'summary': f'Reunión: {requester.get_full_name()} y {request.user.get_full_name()}',
+            'description': f'Videollamada generada desde Silicon Founder\nConversación ID: {conversation.id}',
+            'start': {
+                'dateTime': start_time,
+                'timeZone': 'UTC',
+            },
+            'end': {
+                'dateTime': end_time,
+                'timeZone': 'UTC',
+            },
+            'attendees': attendees,
+            'conferenceData': {
+                'createRequest': {
+                    'requestId': f'silicon-founder-{conversation.id}-{int(now.timestamp())}',
+                    'conferenceSolutionKey': {
+                        'type': 'hangoutsMeet'
+                    }
+                }
+            },
+            'reminders': {
+                'useDefault': False,
+                'overrides': [
+                    {'method': 'popup', 'minutes': 5},
+                ],
+            },
+        }
+        
+        # Insertar evento en Google Calendar
+        event_result = service.events().insert(
+            calendarId='primary',
+            body=event,
+            conferenceDataVersion=1,
+            sendUpdates='all' if attendees else 'none'
+        ).execute()
+        
+        # Extraer enlace REAL de Google Meet
+        meet_link = event_result.get('hangoutLink')
+        calendar_event_id = event_result.get('id')
+        
+        if not meet_link:
+            return JsonResponse({
+                'success': False,
+                'error': 'No se pudo generar el enlace de Google Meet'
+            }, status=400)
+        
+        # Actualizar solicitud a "aceptada"
+        meet_request.accept()
+        meet_request.meet_link = meet_link
+        meet_request.calendar_event_id = calendar_event_id
+        meet_request.save()
+        
+        # Guardar enlace en conversación
+        conversation.meet_link = meet_link
+        conversation.meet_created_at = timezone.now()
+        conversation.meet_created_by = requester
+        conversation.save()
+        
+        # Enviar notificación por WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'chat_{conversation.id}',
+            {
+                'type': 'meet_request_accepted',
+                'request_id': meet_request.id,
+                'meet_link': meet_link,
+                'acceptor_id': request.user.id,
+                'acceptor_name': request.user.get_full_name(),
+                'requester_id': requester.id,
+                'conversation_id': conversation.id,
+            }
+        )
+        
+        # Crear notificación para el solicitante
+        Notification.objects.create(
+            user=requester,
+            conversation=conversation,
+            content=f'{request.user.get_full_name()} ha aceptado tu solicitud de videollamada'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'meet_link': meet_link,
+            'message': 'Videollamada aceptada y enlace creado'
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
+
+
+@login_required
+@require_POST
+def reject_meet_request(request, request_id):
+    """Rechazar solicitud de videollamada"""
+    from channels.layers import get_channel_layer
+    from asgiref.sync import async_to_sync
+    from .models import MeetRequest
+    
+    try:
+        # Obtener solicitud
+        meet_request = get_object_or_404(
+            MeetRequest,
+            id=request_id,
+            receiver=request.user,
+            status='pending'
+        )
+        
+        conversation = meet_request.conversation
+        requester = meet_request.requester
+        
+        # Actualizar solicitud a "rechazada"
+        meet_request.reject()
+        
+        # Enviar notificación por WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            f'chat_{conversation.id}',
+            {
+                'type': 'meet_request_rejected',
+                'request_id': meet_request.id,
+                'rejecter_id': request.user.id,
+                'rejecter_name': request.user.get_full_name(),
+                'requester_id': requester.id,
+                'conversation_id': conversation.id,
+            }
+        )
+        
+        # Crear notificación para el solicitante
+        Notification.objects.create(
+            user=requester,
+            conversation=conversation,
+            content=f'{request.user.get_full_name()} ha rechazado tu solicitud de videollamada'
+        )
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Solicitud rechazada'
+        })
+        
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=400)
