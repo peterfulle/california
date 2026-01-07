@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Registra tu Startup! - Crear Perfil</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    animation: {
+                        'fadeIn': 'fadeIn 0.5s ease-in-out',
+                        'slideIn': 'slideIn 0.3s ease-out',
+                        'bounce-in': 'bounceIn 0.6s ease-out',
+                        'pulse-soft': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(0)' }
+                        },
+                        bounceIn: {
+                            '0%': { transform: 'scale(0.3)', opacity: '0' },
+                            '50%': { transform: 'scale(1.05)' },
+                            '70%': { transform: 'scale(0.9)' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-focus:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .step-indicator {
+            position: relative;
+        }
+        
+        .step-indicator::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 100%;
+            width: 50px;
+            height: 2px;
+            background: #e5e7eb;
+            transform: translateY(-50%);
+        }
+        
+        .step-indicator.active::after {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+        
+        .step-indicator:last-child::after {
+            display: none;
+        }
+        
+        .floating-label {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            color: #6b7280;
+        }
+        
+        .input-container input:focus + .floating-label,
+        .input-container input:not(:placeholder-shown) + .floating-label {
+            transform: translateY(-24px) scale(0.85);
+            color: #667eea;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body class="h-full bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+    <div class="min-h-full flex flex-col">
+        <!-- Header -->
+        <header class="glass-effect relative z-10">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-6">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full gradient-bg flex items-center justify-center">
+                            <i data-lucide="rocket" class="w-6 h-6 text-white"></i>
+                        </div>
+                        <h1 class="text-2xl font-bold gradient-text">StartupHub</h1>
+                    </div>
+                    <nav class="hidden md:flex items-center space-x-8">
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Inicio</a>
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Startups</a>
+                        <a href="#" class="text-gray-600 hover:text-indigo-600 transition-colors">Inversores</a>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
+            <div class="max-w-4xl w-full">
+                <!-- Hero Section -->
+                <div class="text-center mb-12 animate-fadeIn">
+                    <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                        ¡Registra tu <span class="gradient-text">Startup</span>!
+                    </h1>
+                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                        Crea un perfil increíble para tu startup y conecta con inversores, advisors y el ecosistema emprendedor
+                    </p>
+                </div>
+
+                <!-- Form Container -->
+                <div class="glass-effect rounded-3xl shadow-2xl p-8 md:p-12 animate-bounce-in" 
+                     x-data="startupForm()" 
+                     x-init="initLucide()">
+                    
+                    <!-- Progress Section -->
+                    <div class="mb-12">
+                        <div class="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-900">Progreso</h3>
+                                <p class="text-sm text-gray-500" x-text="`${Math.round((currentStep / totalSteps) * 100)}% completado`"></p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-medium text-indigo-600" x-text="`Paso ${currentStep} de ${totalSteps}`"></p>
+                                <p class="text-xs text-gray-500" x-text="`Faltan ${totalSteps - currentStep} pasos`"></p>
+                            </div>
+                        </div>
+                        
+                        <!-- Progress Bar -->
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-8">
+                            <div class="gradient-bg h-3 rounded-full transition-all duration-500 ease-out" 
+                                 :style="`width: ${(currentStep / totalSteps) * 100}%`"></div>
+                        </div>
+                        
+                        <!-- Step Indicators -->
+                        <div class="flex items-center justify-between">
+                            <template x-for="step in totalSteps" :key="step">
+                                <div class="flex items-center step-indicator" 
+                                     :class="{ 'active': step <= currentStep }">
+                                    <div class="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300"
+                                         :class="step <= currentStep ? 'gradient-bg text-white shadow-lg' : 'bg-gray-200 text-gray-400'">
+                                        <span class="font-bold" x-text="step"></span>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Form -->
+                    <form method="post" enctype="multipart/form-data" @submit.prevent="submitForm">
+                        {% csrf_token %}
+                        
+                        <!-- Step 1: Basic Information -->
+                        <div x-show="currentStep === 1" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-8"
+                             x-transition:enter-end="opacity-100 transform translate-x-0"
+                             class="space-y-8">
+                            
+                            <div class="flex items-center space-x-3 mb-8">
+                                <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                                    <i data-lucide="clipboard-list" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-gray-900">📋 Información Básica</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Company Name -->
+                                <div class="md:col-span-2">
+                                    <div class="input-container relative">
+                                        <input type="text" 
+                                               name="name" 
+                                               id="name"
+                                               placeholder=" "
+                                               required
+                                               class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 text-lg">
+                                        <label for="name" class="floating-label text-lg">Nombre de la Empresa *</label>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">Nombre de la startup</p>
+                                </div>
+                                
+                                <!-- Tagline -->
+                                <div class="md:col-span-2">
+                                    <div class="input-container relative">
+                                        <input type="text" 
+                                               name="tagline" 
+                                               id="tagline"
+                                               placeholder=" "
+                                               required
+                                               class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200">
+                                        <label for="tagline" class="floating-label">Eslogan *</label>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">Descripción breve en una línea</p>
+                                </div>
+                                
+                                <!-- Description -->
+                                <div class="md:col-span-2">
+                                    <div class="input-container relative">
+                                        <textarea name="description" 
+                                                  id="description"
+                                                  placeholder=" "
+                                                  required
+                                                  rows="4"
+                                                  class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 resize-none"></textarea>
+                                        <label for="description" class="floating-label">Descripción *</label>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">Descripción completa de la startup, productos, misión, innovaciones...</p>
+                                </div>
+                                
+                                <!-- Founded Date -->
+                                <div>
+                                    <label for="founded_date" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Fecha de Fundación
+                                    </label>
+                                    <input type="date" 
+                                           name="founded_date" 
+                                           id="founded_date"
+                                           class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200">
+                                </div>
+                                
+                                <!-- Website -->
+                                <div>
+                                    <div class="input-container relative">
+                                        <input type="url" 
+                                               name="website" 
+                                               id="website"
+                                               placeholder=" "
+                                               class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200">
+                                        <label for="website" class="floating-label">Sitio Web</label>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">https://tustarrtup.com</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Industry & Business Model -->
+                        <div x-show="currentStep === 2" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-8"
+                             x-transition:enter-end="opacity-100 transform translate-x-0"
+                             class="space-y-8">
+                            
+                            <div class="flex items-center space-x-3 mb-8">
+                                <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                                    <i data-lucide="building" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-gray-900">🏢 Industria y Modelo de Negocio</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Industry -->
+                                <div class="md:col-span-2">
+                                    <label for="industry" class="block text-sm font-medium text-gray-700 mb-3">
+                                        Industria *
+                                    </label>
+                                    <select name="industry" 
+                                            id="industry"
+                                            required
+                                            class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 bg-white">
+                                        <option value="">Selecciona una industria</option>
+                                        <option value="fintech">FinTech</option>
+                                        <option value="healthtech">HealthTech</option>
+                                        <option value="edtech">EdTech</option>
+                                        <option value="ecommerce">E-commerce</option>
+                                        <option value="saas">SaaS</option>
+                                        <option value="biotech">BioTech</option>
+                                        <option value="cleantech">CleanTech</option>
+                                        <option value="foodtech">FoodTech</option>
+                                        <option value="proptech">PropTech</option>
+                                        <option value="mobility">Movilidad</option>
+                                        <option value="gaming">Gaming</option>
+                                        <option value="ai">Inteligencia Artificial</option>
+                                        <option value="blockchain">Blockchain</option>
+                                        <option value="iot">IoT</option>
+                                        <option value="other">Otra</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Business Model -->
+                                <div class="md:col-span-2">
+                                    <label for="business_model" class="block text-sm font-medium text-gray-700 mb-3">
+                                        Modelo de Negocio *
+                                    </label>
+                                    <select name="business_model" 
+                                            id="business_model"
+                                            required
+                                            class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 bg-white">
+                                        <option value="">Selecciona un modelo</option>
+                                        <option value="b2b">B2B (Business to Business)</option>
+                                        <option value="b2c">B2C (Business to Consumer)</option>
+                                        <option value="b2b2c">B2B2C (Business to Business to Consumer)</option>
+                                        <option value="marketplace">Marketplace</option>
+                                        <option value="saas">SaaS (Software as a Service)</option>
+                                        <option value="subscription">Suscripción</option>
+                                        <option value="freemium">Freemium</option>
+                                        <option value="ecommerce">E-commerce</option>
+                                        <option value="platform">Plataforma</option>
+                                        <option value="other">Otro</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Location -->
+                                <div class="md:col-span-2">
+                                    <div class="input-container relative">
+                                        <input type="text" 
+                                               name="location" 
+                                               id="location"
+                                               placeholder=" "
+                                               class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200">
+                                        <label for="location" class="floating-label">Ubicación</label>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">Ciudad, País</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Metrics & Funding -->
+                        <div x-show="currentStep === 3" 
+                             x-transition:enter="transition ease-out duration-300"
+                             x-transition:enter-start="opacity-0 transform translate-x-8"
+                             x-transition:enter-end="opacity-100 transform translate-x-0"
+                             class="space-y-8">
+                            
+                            <div class="flex items-center space-x-3 mb-8">
+                                <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-white"></i>
+                                </div>
+                                <h2 class="text-2xl font-bold text-gray-900">📈 Métricas y Financiación</h2>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <!-- Team Size -->
+                                <div>
+                                    <label for="team_size" class="block text-sm font-medium text-gray-700 mb-3">
+                                        Tamaño del Equipo
+                                    </label>
+                                    <select name="team_size" 
+                                            id="team_size"
+                                            class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 bg-white">
+                                        <option value="">Selecciona</option>
+                                        <option value="1">Solo fundador</option>
+                                        <option value="2-5">2-5 personas</option>
+                                        <option value="6-10">6-10 personas</option>
+                                        <option value="11-25">11-25 personas</option>
+                                        <option value="26-50">26-50 personas</option>
+                                        <option value="51+">51+ personas</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Funding Stage -->
+                                <div>
+                                    <label for="funding_stage" class="block text-sm font-medium text-gray-700 mb-3">
+                                        Etapa de Financiación
+                                    </label>
+                                    <select name="funding_stage" 
+                                            id="funding_stage"
+                                            class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 bg-white">
+                                        <option value="">Selecciona</option>
+                                        <option value="idea">Idea</option>
+                                        <option value="mvp">MVP</option>
+                                        <option value="pre-seed">Pre-Seed</option>
+                                        <option value="seed">Seed</option>
+                                        <option value="series-a">Series A</option>
+                                        <option value="series-b">Series B</option>
+                                        <option value="series-c">Series C+</option>
+                                        <option value="ipo">IPO</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Revenue -->
+                                <div>
+                                    <div class="input-container relative">
+                                        <input type="text" 
+                                               name="revenue" 
+                                               id="revenue"
+                                               placeholder=" "
+                                               class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200">
+                                        <label for="revenue" class="floating-label">Ingresos Anuales</label>
+                                    </div>
+                                    <p class="mt-2 text-sm text-gray-500">Ej: $100,000 USD</p>
+                                </div>
+                                
+                                <!-- Looking for -->
+                                <div>
+                                    <label for="looking_for" class="block text-sm font-medium text-gray-700 mb-3">
+                                        Buscando
+                                    </label>
+                                    <select name="looking_for" 
+                                            id="looking_for"
+                                            class="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:outline-none input-focus transition-all duration-200 bg-white">
+                                        <option value="">Selecciona</option>
+                                        <option value="investment">Inversión</option>
+                                        <option value="advisors">Advisors</option>
+                                        <option value="partners">Socios</option>
+                                        <option value="customers">Clientes</option>
+                                        <option value="talent">Talento</option>
+                                        <option value="networking">Networking</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Files -->
+                                <div class="md:col-span-2">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Logo -->
+                                        <div>
+                                            <label for="logo" class="block text-sm font-medium text-gray-700 mb-3">
+                                                Logo de la Startup
+                                            </label>
+                                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 transition-colors cursor-pointer"
+                                                 onclick="document.getElementById('logo').click()">
+                                                <i data-lucide="upload" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                                                <p class="text-sm text-gray-500">Haz clic para subir logo</p>
+                                                <input type="file" name="logo" id="logo" accept="image/*" class="hidden">
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Cover -->
+                                        <div>
+                                            <label for="cover_image" class="block text-sm font-medium text-gray-700 mb-3">
+                                                Imagen de Portada
+                                            </label>
+                                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-indigo-400 transition-colors cursor-pointer"
+                                                 onclick="document.getElementById('cover_image').click()">
+                                                <i data-lucide="image" class="w-8 h-8 text-gray-400 mx-auto mb-2"></i>
+                                                <p class="text-sm text-gray-500">Haz clic para subir portada</p>
+                                                <input type="file" name="cover_image" id="cover_image" accept="image/*" class="hidden">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="flex justify-between items-center mt-12 pt-8 border-t border-gray-200">
+                            <button type="button" 
+                                    x-show="currentStep > 1"
+                                    @click="previousStep()"
+                                    class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-all duration-200 flex items-center space-x-2">
+                                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                                <span>Anterior</span>
+                            </button>
+                            
+                            <div x-show="currentStep < totalSteps">
+                                <button type="button" 
+                                        @click="nextStep()"
+                                        class="px-8 py-4 gradient-bg text-white rounded-xl font-medium hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 flex items-center space-x-2">
+                                    <span>Siguiente</span>
+                                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                            
+                            <div x-show="currentStep === totalSteps">
+                                <button type="submit" 
+                                        class="px-8 py-4 gradient-bg text-white rounded-xl font-bold hover:shadow-lg transform hover:-translate-y-1 transition-all duration-200 flex items-center space-x-2">
+                                    <i data-lucide="rocket" class="w-5 h-5"></i>
+                                    <span>¡Crear Startup!</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        function startupForm() {
+            return {
+                currentStep: 1,
+                totalSteps: 3,
+                
+                nextStep() {
+                    if (this.currentStep < this.totalSteps) {
+                        this.currentStep++;
+                    }
+                },
+                
+                previousStep() {
+                    if (this.currentStep > 1) {
+                        this.currentStep--;
+                    }
+                },
+                
+                submitForm(event) {
+                    // Here you would handle form submission
+                    console.log('Form submitted!');
+                    event.target.submit();
+                },
+                
+                initLucide() {
+                    // Initialize Lucide icons after Alpine loads
+                    setTimeout(() => {
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    }, 100);
+                }
+            }
+        }
+        
+        // Re-initialize icons when Alpine updates the DOM
+        document.addEventListener('alpine:updated', () => {
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        });
+    </script>
+</body>
+</html>

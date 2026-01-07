@@ -1,0 +1,559 @@
+{% extends 'base.html' %}
+
+{% block title %}Chile Conecta - Bridging Chilean Innovation with Global Investment{% endblock %}
+
+{% block public_content %}
+<!-- Hero Section - Chile Conecta -->
+<div class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background with Chilean colors accent -->
+    <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+    
+    <!-- Floating elements -->
+    <div class="absolute top-20 left-10 w-20 h-20 bg-gradient-to-r from-blue-500 to-red-500 rounded-full opacity-20 animate-pulse"></div>
+    <div class="absolute top-40 right-20 w-32 h-32 bg-gradient-to-r from-red-500 to-blue-600 rounded-full opacity-10 animate-bounce"></div>
+    <div class="absolute bottom-20 left-20 w-16 h-16 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-full opacity-20 animate-pulse"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20">
+        <div class="text-center">
+            <!-- Badge with Chilean flag colors -->
+            <div class="inline-flex items-center px-6 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white/90 text-sm font-medium mb-8">
+                <span class="flex items-center">
+                    <span class="w-6 h-4 mr-3 rounded overflow-hidden flex">
+                        <span class="w-3 h-full bg-blue-600"></span>
+                        <span class="w-3 h-full bg-red-600"></span>
+                    </span>
+                    A Strategic Initiative by CORFO & ProChile
+                </span>
+            </div>
+            
+            <!-- Main Headline -->
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
+                <span class="block">Chile Conecta</span>
+                <span class="block bg-gradient-to-r from-blue-400 via-indigo-400 to-blue-600 bg-clip-text text-transparent">
+                    Connecting Chilean Startups
+                </span>
+                <span class="block bg-gradient-to-r from-red-400 via-red-500 to-orange-500 bg-clip-text text-transparent">
+                    with Silicon Valley
+                </span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-xl sm:text-2xl text-gray-300 mb-10 max-w-4xl mx-auto leading-relaxed">
+                The official platform bridging Chilean innovation with global investors. 
+                Streamlining validated connections and accelerating international expansion.
+            </p>
+            
+            <!-- CTA Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                {% if not user.is_authenticated %}
+                    <a href="{% url 'core:register' %}" 
+                       class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-red-600 text-white font-bold text-lg rounded-xl hover:from-blue-700 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                        <i class="fas fa-rocket mr-3 group-hover:animate-pulse"></i>
+                        Join the Platform
+                        <div class="absolute inset-0 bg-gradient-to-r from-blue-400 to-red-400 rounded-xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
+                    </a>
+                    <a href="{% url 'core:startup_directory' %}" 
+                       class="group inline-flex items-center px-8 py-4 border-2 border-white/30 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm">
+                        <i class="fas fa-search mr-3"></i>
+                        Explore Startups
+                    </a>
+                {% else %}
+                    <a href="{% url 'core:dashboard' %}" 
+                       class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                        <i class="fas fa-tachometer-alt mr-3 group-hover:animate-pulse"></i>
+                        Go to Dashboard
+                    </a>
+                {% endif %}
+            </div>
+            
+            <!-- Institutional Trust indicators -->
+            <div class="flex flex-wrap justify-center items-center gap-8 text-white/70 text-sm">
+                <div class="flex items-center">
+                    <i class="fas fa-university mr-2 text-blue-400"></i>
+                    CORFO Backed
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-globe-americas mr-2 text-red-400"></i>
+                    ProChile Network
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-shield-check mr-2 text-green-400"></i>
+                    Verified Connections
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <i class="fas fa-chevron-down text-white/50 text-2xl"></i>
+    </div>
+</div>
+
+<!-- Mission Statement Section -->
+<div class="bg-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">Our Mission</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">Bridging the Gap in Chilean Startup Internationalization</h2>
+            <div class="max-w-4xl mx-auto text-left sm:text-center">
+                <p class="text-lg text-gray-700 mb-6 leading-relaxed">
+                    Chile currently has limited capabilities to facilitate fast, validated, and efficient connections between startups and investors in highly competitive markets like Silicon Valley. This forces entrepreneurs to face their landing in new markets with their own resources and without a structure to accompany and scale their insertion.
+                </p>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    <strong>Chile Conecta</strong> fills this gap by offering a system adapted to Chilean startups, with traceability, metrics, and institutional backing from CORFO and ProChile, transforming isolated efforts into a strategic tool that facilitates more successful landings in global hubs like California.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Section - Pilot Impact -->
+<div class="bg-gradient-to-b from-gray-50 to-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Platform Capabilities</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">A strategic public infrastructure for Chilean entrepreneurship internationalization</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-blue-100">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-handshake text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">Validated</div>
+                <div class="text-gray-600 font-medium">Connections</div>
+                <p class="text-sm text-gray-500 mt-3">Verified matches between startups and investors</p>
+            </div>
+            
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-red-100">
+                <div class="w-16 h-16 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-chart-network text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">Traceable</div>
+                <div class="text-gray-600 font-medium">Metrics</div>
+                <p class="text-sm text-gray-500 mt-3">Complete tracking and institutional reporting</p>
+            </div>
+            
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-emerald-100">
+                <div class="w-16 h-16 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-globe-americas text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">Global</div>
+                <div class="text-gray-600 font-medium">Expansion</div>
+                <p class="text-sm text-gray-500 mt-3">Scalable to multiple international markets</p>
+            </div>
+            
+            <div class="group p-6 bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border border-purple-100">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-600 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-robot text-2xl text-white"></i>
+                </div>
+                <div class="text-3xl font-bold text-gray-900 mb-2">AI-Powered</div>
+                <div class="text-gray-600 font-medium">Matching</div>
+                <p class="text-sm text-gray-500 mt-3">Future intelligent matchmaking capabilities</p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Key Features Section - Platform Capabilities -->
+<div class="py-16 sm:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="inline-block px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-semibold mb-4">Platform Features</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Built for Every Ecosystem Player</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Comprehensive tools designed for Chilean startups, global investors, and strategic advisors</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- For Chilean Startups -->
+            <div class="group relative bg-gradient-to-br from-blue-50 to-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border-2 border-blue-100 hover:border-blue-300">
+                <div class="absolute top-4 right-4">
+                    <span class="px-3 py-1 bg-blue-600 text-white text-xs font-bold rounded-full">STARTUPS</span>
+                </div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <i class="fas fa-rocket text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">For Chilean Startups</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Structured Profiles</span>
+                                <span class="text-sm text-gray-600">Complete startup profiles with metrics, KPIs, and rich media</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Verified Connections</span>
+                                <span class="text-sm text-gray-600">Direct access to validated Silicon Valley investors</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Market Insights</span>
+                                <span class="text-sm text-gray-600">Real-time market trends and competitive intelligence</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Institutional Support</span>
+                                <span class="text-sm text-gray-600">CORFO & ProChile program integration</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- For Global Investors -->
+            <div class="group relative bg-gradient-to-br from-emerald-50 to-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border-2 border-emerald-100 hover:border-emerald-300">
+                <div class="absolute top-4 right-4">
+                    <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-full">INVESTORS</span>
+                </div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <i class="fas fa-chart-line text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">For Global Investors</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Curated Deal Flow</span>
+                                <span class="text-sm text-gray-600">Pre-vetted Chilean startups ready for global markets</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Due Diligence Tools</span>
+                                <span class="text-sm text-gray-600">Streamlined verification and analysis processes</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Portfolio Management</span>
+                                <span class="text-sm text-gray-600">Track investments and performance metrics</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-emerald-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Market Intelligence</span>
+                                <span class="text-sm text-gray-600">LatAm ecosystem trends and opportunities</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- For Strategic Advisors -->
+            <div class="group relative bg-gradient-to-br from-red-50 to-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-4 border-2 border-red-100 hover:border-red-300">
+                <div class="absolute top-4 right-4">
+                    <span class="px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full">ADVISORS</span>
+                </div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-gradient-to-r from-red-600 to-red-500 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                        <i class="fas fa-users-cog text-2xl text-white"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">For Strategic Advisors</h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Advisory Opportunities</span>
+                                <span class="text-sm text-gray-600">Connect with high-potential Chilean startups</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Network Expansion</span>
+                                <span class="text-sm text-gray-600">Build connections across the Chilean-US ecosystem</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Expertise Matching</span>
+                                <span class="text-sm text-gray-600">AI-powered matching based on industry expertise</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start text-gray-700 group-hover:text-gray-900 transition-colors">
+                            <div class="w-6 h-6 bg-red-500 rounded-lg flex items-center justify-center mr-4 flex-shrink-0 mt-0.5">
+                                <i class="fas fa-check text-white text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="font-semibold block">Track Record Showcase</span>
+                                <span class="text-sm text-gray-600">Display your impact and successful engagements</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Strategic Benefits Section -->
+<div class="bg-gradient-to-b from-gray-50 to-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="inline-block px-4 py-2 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold mb-4">Strategic Value</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Why Chile Conecta Matters</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">A strategic public infrastructure aligned with CORFO and ProChile mandates</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 mb-16">
+            <!-- Benefit 1 -->
+            <div class="flex items-start space-x-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-blue-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-blue-600 to-blue-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-compress-arrows-alt text-white text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Close the Internationalization Gap</h3>
+                    <p class="text-gray-600 leading-relaxed">Accelerate Chilean startup expansion into global markets, democratizing access to international financing and scaling GoGlobal program impact.</p>
+                </div>
+            </div>
+            
+            <!-- Benefit 2 -->
+            <div class="flex items-start space-x-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-emerald-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-database text-white text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Data-Driven Public Infrastructure</h3>
+                    <p class="text-gray-600 leading-relaxed">Free public access tool with complete traceability, metrics, and institutional tracking capabilities for informed policy-making.</p>
+                </div>
+            </div>
+            
+            <!-- Benefit 3 -->
+            <div class="flex items-start space-x-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-red-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-red-600 to-red-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-globe-americas text-white text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Global Expansion Potential</h3>
+                    <p class="text-gray-600 leading-relaxed">Scalable to any Chilean commercial or tech office worldwide, positioning Chile as a LatAm innovation hub.</p>
+                </div>
+            </div>
+            
+            <!-- Benefit 4 -->
+            <div class="flex items-start space-x-4 p-6 bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 border border-purple-100">
+                <div class="w-12 h-12 bg-gradient-to-r from-purple-600 to-purple-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <i class="fas fa-hand-holding-usd text-white text-xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">High ROI, Low Cost</h3>
+                    <p class="text-gray-600 leading-relaxed">Strategic priority project with functional prototype, ready for testing and scaling with minimal investment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Startups Section -->
+<div class="bg-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <span class="inline-block px-4 py-2 bg-red-100 text-red-700 rounded-full text-sm font-semibold mb-4">Featured Companies</span>
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Chilean Startups Going Global</h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">Discover innovative Chilean companies ready for international expansion</p>
+        </div>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for startup in featured_startups %}
+            <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 border border-gray-100">
+                <div class="relative h-48 bg-gradient-to-br from-blue-900 to-slate-900 overflow-hidden">
+                    {% if startup.cover_image %}
+                        <img src="{{ startup.cover_image.url }}" alt="{{ startup.name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
+                    {% else %}
+                        <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600 via-indigo-600 to-red-600">
+                            <i class="fas fa-rocket text-4xl text-white opacity-80"></i>
+                        </div>
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                    
+                    <!-- Chilean Flag Badge -->
+                    <div class="absolute top-4 left-4 flex items-center">
+                        <span class="w-6 h-4 mr-2 rounded overflow-hidden flex shadow-md">
+                            <span class="w-3 h-full bg-blue-600"></span>
+                            <span class="w-3 h-full bg-red-600"></span>
+                        </span>
+                        <span class="px-3 py-1 bg-white/95 backdrop-blur-sm text-gray-800 rounded-full text-xs font-semibold">
+                            {{ startup.industry|default:"Technology" }}
+                        </span>
+                    </div>
+                    
+                    <!-- Logo -->
+                    {% if startup.logo %}
+                        <div class="absolute bottom-4 right-4">
+                            <img src="{{ startup.logo.url }}" alt="{{ startup.name }} logo" 
+                                 class="w-12 h-12 rounded-xl object-cover border-2 border-white shadow-lg bg-white">
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {{ startup.name }}
+                    </h3>
+                    <p class="text-gray-600 mb-4 text-sm leading-relaxed line-clamp-2">
+                        {{ startup.description|truncatechars:100 }}
+                    </p>
+                    
+                    <!-- Metrics -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-blue-50 rounded-xl p-3 text-center border border-blue-100">
+                            <div class="text-lg font-bold text-blue-900">{{ startup.team_size|default:"8" }}</div>
+                            <div class="text-xs text-blue-600 font-medium">Team Size</div>
+                        </div>
+                        <div class="bg-red-50 rounded-xl p-3 text-center border border-red-100">
+                            <div class="text-lg font-bold text-red-900">{{ startup.funding_stage|default:"Seed" }}</div>
+                            <div class="text-xs text-red-600 font-medium">Stage</div>
+                        </div>
+                    </div>
+                    
+                    <a href="{% url 'core:startup_detail' startup.id %}" 
+                       class="block w-full bg-gradient-to-r from-blue-600 to-red-600 text-white text-center py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-red-700 transition-all duration-300 group-hover:shadow-lg">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-16">
+                <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-red-500 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-rocket text-3xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Pilot Program Coming Soon</h3>
+                <p class="text-gray-600 max-w-md mx-auto">Featured Chilean startups will appear here once the platform pilot begins in California.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <!-- View All Button -->
+        <div class="text-center mt-12">
+            <a href="{% url 'core:startup_directory' %}" 
+               class="inline-flex items-center px-8 py-4 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all duration-300 hover:shadow-lg group">
+                <span>Explore All Startups</span>
+                <i class="fas fa-arrow-right ml-3 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section - Chile Conecta -->
+<div class="relative py-16 sm:py-24 overflow-hidden">
+    <!-- Background with Chilean colors -->
+    <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900 to-red-900"></div>
+    <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+    
+    <!-- Floating shapes with Chilean colors -->
+    <div class="absolute top-20 left-10 w-32 h-32 bg-blue-500/20 rounded-full blur-xl animate-pulse"></div>
+    <div class="absolute bottom-20 right-10 w-40 h-40 bg-red-500/20 rounded-full blur-xl animate-pulse delay-700"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+        <!-- Chilean Flag -->
+        <div class="flex justify-center mb-6">
+            <div class="w-16 h-12 rounded-lg overflow-hidden shadow-xl flex">
+                <div class="w-8 h-full bg-blue-600"></div>
+                <div class="w-8 h-full bg-red-600"></div>
+            </div>
+        </div>
+        
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">
+            Join the Chile Conecta Platform
+        </h2>
+        <p class="text-xl sm:text-2xl text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+            Be part of the official CORFO & ProChile initiative connecting Chilean innovation with Silicon Valley investors
+        </p>
+        
+        {% if not user.is_authenticated %}
+        <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <a href="{% url 'core:register' %}" 
+               class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-red-600 text-white font-bold text-lg rounded-xl hover:from-blue-700 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl">
+                <i class="fas fa-rocket mr-3 group-hover:animate-pulse"></i>
+                Join the Platform
+                <div class="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-red-400/20 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            </a>
+            <a href="{% url 'core:login' %}" 
+               class="group inline-flex items-center px-8 py-4 border-2 border-white/30 text-white font-bold text-lg rounded-xl hover:bg-white/10 hover:border-white/50 transition-all duration-300 backdrop-blur-sm">
+                <i class="fas fa-sign-in-alt mr-3"></i>
+                Sign In
+            </a>
+        </div>
+        {% else %}
+        <div class="mb-12">
+            <a href="{% url 'core:dashboard' %}" 
+               class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-emerald-600 to-cyan-600 text-white font-bold text-lg rounded-xl hover:from-emerald-700 hover:to-cyan-700 transition-all duration-300 transform hover:scale-105 shadow-xl">
+                <i class="fas fa-tachometer-alt mr-3 group-hover:animate-pulse"></i>
+                Go to Dashboard
+            </a>
+        </div>
+        {% endif %}
+        
+        <!-- Institutional Partners -->
+        <div class="border-t border-white/20 pt-8">
+            <p class="text-gray-400 mb-6 text-sm uppercase tracking-wide font-medium">Strategic Partners</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 text-white/70">
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-400 to-blue-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-university text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold">CORFO</div>
+                        <div class="text-xs text-gray-400">Innovation Agency</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-r from-red-400 to-red-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-globe-americas text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold">ProChile</div>
+                        <div class="text-xs text-gray-400">Trade Commission</div>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-3 group">
+                    <div class="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i class="fas fa-handshake text-white"></i>
+                    </div>
+                    <div>
+                        <div class="text-white font-semibold">GoGlobal</div>
+                        <div class="text-xs text-gray-400">Acceleration Program</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,1235 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ApexDev Studio | Vanguardia en Ingeniería Digital Exponencial{% endblock %}
+
+{% block content %}
+<!-- Hero Section - Enhanced with 3D Parallax Effect -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden bg-black text-center">
+    <div id="particles-js" class="absolute inset-0 z-0 opacity-35"></div>
+
+    <div class="absolute inset-0 overflow-hidden z-0">
+        <div class="absolute -top-60 -left-40 w-96 h-96 md:w-[550px] md:h-[550px] bg-accent-primary rounded-full blur-3xl animate-pulse-slow opacity-75"></div>
+        <div class="absolute top-1/4 right-10 md:right-20 w-80 h-80 md:w-[500px] md:h-[500px] bg-accent-secondary rounded-full blur-3xl animate-pulse-slow animation-delay-2000 opacity-65"></div>
+        <div class="absolute bottom-10 left-1/3 md:bottom-20 w-72 h-72 md:w-[450px] md:h-[450px] bg-accent-third rounded-full blur-3xl animate-pulse-slow animation-delay-4000 opacity-55"></div>
+    </div>
+    
+    <div class="container relative px-4 mx-auto sm:px-6 lg:px-8 z-10 pt-20 pb-20">
+        <div data-aos="fade-up" data-aos-delay="100">
+            <div class="flex items-center justify-center space-x-3 mb-8">
+                <span class="inline-block h-1.5 w-12 bg-accent-primary rounded-full"></span>
+                <span class="text-accent-primary font-semibold text-lg tracking-wider">CREAMOS EL FUTURO DIGITAL</span>
+            </div>
+            
+            <h1 class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold font-display leading-tight text-white mb-8 hero-title">
+                Ingeniería <span class="text-gradient-animated">Exponencial</span>
+            </h1>
+            
+            <p class="mt-6 mb-12 text-xl md:text-2xl leading-relaxed text-gray-200 max-w-3xl mx-auto hero-subtitle">
+                Transformamos ideas visionarias en soluciones digitales de impacto con tecnología de vanguardia y una creatividad sin límites.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-6 mt-12">
+                <a href="#contact" 
+                   class="group px-10 py-4 text-lg font-semibold text-white rounded-lg bg-gradient-to-r from-accent-primary to-accent-secondary hover:from-accent-primaryHover hover:to-accent-secondaryHover transform transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-accent-primary/30 btn-glow">
+                    Inicia Tu Proyecto <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform duration-300"></i>
+                </a>
+                <a href="#process"
+                   class="group px-10 py-4 text-lg font-semibold rounded-lg text-accent-primary border-2 border-accent-primary/50 hover:bg-accent-primary/10 hover:text-accent-secondary transform transition-all duration-300 hover:scale-105 hover:border-accent-secondary">
+                    Nuestro Proceso <i class="fas fa-cogs ml-2 transform group-hover:rotate-12 transition-transform duration-300"></i>
+                </a>
+            </div>
+            
+            <!-- Mouse scroll animation -->
+            <div class="absolute bottom-8 left-0 right-0 flex justify-center">
+                <a href="#services" class="inline-block text-gray-400 animate-bounce">
+                    <span class="sr-only">Scroll Down</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Showcase Section - NEW AND ENHANCED -->
+<section id="services" class="py-20 lg:py-28 bg-dark-200 relative overflow-hidden">
+    <!-- 3D Globe Visualization -->
+    <div id="service-globe" class="absolute top-0 left-0 w-full h-full opacity-20"></div>
+    
+    <!-- Background effect -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-accent-primary/5 to-transparent pointer-events-none"></div>
+    
+    <div class="container px-4 mx-auto sm:px-6 lg:px-8 relative z-10">
+        <div class="text-center mb-16" data-aos="fade-up">
+            <div class="flex items-center justify-center space-x-3 mb-6">
+                <span class="inline-block h-1.5 w-12 bg-accent-primary rounded-full"></span>
+                <span class="text-accent-primary font-semibold text-base tracking-wider">NUESTROS SERVICIOS</span>
+            </div>
+            <h2 class="text-4xl lg:text-5xl xl:text-6xl font-bold font-display text-white mb-6">Soluciones <span class="text-gradient">Digitales</span> Extraordinarias</h2>
+            <p class="mt-4 text-lg lg:text-xl text-gray-300 max-w-3xl mx-auto">Diseñamos y desarrollamos servicios digitales personalizados que generan resultados excepcionales para tu negocio.</p>
+        </div>
+        
+        <!-- Services Grid - Enhanced with interactive hover effects -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+            <!-- Service 1 -->
+            <div class="service-card bg-dark-300 rounded-xl p-8 border border-white/5 transform transition-all" data-aos="fade-up" data-aos-delay="100">
+                <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-4 rounded-xl inline-block">
+                    <i class="fas fa-code text-4xl text-accent-primary"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-display text-white mb-4">Desarrollo Web Personalizado</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">Creamos sitios web y aplicaciones web altamente personalizados con tecnologías modernas que potencian tu negocio digital.</p>
+                <ul class="space-y-2 text-gray-400 mb-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Arquitectura escalable y robusta</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Integración de APIs y servicios externos</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Optimizado para SEO y rendimiento</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                    Explorar Servicio
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Service 2 -->
+            <div class="service-card bg-dark-300 rounded-xl p-8 border border-white/5 transform transition-all" data-aos="fade-up" data-aos-delay="200">
+                <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-secondary/20 to-accent-third/20 p-4 rounded-xl inline-block">
+                    <i class="fas fa-mobile-alt text-4xl text-accent-secondary"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-display text-white mb-4">Desarrollo de Aplicaciones Móviles</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">Diseñamos y desarrollamos aplicaciones iOS y Android intuitivas y atractivas que cautivan a tus usuarios.</p>
+                <ul class="space-y-2 text-gray-400 mb-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Experiencia de usuario fluida y moderna</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Desarrollo nativo y cross-platform</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Optimización para tiendas de aplicaciones</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                    Explorar Servicio
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Service 3 -->
+            <div class="service-card bg-dark-300 rounded-xl p-8 border border-white/5 transform transition-all" data-aos="fade-up" data-aos-delay="300">
+                <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-third/20 to-accent-primary/20 p-4 rounded-xl inline-block">
+                    <i class="fas fa-paint-brush text-4xl text-accent-third"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-display text-white mb-4">Diseño UI/UX Centrado en el Usuario</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">Creamos interfaces intuitivas y experiencias memorables que cautivan y convierten a tus visitantes en clientes.</p>
+                <ul class="space-y-2 text-gray-400 mb-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Diseño centrado en el usuario</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Investigación y wireframing</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Prototipos interactivos</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                    Explorar Servicio
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Service 4 -->
+            <div class="service-card bg-dark-300 rounded-xl p-8 border border-white/5 transform transition-all" data-aos="fade-up" data-aos-delay="400">
+                <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-primary/20 to-accent-third/20 p-4 rounded-xl inline-block">
+                    <i class="fas fa-server text-4xl text-accent-primary"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-display text-white mb-4">Soluciones Cloud y DevOps</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">Implementamos arquitecturas cloud escalables y automatizamos tus procesos de desarrollo y despliegue.</p>
+                <ul class="space-y-2 text-gray-400 mb-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Infraestructura como código</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>CI/CD pipelines automatizados</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Monitorización y optimización</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                    Explorar Servicio
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Service 5 -->
+            <div class="service-card bg-dark-300 rounded-xl p-8 border border-white/5 transform transition-all" data-aos="fade-up" data-aos-delay="500">
+                <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-secondary/20 to-accent-primary/20 p-4 rounded-xl inline-block">
+                    <i class="fas fa-brain text-4xl text-accent-secondary"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-display text-white mb-4">Inteligencia Artificial y Machine Learning</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">Desarrollamos soluciones inteligentes que automatizan procesos y generan insights valiosos a partir de tus datos.</p>
+                <ul class="space-y-2 text-gray-400 mb-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Modelos predictivos y analíticos</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Procesamiento de lenguaje natural (NLP)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Visión por computadora</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                    Explorar Servicio
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Service 6 -->
+            <div class="service-card bg-dark-300 rounded-xl p-8 border border-white/5 transform transition-all" data-aos="fade-up" data-aos-delay="600">
+                <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-third/20 to-accent-secondary/20 p-4 rounded-xl inline-block">
+                    <i class="fas fa-chart-line text-4xl text-accent-third"></i>
+                </div>
+                <h3 class="text-2xl font-bold font-display text-white mb-4">Consultoría y Transformación Digital</h3>
+                <p class="text-gray-300 leading-relaxed mb-6">Asesoramos a tu empresa en el proceso de digitalización y adoptamos las mejores estrategias y tecnologías.</p>
+                <ul class="space-y-2 text-gray-400 mb-6">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Auditoría y estrategia digital</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Optimización de procesos</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-accent-secondary mt-1 mr-2"></i>
+                        <span>Capacitación y acompañamiento</span>
+                    </li>
+                </ul>
+                <a href="#contact" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                    Explorar Servicio
+                    <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Technology Stack Marquee - NEW -->
+<section class="py-16 bg-black relative overflow-hidden">
+    <div class="container mx-auto px-4 text-center mb-12" data-aos="fade-up">
+        <h3 class="text-3xl font-bold font-display text-white mb-2">Stack Tecnológico</h3>
+        <p class="text-gray-400">Dominamos las tecnologías más avanzadas para crear soluciones de vanguardia</p>
+    </div>
+    
+    <!-- Marquee Animation Row 1 -->
+    <div class="marquee-container py-6 relative">
+        <div class="marquee flex space-x-20 animate-marquee">
+            <!-- Technology Items -->
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-react text-3xl text-blue-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">React</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-python text-3xl text-blue-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Python</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-node-js text-3xl text-green-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Node.js</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-aws text-3xl text-orange-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">AWS</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-angular text-3xl text-red-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Angular</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-js text-3xl text-yellow-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">JavaScript</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-vuejs text-3xl text-green-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Vue.js</span>
+            </div>
+        </div>
+        
+        <!-- Duplicate for continuous effect -->
+        <div class="marquee flex space-x-20 animate-marquee" aria-hidden="true">
+            <!-- Duplicate Technology Items -->
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-react text-3xl text-blue-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">React</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-python text-3xl text-blue-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Python</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-node-js text-3xl text-green-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Node.js</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-aws text-3xl text-orange-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">AWS</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-angular text-3xl text-red-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Angular</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-js text-3xl text-yellow-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">JavaScript</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-vuejs text-3xl text-green-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Vue.js</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Marquee Animation Row 2 (Reverse Direction) -->
+    <div class="marquee-container py-6 relative">
+        <div class="marquee flex space-x-20 animate-marquee-reverse">
+            <!-- Other Technology Items -->
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-docker text-3xl text-blue-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Docker</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-laravel text-3xl text-red-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Laravel</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-github text-3xl text-white"></i>
+                </div>
+                <span class="text-gray-400 font-medium">GitHub</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-wordpress text-3xl text-blue-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">WordPress</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-php text-3xl text-purple-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">PHP</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-bootstrap text-3xl text-purple-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Bootstrap</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-sass text-3xl text-pink-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Sass</span>
+            </div>
+        </div>
+        
+        <!-- Duplicate for continuous effect -->
+        <div class="marquee flex space-x-20 animate-marquee-reverse" aria-hidden="true">
+            <!-- Duplicate Other Technology Items -->
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-docker text-3xl text-blue-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Docker</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-laravel text-3xl text-red-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Laravel</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-github text-3xl text-white"></i>
+                </div>
+                <span class="text-gray-400 font-medium">GitHub</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-wordpress text-3xl text-blue-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">WordPress</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-php text-3xl text-purple-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">PHP</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-bootstrap text-3xl text-purple-400"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Bootstrap</span>
+            </div>
+            <div class="tech-item flex flex-col items-center mx-8">
+                <div class="tech-icon h-16 w-16 flex items-center justify-center bg-dark-300 rounded-full mb-3">
+                    <i class="fab fa-sass text-3xl text-pink-500"></i>
+                </div>
+                <span class="text-gray-400 font-medium">Sass</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Development Process Sections with 3D Tilt Effect - Enhanced -->
+<section id="process" class="py-16 lg:py-24 bg-dark-200">
+    <div class="container px-4 mx-auto sm:px-6 lg:px-8">
+        <div class="text-center mb-12 lg:mb-20" data-aos="fade-up">
+            <div class="flex items-center justify-center space-x-3 mb-6">
+                <span class="inline-block h-1.5 w-12 bg-accent-primary rounded-full"></span>
+                <span class="text-accent-primary font-semibold text-base tracking-wider">METODOLOGÍA</span>
+            </div>
+            <h2 class="text-4xl lg:text-5xl font-bold font-display text-white">Nuestro <span class="text-gradient">Proceso Evolutivo</span></h2>
+            <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Cada fase, una obra de arte de ingeniería digital, diseñada para la excelencia y la innovación continua.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-12 process-cards-container">
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="100">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-primary/20 to-accent-secondary/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-search-plus text-4xl text-accent-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">1. Descubrimiento y Estrategia</h3>
+                    <p class="text-gray-400 leading-relaxed">Entendemos tu visión, el mercado y definimos una hoja de ruta clara para el éxito digital.</p>
+                </div>
+            </div>
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="200">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-secondary/20 to-accent-primary/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-drafting-compass text-4xl text-accent-secondary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">2. Diseño UI/UX Centrado en el Humano</h3>
+                    <p class="text-gray-400 leading-relaxed">Creamos interfaces intuitivas y experiencias memorables que cautivan y convierten.</p>
+                </div>
+            </div>
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="300">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-third/20 to-accent-secondary/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-code-branch text-4xl text-accent-third"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">3. Desarrollo Ágil y Robusto</h3>
+                    <p class="text-gray-400 leading-relaxed">Tecnologías avanzadas para construir soluciones escalables, seguras y de alto rendimiento.</p>
+                </div>
+            </div>
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="400">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-primary/20 to-accent-third/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-vial-virus text-4xl text-accent-primary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">4. Pruebas Rigurosas y QA Impecable</h3>
+                    <p class="text-gray-400 leading-relaxed">Aseguramos calidad y funcionamiento perfecto a través de procesos de testing exhaustivos.</p>
+                </div>
+            </div>
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="500">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-secondary/20 to-accent-third/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-rocket text-4xl text-accent-secondary"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">5. Despliegue Estratégico y Lanzamiento</h3>
+                    <p class="text-gray-400 leading-relaxed">Gestionamos el lanzamiento eficientemente, asegurando una transición suave a producción.</p>
+                </div>
+            </div>
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="600">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-third/20 to-accent-primary/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-infinity text-4xl text-accent-third"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">6. Soporte Evolutivo y Crecimiento</h3>
+                    <p class="text-gray-400 leading-relaxed">Mantenimiento proactivo y planes de mejora para que tu solución digital siga adaptándose y evolucionando con tu negocio.</p>
+                </div>
+            </div>
+            You said: pero no terminaste todo el codigo
+            pero no terminaste todo el codigo
+            Copilot said: Disculpa, tienes razón. Aquí está el resto
+            Disculpa, tienes razón. Aquí está el resto del código completo para el index.html desde donde lo dejamos:
+            
+            HTML
+            <div class="process-card bg-dark-300 rounded-xl shadow-2xl" data-aos="fade-up" data-aos-delay="600">
+                <div class="process-card-inner p-8">
+                    <div class="service-icon-container mb-6 bg-gradient-to-br from-accent-third/20 to-accent-primary/20 p-4 rounded-xl inline-block">
+                        <i class="fas fa-infinity text-4xl text-accent-third"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold font-display text-white mb-4">6. Soporte Evolutivo y Crecimiento</h3>
+                    <p class="text-gray-400 leading-relaxed">Mantenimiento proactivo y planes de mejora para que tu solución digital siga adaptándose y evolucionando con tu negocio.</p>
+                </div>
+            </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- React Code Typing Simulation Section - Enhanced -->
+            <section class="py-16 lg:py-24 bg-black">
+                <div class="container px-4 mx-auto sm:px-6 lg:px-8">
+                    <div class="text-center mb-12 lg:mb-16" data-aos="fade-up">
+                        <div class="flex items-center justify-center space-x-3 mb-6">
+                            <span class="inline-block h-1.5 w-12 bg-accent-primary rounded-full"></span>
+                            <span class="text-accent-primary font-semibold text-base tracking-wider">CÓDIGO VIVO</span>
+                        </div>
+                        <h2 class="text-4xl lg:text-5xl font-bold font-display text-white">Código <span class="text-gradient">Vivo</span>: Nuestra Maestría Tecnológica</h2>
+                        <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Observa la precisión y elegancia con la que construimos el futuro digital, línea por línea.</p>
+                    </div>
+            
+                    <div class="max-w-4xl mx-auto bg-dark-200 rounded-xl shadow-2xl overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000">
+                        <div class="bg-dark-300 px-4 py-3 flex items-center border-b border-dark-100">
+                            <span class="w-3.5 h-3.5 bg-red-500 rounded-full mr-2 border border-red-700"></span>
+                            <span class="w-3.5 h-3.5 bg-yellow-400 rounded-full mr-2 border border-yellow-600"></span>
+                            <span class="w-3.5 h-3.5 bg-green-500 rounded-full border border-green-700"></span>
+                            <span class="ml-auto text-xs text-gray-500 font-mono">/components/ApexEngine.jsx</span>
+                        </div>
+                        <div class="flex">
+                            <div id="line-numbers" class="p-6 pr-3 text-right text-gray-600 font-mono text-sm bg-dark-300/30 select-none">
+                                {# Line numbers will be populated by JS #}
+                            </div>
+                            <div id="code-editor" class="flex-1 p-6 text-sm font-mono leading-relaxed min-h-[350px] lg:min-h-[450px] relative">
+                                <pre><code id="typed-code"></code></pre>
+                                <span id="cursor" class="animate-pulse">|</span>
+                            </div>
+                        </div>
+                        <div id="simulated-output" class="bg-dark-300/50 p-4 border-t border-dark-100 text-xs font-mono text-gray-400 min-h-[80px]">
+                            <span class="output-prompt text-accent-secondary">&gt; </span>Compilando ApexEngine.jsx...
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Project Showcase - NEW -->
+            <section id="work" class="py-16 lg:py-24 bg-dark-200 relative overflow-hidden">
+                <!-- Background effect -->
+                <div class="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black pointer-events-none"></div>
+                
+                <div class="container px-4 mx-auto sm:px-6 lg:px-8 relative z-10">
+                    <div class="text-center mb-12 lg:mb-16" data-aos="fade-up">
+                        <div class="flex items-center justify-center space-x-3 mb-6">
+                            <span class="inline-block h-1.5 w-12 bg-accent-primary rounded-full"></span>
+                            <span class="text-accent-primary font-semibold text-base tracking-wider">NUESTRO PORTAFOLIO</span>
+                        </div>
+                        <h2 class="text-4xl lg:text-5xl font-bold font-display text-white">Proyectos <span class="text-gradient">Destacados</span></h2>
+                        <p class="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">Explora nuestras soluciones digitales que han transformado negocios y creado experiencias excepcionales.</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-10">
+                        <!-- Project 1 -->
+                        <div class="project-card bg-dark-300 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:-translate-y-2 hover:shadow-accent-primary/20 hover:shadow-xl" data-aos="fade-up" data-aos-delay="100">
+                            <div class="project-image relative overflow-hidden aspect-video">
+                                <img src="https://via.placeholder.com/800x450/2D2D2D/FFFFFF?text=E-commerce+Platform" alt="E-commerce Platform" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-300 to-transparent opacity-60"></div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs font-semibold bg-accent-primary/20 text-accent-primary py-1 px-3 rounded-full">React</span>
+                                    <span class="text-xs font-semibold bg-accent-secondary/20 text-accent-secondary py-1 px-3 rounded-full">Node.js</span>
+                                    <span class="text-xs font-semibold bg-accent-third/20 text-accent-third py-1 px-3 rounded-full">MongoDB</span>
+                                </div>
+                                <h3 class="text-2xl font-bold font-display text-white mb-3">E-commerce Premium</h3>
+                                <p class="text-gray-400 mb-6">Plataforma de comercio electrónico completa con gestión de inventario, pasarelas de pago seguras y panel de administración avanzado.</p>
+                                <div class="flex items-center justify-between">
+                                    <a href="#" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                                        Ver Proyecto
+                                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                                    </a>
+                                    <span class="text-gray-500 text-sm">2024</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 2 -->
+                        <div class="project-card bg-dark-300 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:-translate-y-2 hover:shadow-accent-secondary/20 hover:shadow-xl" data-aos="fade-up" data-aos-delay="200">
+                            <div class="project-image relative overflow-hidden aspect-video">
+                                <img src="https://via.placeholder.com/800x450/2D2D2D/FFFFFF?text=Fintech+App" alt="Fintech App" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-300 to-transparent opacity-60"></div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs font-semibold bg-accent-primary/20 text-accent-primary py-1 px-3 rounded-full">Flutter</span>
+                                    <span class="text-xs font-semibold bg-accent-secondary/20 text-accent-secondary py-1 px-3 rounded-full">Firebase</span>
+                                    <span class="text-xs font-semibold bg-accent-third/20 text-accent-third py-1 px-3 rounded-full">Python</span>
+                                </div>
+                                <h3 class="text-2xl font-bold font-display text-white mb-3">Fintech Analytics App</h3>
+                                <p class="text-gray-400 mb-6">Aplicación móvil para gestión y análisis financiero personal con integración bancaria, reportes visuales e IA para recomendaciones.</p>
+                                <div class="flex items-center justify-between">
+                                    <a href="#" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                                        Ver Proyecto
+                                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                                    </a>
+                                    <span class="text-gray-500 text-sm">2023</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 3 -->
+                        <div class="project-card bg-dark-300 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:-translate-y-2 hover:shadow-accent-third/20 hover:shadow-xl" data-aos="fade-up" data-aos-delay="300">
+                            <div class="project-image relative overflow-hidden aspect-video">
+                                <img src="https://via.placeholder.com/800x450/2D2D2D/FFFFFF?text=SaaS+Dashboard" alt="SaaS Dashboard" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-300 to-transparent opacity-60"></div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs font-semibold bg-accent-primary/20 text-accent-primary py-1 px-3 rounded-full">Vue.js</span>
+                                    <span class="text-xs font-semibold bg-accent-secondary/20 text-accent-secondary py-1 px-3 rounded-full">Laravel</span>
+                                    <span class="text-xs font-semibold bg-accent-third/20 text-accent-third py-1 px-3 rounded-full">MySQL</span>
+                                </div>
+                                <h3 class="text-2xl font-bold font-display text-white mb-3">SaaS Analytics Dashboard</h3>
+                                <p class="text-gray-400 mb-6">Panel de administración para empresas SaaS con analíticas en tiempo real, gestión de clientes y herramientas de predicción avanzadas.</p>
+                                <div class="flex items-center justify-between">
+                                    <a href="#" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                                        Ver Proyecto
+                                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                                    </a>
+                                    <span class="text-gray-500 text-sm">2023</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Project 4 -->
+                        <div class="project-card bg-dark-300 rounded-xl overflow-hidden shadow-2xl transform transition-all duration-500 hover:-translate-y-2 hover:shadow-accent-primary/20 hover:shadow-xl" data-aos="fade-up" data-aos-delay="400">
+                            <div class="project-image relative overflow-hidden aspect-video">
+                                <img src="https://via.placeholder.com/800x450/2D2D2D/FFFFFF?text=AI+Platform" alt="AI Platform" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+                                <div class="absolute inset-0 bg-gradient-to-t from-dark-300 to-transparent opacity-60"></div>
+                            </div>
+                            <div class="p-8">
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="text-xs font-semibold bg-accent-primary/20 text-accent-primary py-1 px-3 rounded-full">React</span>
+                                    <span class="text-xs font-semibold bg-accent-secondary/20 text-accent-secondary py-1 px-3 rounded-full">Python</span>
+                                    <span class="text-xs font-semibold bg-accent-third/20 text-accent-third py-1 px-3 rounded-full">TensorFlow</span>
+                                </div>
+                                <h3 class="text-2xl font-bold font-display text-white mb-3">Plataforma de IA para Servicios</h3>
+                                <p class="text-gray-400 mb-6">Plataforma SaaS basada en IA para la automatización de servicio al cliente con procesamiento de lenguaje natural y análisis predictivo.</p>
+                                <div class="flex items-center justify-between">
+                                    <a href="#" class="inline-flex items-center font-semibold text-accent-primary hover:text-accent-secondary transition-colors group">
+                                        Ver Proyecto
+                                        <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                                    </a>
+                                    <span class="text-gray-500 text-sm">2024</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-12">
+                        <a href="#" class="inline-flex items-center px-8 py-3 bg-dark-300 border border-accent-primary/30 text-accent-primary hover:bg-accent-primary/10 rounded-lg font-semibold transition-all duration-300 group">
+                            Ver Todos los Proyectos
+                            <i class="fas fa-arrow-right ml-2 transform group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- "Trusted by" Section - Enhanced -->
+            <section class="py-16 lg:py-20 bg-black">
+                <div class="container px-4 mx-auto sm:px-6 lg:px-8" data-aos="fade-up">
+                    <p class="text-sm font-medium text-center text-gray-500 mb-10 tracking-widest uppercase">CONFÍAN EN NOSOTROS EMPRESAS INNOVADORAS</p>
+                    <div class="flex flex-wrap items-center justify-center gap-x-12 gap-y-8 md:gap-x-16">
+                        <div class="client-logo group">
+                            <img src="https://cdn.worldvectorlogo.com/logos/airbnb.svg" alt="Airbnb" class="h-8 grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                        </div>
+                        <div class="client-logo group">
+                            <img src="https://cdn.worldvectorlogo.com/logos/spotify-1.svg" alt="Spotify" class="h-9 grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                        </div>
+                        <div class="client-logo group">
+                            <img src="https://cdn.worldvectorlogo.com/logos/slack-1.svg" alt="Slack" class="h-8 grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                        </div>
+                        <div class="client-logo group">
+                            <img src="https://cdn.worldvectorlogo.com/logos/netflix-3.svg" alt="Netflix" class="h-7 grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                        </div>
+                        <div class="client-logo group">
+                            <img src="https://cdn.worldvectorlogo.com/logos/amazon-icon-1.svg" alt="Amazon" class="h-8 grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                        </div>
+                        <div class="client-logo group">
+                            <img src="https://cdn.worldvectorlogo.com/logos/uber-2.svg" alt="Uber" class="h-6 grayscale hover:grayscale-0 transition-all duration-500 transform group-hover:scale-110">
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Contact CTA Section - NEW -->
+            <section id="contact" class="py-16 lg:py-24 bg-dark-200 relative overflow-hidden">
+                <!-- Background Elements -->
+                <div class="absolute inset-0 overflow-hidden">
+                    <div class="absolute top-1/4 -right-40 w-80 h-80 md:w-[500px] md:h-[500px] bg-accent-primary rounded-full blur-3xl opacity-20"></div>
+                    <div class="absolute -bottom-40 -left-20 w-80 h-80 md:w-[400px] md:h-[400px] bg-accent-secondary rounded-full blur-3xl opacity-20"></div>
+                </div>
+                
+                <div class="container px-4 mx-auto sm:px-6 lg:px-8 relative z-10">
+                    <div class="bg-dark-300 rounded-2xl overflow-hidden shadow-2xl border border-white/5">
+                        <div class="grid grid-cols-1 lg:grid-cols-2">
+                            <!-- Contact Form Section -->
+                            <div class="p-8 lg:p-12" data-aos="fade-right">
+                                <h2 class="text-3xl lg:text-4xl font-bold font-display text-white mb-6">Inicia Tu <span class="text-gradient">Proyecto Digital</span></h2>
+                                <p class="text-gray-300 mb-8">Estamos listos para convertir tu visión en realidad. Cuéntanos sobre tu proyecto y te contactaremos en menos de 24 horas.</p>
+                                
+                                <form class="space-y-6" hx-post="/contact/" hx-swap="outerHTML">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="name" class="block text-sm font-medium text-gray-400 mb-1">Nombre</label>
+                                            <input type="text" id="name" name="name" placeholder="Tu nombre" class="w-full px-4 py-3 rounded-lg bg-dark-200 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all">
+                                        </div>
+                                        <div>
+                                            <label for="email" class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                                            <input type="email" id="email" name="email" placeholder="tu@email.com" class="w-full px-4 py-3 rounded-lg bg-dark-200 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all">
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="company" class="block text-sm font-medium text-gray-400 mb-1">Empresa</label>
+                                        <input type="text" id="company" name="company" placeholder="Nombre de tu empresa" class="w-full px-4 py-3 rounded-lg bg-dark-200 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all">
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="project" class="block text-sm font-medium text-gray-400 mb-1">Describe tu Proyecto</label>
+                                        <textarea id="project" name="project" rows="4" placeholder="Cuéntanos sobre tu idea o proyecto..." class="w-full px-4 py-3 rounded-lg bg-dark-200 border border-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-accent-primary focus:border-transparent transition-all"></textarea>
+                                    </div>
+                                    
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-400 mb-2">Servicios de Interés</label>
+                                        <div class="grid grid-cols-2 gap-x-4 gap-y-2">
+                                            <label class="flex items-center space-x-2 text-gray-300 text-sm">
+                                                <input type="checkbox" name="services[]" value="web" class="rounded bg-dark-200 border-gray-700 text-accent-primary focus:ring-accent-primary">
+                                                <span>Desarrollo Web</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 text-gray-300 text-sm">
+                                                <input type="checkbox" name="services[]" value="mobile" class="rounded bg-dark-200 border-gray-700 text-accent-primary focus:ring-accent-primary">
+                                                <span>Apps Móviles</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 text-gray-300 text-sm">
+                                                <input type="checkbox" name="services[]" value="design" class="rounded bg-dark-200 border-gray-700 text-accent-primary focus:ring-accent-primary">
+                                                <span>UI/UX Design</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 text-gray-300 text-sm">
+                                                <input type="checkbox" name="services[]" value="cloud" class="rounded bg-dark-200 border-gray-700 text-accent-primary focus:ring-accent-primary">
+                                                <span>Cloud & DevOps</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 text-gray-300 text-sm">
+                                                <input type="checkbox" name="services[]" value="ai" class="rounded bg-dark-200 border-gray-700 text-accent-primary focus:ring-accent-primary">
+                                                <span>AI & Machine Learning</span>
+                                            </label>
+                                            <label class="flex items-center space-x-2 text-gray-300 text-sm">
+                                                <input type="checkbox" name="services[]" value="consulting" class="rounded bg-dark-200 border-gray-700 text-accent-primary focus:ring-accent-primary">
+                                                <span>Consultoría Digital</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <button type="submit" class="w-full px-8 py-4 bg-gradient-to-r from-accent-primary to-accent-secondary text-white rounded-lg font-semibold hover:from-accent-primary/90 hover:to-accent-secondary/90 transition-all shadow-lg hover:shadow-accent-primary/20 transform hover:translate-y-[-2px] btn-glow">
+                                            Enviar Mensaje
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                            
+                            <!-- Contact Info & Map Section -->
+                            <div class="contact-right-panel bg-gradient-to-br from-dark-200 to-black lg:h-full p-8 lg:p-12 flex flex-col" data-aos="fade-left">
+                                <h3 class="text-2xl font-bold font-display text-white mb-4">Información de Contacto</h3>
+                                <p class="text-gray-400 mb-8">Estamos disponibles para responder cualquier pregunta sobre tu proyecto digital.</p>
+                                
+                                <div class="space-y-6 mb-8">
+                                    <div class="flex items-start">
+                                        <div class="mt-1 bg-accent-primary/20 p-3 rounded-full">
+                                            <i class="fas fa-envelope text-accent-primary"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h4 class="text-white font-medium">Email</h4>
+                                            <a href="mailto:hello@apexdev.studio" class="text-gray-400 hover:text-accent-secondary transition-colors">hello@apexdev.studio</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start">
+                                        <div class="mt-1 bg-accent-secondary/20 p-3 rounded-full">
+                                            <i class="fas fa-phone text-accent-secondary"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h4 class="text-white font-medium">Teléfono</h4>
+                                            <a href="tel:+12345678901" class="text-gray-400 hover:text-accent-secondary transition-colors">+1 (234) 567-8901</a>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex items-start">
+                                        <div class="mt-1 bg-accent-third/20 p-3 rounded-full">
+                                            <i class="fas fa-map-marker-alt text-accent-third"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h4 class="text-white font-medium">Ubicación</h4>
+                                            <p class="text-gray-400">San Francisco, CA</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-auto">
+                                    <h4 class="text-lg font-medium text-white mb-4">Síguenos</h4>
+                                    <div class="flex space-x-5">
+                                        <a href="#" class="bg-dark-300 h-12 w-12 rounded-full flex items-center justify-center text-gray-400 hover:text-accent-primary hover:bg-dark-200 transition-all">
+                                            <i class="fab fa-github"></i>
+                                        </a>
+                                        <a href="#" class="bg-dark-300 h-12 w-12 rounded-full flex items-center justify-center text-gray-400 hover:text-accent-primary hover:bg-dark-200 transition-all">
+                                            <i class="fab fa-linkedin"></i>
+                                        </a>
+                                        <a href="#" class="bg-dark-300 h-12 w-12 rounded-full flex items-center justify-center text-gray-400 hover:text-accent-primary hover:bg-dark-200 transition-all">
+                                            <i class="fab fa-twitter"></i>
+                                        </a>
+                                        <a href="#" class="bg-dark-300 h-12 w-12 rounded-full flex items-center justify-center text-gray-400 hover:text-accent-primary hover:bg-dark-200 transition-all">
+                                            <i class="fab fa-instagram"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Libraries -->
+            <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+            
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Initialize Particles.js
+                if (document.getElementById('particles-js')) {
+                    particlesJS('particles-js', {
+                        "particles": {"number": {"value":100,"density": {"enable":true,"value_area":800}},"color": {"value":"#ffffff"},"shape": {"type":"circle"},"opacity": {"value":0.3,"random":true,"anim": {"enable":false}},"size": {"value":3,"random":true},"line_linked": {"enable":true,"distance":150,"color":"#ffffff","opacity":0.15,"width":1},"move": {"enable":true,"speed":2,"direction":"none","random":true,"straight":false,"out_mode":"out","bounce":false}},
+                        "interactivity": {"detect_on":"canvas","events": {"onhover": {"enable":true,"mode":"grab"},"onclick": {"enable":true,"mode":"push"},"resize":true},"modes": {"grab": {"distance":120,"line_linked": {"opacity":0.3}},"bubble": {"distance":400,"size":40,"duration":2,"opacity":8,"speed":3},"repulse": {"distance":200,"duration":0.4},"push": {"particles_nb":4},"remove": {"particles_nb":2}}},
+                        "retina_detect":true
+                    });
+                }
+            
+                const codeElement = document.getElementById('typed-code');
+                const cursorElement = document.getElementById('cursor');
+                const lineNumbersElement = document.getElementById('line-numbers');
+                const simulatedOutputElement = document.getElementById('simulated-output');
+            
+                if (codeElement && cursorElement && lineNumbersElement && simulatedOutputElement) {
+                    {% verbatim %}
+                    const reactCodeLines = [
+                        { text: "import React, { useState, useEffect } from 'react';", type: 'keyword' },
+                        { text: "import { motion } from 'framer-motion';", type: 'keyword'},
+                        { text: "", type: 'normal' },
+                        { text: "const ApexEngine = ({ title }) => {", type: 'normal' },
+                        { text: "  const [status, setStatus] = useState('Initializing...');", type: 'normal' },
+                        { text: "  const [isCompiled, setIsCompiled] = useState(false);", type: 'normal' },
+                        { text: "", type: 'normal' },
+                        { text: "  useEffect(() => {", type: 'keyword' },
+                        { text: "    setStatus('Compiling module...');", type: 'output' },
+                        { text: "    const timer = setTimeout(() => {", type: 'normal' },
+                        { text: "      setStatus(`Module '${title}' compiled successfully!`);", type: 'output' },
+                        { text: "      setIsCompiled(true);", type: 'normal' },
+                        { text: "    }, 2500);", type: 'normal' },
+                        { text: "    return () => clearTimeout(timer);", type: 'keyword' },
+                        { text: "  }, [title]);", type: 'keyword' },
+                        { text: "", type: 'normal' },
+                        { text: "  return (", type: 'keyword' },
+                        { text: "    <motion.div ", type: 'tag' },
+                        { text: "      className=\"apex-output-display\"", type: 'attribute' },
+                        { text: "      initial={{ opacity: 0, y: 20 }}", type: 'attribute' },
+                        { text: "      animate={{ opacity: isCompiled ? 1 : 0, y: isCompiled ? 0 : 20 }}", type: 'attribute' },
+                        { text: "      transition={{ duration: 0.5 }} >", type: 'tag' },
+                        { text: "      <h2 className=\"text-accent-primary\">{title}</h2>", type: 'tag' },
+                        { text: "      <p className=\"status-text\">{status}</p>", type: 'tag' },
+                        { text: "    </motion.div>", type: 'tag' },
+                        { text: "  );", type: 'keyword' },
+                        { text: "};", type: 'normal' },
+                        { text: "", type: 'normal' },
+                        { text: "export default ApexEngine;", type: 'keyword' }
+                    ];
+                    {% endverbatim %}
+            
+                    let lineIndex = 0;
+                    let charIndex = 0;
+                    const typingSpeed = 50;
+                    const lineDelay = 200;
+                    let currentLineNumber = 0;
+            
+                    function updateLineNumbers() {
+                        lineNumbersElement.innerHTML = '';
+                        for (let i = 0; i <= currentLineNumber; i++) {
+                            const div = document.createElement('div');
+                            div.textContent = i + 1;
+                            lineNumbersElement.appendChild(div);
+                        }
+                    }
+                    updateLineNumbers();
+            
+                    function updateSimulatedOutput(text, isCommand = false) {
+                        if (isCommand) {
+                            simulatedOutputElement.innerHTML = `<span class="output-prompt text-accent-secondary">&gt; </span>${text}`;
+                        } else {
+                            const newLine = document.createElement('div');
+                            newLine.innerHTML = `<span class="output-prompt text-gray-500">&nbsp;&nbsp;</span>${text}`;
+                            simulatedOutputElement.appendChild(newLine);
+                        }
+                        simulatedOutputElement.scrollTop = simulatedOutputElement.scrollHeight;
+                    }
+            
+                    function typeCode() {
+                        if (lineIndex < reactCodeLines.length) {
+                            const currentLine = reactCodeLines[lineIndex];
+            
+                            if (charIndex === 0) {
+                                if (lineIndex > 0) codeElement.appendChild(document.createElement('br'));
+                                currentLineNumber = lineIndex;
+                                updateLineNumbers();
+                                if (currentLine.type === 'output') {
+                                    updateSimulatedOutput(currentLine.text);
+                                }
+                            }
+                            
+                            if (charIndex < currentLine.text.length && currentLine.type !== 'output') {
+                                let charToType = currentLine.text.charAt(charIndex);
+                                let span = document.createElement('span');
+                                const remainingText = currentLine.text.substring(charIndex);
+            
+                                if (remainingText.match(/^(import|export|default|const|let|var|function|return|true|false|null|if|else|for|while|switch|case|break|continue|new|this|typeof|instanceof|delete|try|catch|finally|throw|useEffect|useState)\b/)) {
+                                    span.className = 'code-keyword';
+                                } else if (remainingText.match(/^['"`]/)) {
+                                    let endQuoteIndex = remainingText.indexOf(charToType, 1);
+                                    if (endQuoteIndex === -1) endQuoteIndex = remainingText.length -1;
+                                    span.className = 'code-string';
+                                    span.textContent = remainingText.substring(0, endQuoteIndex + 1);
+                                    charIndex += endQuoteIndex;
+                                } else if (remainingText.match(/^\/\/.*/)) {
+                                    span.className = 'code-comment';
+                                    span.textContent = remainingText;
+                                    charIndex = currentLine.text.length -1;
+                                } else if (remainingText.match(/^<\/?([A-Za-z][A-Za-z0-9]*)\b/)) {
+                                    span.className = 'code-tag';
+                                } else if (remainingText.match(/^[A-Z][a-zA-Z0-9]*\b/)) {
+                                    span.className = 'code-component';
+                                } else if (remainingText.match(/^[a-z][A-Za-z0-9_]*\s*=\s*".*?"/)) { 
+                                    span.className = 'code-attribute';
+                                } else {
+                                    span.className = 'code-normal';
+                                }
+                                
+                                if (span.textContent === '') span.textContent = charToType;
+                                codeElement.appendChild(span);
+                                charIndex++;
+                                setTimeout(typeCode, typingSpeed);
+            
+                            } else {
+                                lineIndex++;
+                                charIndex = 0;
+                                if (lineIndex < reactCodeLines.length && reactCodeLines[lineIndex].text === "" && lineIndex > 0) {
+                                     codeElement.appendChild(document.createElement('br'));
+                                     currentLineNumber = lineIndex;
+                                     updateLineNumbers();
+                                }
+                                setTimeout(typeCode, lineDelay);
+                            }
+                        } else {
+                            cursorElement.style.display = 'none';
+                            updateSimulatedOutput("ApexEngine.jsx compiled. Ready.", true);
+                        }
+                    }
+                    
+                    const codeEditorElement = document.getElementById('code-editor');
+                    if (codeEditorElement) { // Check if the element exists before observing
+                        const codeObserver = new IntersectionObserver((entries) => {
+                            if(entries[0].isIntersecting){
+                                updateSimulatedOutput("Initiating ApexDev Code Simulation...", true);
+                                typeCode();
+                                codeObserver.disconnect(); 
+                            }
+                        }, { threshold: 0.2 }); 
+                        codeObserver.observe(codeEditorElement);
+                    }
+                }
+            
+                const animationDelayElements = document.querySelectorAll('[class*="animation-delay-"]');
+                animationDelayElements.forEach(el => { 
+                    const delayClass = Array.from(el.classList).find(cls => cls.startsWith('animation-delay-'));
+                    if (delayClass) {
+                        const delay = delayClass.split('-').pop();
+                        el.style.animationDelay = `${parseInt(delay) / 1000}s`;
+                    }
+                 });
+            
+                const cards = document.querySelectorAll('.process-card');
+                cards.forEach(card => {
+                    const cardInner = card.querySelector('.process-card-inner');
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        const rotateY = (x / (rect.width / 2)) * 10; 
+                        const rotateX = -(y / (rect.height / 2)) * 10;
+                        cardInner.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        cardInner.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                    });
+                });
+                
+                // Initialize 3D Globe for Services Section
+                if (document.getElementById('service-globe')) {
+                    initServiceGlobe();
+                }
+                
+                // Hero text animation with GSAP
+                gsap.from(".hero-title", {
+                    duration: 1.2, 
+                    y: 50, 
+                    opacity: 0, 
+                    ease: "power3.out",
+                    delay: 0.5
+                });
+                
+                gsap.from(".hero-subtitle", {
+                    duration: 1.2, 
+                    y: 30, 
+                    opacity: 0, 
+                    ease: "power3.out",
+                    delay: 0.8
+                });
+                
+                // Function to initialize 3D globe
+                function initServiceGlobe() {
+                    const container = document.getElementById('service-globe');
+                    
+                    // Scene setup
+                    const scene = new THREE.Scene();
+                    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+                    camera.position.z = 5;
+                    
+                    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+                    renderer.setSize(container.clientWidth, container.clientHeight);
+                    renderer.setPixelRatio(window.devicePixelRatio);
+                    container.appendChild(renderer.domElement);
+                    
+                    // Create globe geometry
+                    const globeGeometry = new THREE.SphereGeometry(2, 32, 32);
+                    const globeMaterial = new THREE.MeshBasicMaterial({
+                        color: 0x6366F1,
+                        wireframe: true,
+                        transparent: true,
+                        opacity: 0.3
+                    });
+                    const globe = new THREE.Mesh(globeGeometry, globeMaterial);
+                    scene.add(globe);
+                    
+                    // Create points on the globe (representing services)
+                    const pointsGroup = new THREE.Group();
+                    scene.add(pointsGroup);
+                    
+                    // Add random points
+                    for (let i = 0; i < 150; i++) {
+                        const phi = Math.acos(-1 + (2 * Math.random()));
+                        const theta = Math.random() * Math.PI * 2;
+                        
+                        const pointGeometry = new THREE.SphereGeometry(0.03, 8, 8);
+                        const pointMaterial = new THREE.MeshBasicMaterial({
+                            color: new THREE.Color(
+                                0.3 + Math.random() * 0.7, // More blue to cyan
+                                0.3 + Math.random() * 0.7, // More cyan
+                                0.5 + Math.random() * 0.5  // Some brightness
+                            )
+                        });
+                        
+                        const point = new THREE.Mesh(pointGeometry, pointMaterial);
+                        
+                        point.position.x = 2 * Math.sin(phi) * Math.cos(theta);
+                        point.position.y = 2 * Math.sin(phi) * Math.sin(theta);
+                        point.position.z = 2 * Math.cos(phi);
+                        
+                        pointsGroup.add(point);
+                    }
+                    
+                    // Handle resize
+                    window.addEventListener('resize', () => {
+                        camera.aspect = container.clientWidth / container.clientHeight;
+                        camera.updateProjectionMatrix();
+                        renderer.setSize(container.clientWidth, container.clientHeight);
+                    });
+                    
+                    // Animation loop
+                    function animate() {
+                        requestAnimationFrame(animate);
+                        
+                        globe.rotation.y += 0.001;
+                        pointsGroup.rotation.y += 0.001;
+                        
+                        renderer.render(scene, camera);
+                    }
+                    
+                    animate();
+                }
+            });
+            </script>
+            
+            <style>
+            /* Hero Text Dynamic Animation Placeholder */
+            .text-hero-dynamic {
+                /* animation: reveal-text 1s ease-out forwards; */
+                /* opacity: 0; */
+            }
+            
+            /* 3D Tilt Effect for Process Cards */
+            .process-card {
+                transform-style: preserve-3d;
+            }
+            .process-card-inner {
+                transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                transform-style: preserve-3d;
+                will-change: transform;
+            }
+            
+            /* Styles for Code Typing Animation - Enhanced */
+            #code-editor {
+                background-color: #161821; 
+                color: #E0E0E0; 
+                border-bottom-left-radius: 0; 
+                border-bottom-right-radius: 0;
+                overflow-x: auto; 
+                position: relative;
+            }
+            #line-numbers {
+                background-color: #1a1d29; 
+                border-right: 1px solid #2a2f42;
+            }
+            
+            #typed-code .code-keyword { color: #FF79C6; }
+            #typed-code .code-string { color: #F1FA8C; }
+            #typed-code .code-comment { color: #6272A4; font-style: italic; }
+            #typed-code .code-tag { color: #8BE9FD; } 
+            #typed-code .code-attribute { color: #BD93F9; } 
+            #typed-code .code-component { color: #50FA7B; } 
+            #typed-code .code-normal { color: #E0E0E0; }
+            
+            #cursor {
+                color: #FF79C6; 
+                font-weight: bold;
+                animation: blink 0.9s step-end infinite;
+            }
+            
+            @keyframes blink {
+                from, to { opacity: 1; }
+                50% { opacity: 0; }
+            }
+            
+            #simulated-output {
+                background-color: #1a1d29; 
+                border-top: 1px solid #2a2f42;
+                max-height: 120px;
+                overflow-y: auto;
+            }
+            .output-prompt {
+                user-select: none;
+            }
+            
+            .text-gradient-animated {
+                background-image: linear-gradient(to right, theme('colors.accent.primary'), theme('colors.accent.secondary'), theme('colors.accent.third'), theme('colors.accent.secondary'), theme('colors.accent.primary'));
+                background-size: 250% auto;
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                animation: shimmer-text 5s linear infinite;
+            }
+            
+            @keyframes shimmer-text {
+                0% { background-position: 250% center; }
+                100% { background-position: 0% center; }
+            }
+            
+            /* Animation for technology stack marquee */
+            @keyframes marquee {
+                0% { transform: translateX(0%); }
+                100% { transform: translateX(-100%); }
+            }
+            @keyframes marquee-reverse {
+                0% { transform: translateX(-100%); }
+                100% { transform: translateX(0%); }
+            }
+            
+            .marquee {
+                display: flex;
+                animation: marquee 25s linear infinite;
+                width: max-content;
+            }
+            .marquee-reverse {
+                animation: marquee-reverse 30s linear infinite;
+                width: max-content;
+            }
+            
+            .marquee-container {
+                overflow: hidden;
+                width: 100%;
+                white-space: nowrap;
+            }
+            
+            #particles-js {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 0;
+            }
+            .animation-delay-2000 { animation-delay: 2s !important; }
+            .animation-delay-4000 { animation-delay: 4s !important; }
+            </style>
+            
+            {% endblock %}

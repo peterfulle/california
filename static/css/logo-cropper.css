@@ -1,0 +1,238 @@
+/* Professional Logo Cropper Styles */
+
+/* Modal Animation */
+#logoCropperModal {
+    backdrop-filter: blur(10px);
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Cropper Container Enhancement */
+.cropper-container {
+    font-family: 'Inter', sans-serif !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+}
+
+/* Cropper View Box */
+.cropper-view-box {
+    border: 2px solid rgba(59, 130, 246, 0.8) !important;
+    box-shadow: 0 0 0 1px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* Cropper Lines */
+.cropper-dashed {
+    border: 1px dashed rgba(255, 255, 255, 0.8) !important;
+}
+
+.cropper-center {
+    background-color: rgba(59, 130, 246, 0.8) !important;
+    width: 2px !important;
+    height: 2px !important;
+    border-radius: 50% !important;
+}
+
+/* Cropper Points */
+.cropper-point {
+    background-color: #3b82f6 !important;
+    border: 2px solid #ffffff !important;
+    border-radius: 50% !important;
+    width: 10px !important;
+    height: 10px !important;
+    opacity: 0.8 !important;
+}
+
+.cropper-point:hover {
+    opacity: 1 !important;
+    transform: scale(1.2) !important;
+}
+
+/* Cropper Face */
+.cropper-face {
+    background-color: transparent !important;
+}
+
+/* Upload Zone Enhancements */
+.upload-zone {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 2px dashed #d1d5db;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.upload-zone::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(147, 51, 234, 0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.upload-zone:hover::before {
+    opacity: 1;
+}
+
+.upload-zone:hover {
+    border-color: #3b82f6;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.15);
+}
+
+.upload-zone.border-blue-400 {
+    border-color: #60a5fa !important;
+    background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%) !important;
+    transform: scale(1.02) !important;
+}
+
+/* Preview Container */
+#logoPreview {
+    background: radial-gradient(circle at center, #f8fafc 0%, #e2e8f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5e7eb;
+}
+
+/* Control Buttons */
+.control-button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.control-button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Modal Content */
+.modal-content {
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Success Message Animation */
+.success-message {
+    animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #logoCropperModal .max-w-4xl {
+        max-width: 95vw;
+        margin: 1rem;
+    }
+    
+    .grid.lg\\:grid-cols-3 {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem !important;
+    }
+    
+    .lg\\:col-span-2 {
+        grid-column: span 1 !important;
+    }
+    
+    .upload-zone {
+        padding: 1.5rem 1rem;
+    }
+}
+
+/* Loading States */
+.cropper-loading {
+    position: relative;
+}
+
+.cropper-loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 32px;
+    height: 32px;
+    margin: -16px 0 0 -16px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Professional Typography */
+.field-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.875rem;
+}
+
+/* Enhanced Button Styles */
+.btn-primary-gradient {
+    background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary-gradient:hover {
+    background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4);
+}
+
+/* Focus States for Accessibility */
+button:focus,
+.control-button:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+/* Smooth Transitions */
+* {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+}

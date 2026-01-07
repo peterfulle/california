@@ -1,0 +1,847 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join SF Startup Network - Exclusive for San Francisco Startups</title>
+    
+    <!-- Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'sf': {
+                            '50': '#f8fafc',
+                            '100': '#f1f5f9',
+                            '200': '#e2e8f0',
+                            '300': '#cbd5e1',
+                            '400': '#94a3b8',
+                            '500': '#64748b',
+                            '600': '#475569',
+                            '700': '#334155',
+                            '800': '#1e293b',
+                            '900': '#0f172a',
+                        },
+                        'tech': {
+                            'purple': '#6366f1',
+                            'blue': '#3b82f6',
+                            'emerald': '#10b981',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .font-inter { font-family: 'Inter', sans-serif; }
+        
+        .professional-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-indicator {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .step-indicator.completed {
+            background: linear-gradient(135deg, #10b981, #059669);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .step-indicator.active {
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            box-shadow: 0 0 25px rgba(99, 102, 241, 0.5);
+            transform: scale(1.1);
+            animation: pulse 2s infinite;
+        }
+        
+        .step-indicator.future {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8);
+            transform: scale(0.95);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.5); }
+            50% { box-shadow: 0 0 35px rgba(99, 102, 241, 0.7); }
+        }
+        
+        .step-option {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .step-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.15);
+        }
+        
+        .step-option.selected {
+            border-color: #6366f1 !important;
+            background-color: #f8fafc !important;
+            box-shadow: 0 8px 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        
+        .step-option.selected .radio-indicator {
+            background-color: #6366f1 !important;
+            opacity: 1 !important;
+        }
+        
+        .professional-button {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .professional-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        
+        .professional-input {
+            transition: all 0.3s ease;
+        }
+        
+        .professional-input:focus {
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        .user-profile-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .profile-avatar {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .button-disabled {
+            background: linear-gradient(135deg, #cbd5e1, #94a3b8) !important;
+            cursor: not-allowed !important;
+            opacity: 0.6;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .button-disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .field-valid {
+            border-color: #10b981 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+        }
+        
+        .field-invalid {
+            border-color: #ef4444 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+        }
+    </style>
+</head>
+
+<body class="min-h-full bg-gradient-to-br from-slate-50 via-white to-gray-50 font-inter">
+    <!-- Background Pattern -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-blue-100/20 to-purple-100/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-100/20 to-cyan-100/20 rounded-full mix-blend-multiply filter blur-3xl"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="min-h-screen flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="max-w-6xl w-full grid lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+            
+            <!-- Left Column - SF Branding -->
+            <div class="lg:col-span-2 space-y-6 lg:space-y-8 text-center lg:text-left">
+                <!-- SF Logo -->
+                <div class="flex items-center justify-center lg:justify-start space-x-4">
+                    <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl flex items-center justify-center shadow-xl">
+                        <div class="text-white font-bold text-lg sm:text-2xl">SF</div>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-bold text-sf-800">San Francisco</h1>
+                        <p class="text-sm sm:text-base text-sf-600 font-medium">Startup Network</p>
+                    </div>
+                </div>
+                
+                <!-- Main Heading -->
+                <div class="space-y-4 lg:space-y-6">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-sf-900 leading-tight">
+                        Join San Francisco's
+                        <span class="bg-gradient-to-r from-tech-blue to-tech-purple bg-clip-text text-transparent">
+                            Elite Startup
+                        </span>
+                        Community
+                    </h2>
+                    <p class="text-lg sm:text-xl text-sf-600 leading-relaxed">
+                        An exclusive network for founders, investors, and innovators building the future from the heart of Silicon Valley.
+                    </p>
+                    
+                    <!-- SF Badge -->
+                    <div class="inline-flex items-center px-3 sm:px-4 py-2 rounded-full bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-200">
+                        <div class="w-2 h-2 bg-orange-500 rounded-full mr-2 sm:mr-3"></div>
+                        <span class="text-xs sm:text-sm font-semibold text-orange-700">Exclusive to San Francisco, CA Startups</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column - Registration Form -->
+            <div class="lg:col-span-3 w-full max-w-2xl mx-auto">
+                <!-- Progress Steps -->
+                <div class="mb-6 lg:mb-10">
+                    <div class="flex items-center justify-between px-4 sm:px-0">
+                        <div class="flex flex-col items-center space-y-1 sm:space-y-2">
+                            <div id="step1-indicator" class="step-indicator active w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">1</div>
+                            <span id="step1-label" class="text-xs sm:text-sm font-medium text-tech-purple">Role</span>
+                        </div>
+                        
+                        <div class="flex-1 mx-2 sm:mx-6 h-2 bg-sf-200 rounded-full">
+                            <div id="progress1" class="h-full bg-tech-purple rounded-full w-0 transition-all duration-500"></div>
+                        </div>
+                        
+                        <div class="flex flex-col items-center space-y-1 sm:space-y-2">
+                            <div id="step2-indicator" class="step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">2</div>
+                            <span id="step2-label" class="text-xs sm:text-sm font-medium text-sf-500">Profile</span>
+                        </div>
+                        
+                        <div class="flex-1 mx-2 sm:mx-6 h-2 bg-sf-200 rounded-full">
+                            <div id="progress2" class="h-full bg-tech-purple rounded-full w-0 transition-all duration-500"></div>
+                        </div>
+                        
+                        <div class="flex flex-col items-center space-y-1 sm:space-y-2">
+                            <div id="step3-indicator" class="step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base">3</div>
+                            <span id="step3-label" class="text-xs sm:text-sm font-medium text-sf-500">Account</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Container -->
+                <div class="professional-card rounded-xl lg:rounded-2xl p-6 sm:p-8 lg:p-10">
+                    <form method="post" id="registrationForm" action="{% url 'core:register' %}">
+                        {% csrf_token %}
+                        
+                        <!-- Step 1: Role Selection -->
+                        <div id="step1" class="form-step">
+                            <div class="text-center mb-6 lg:mb-10">
+                                <h2 class="text-2xl sm:text-3xl font-bold text-sf-900 mb-3 lg:mb-4">Your Role in the Ecosystem</h2>
+                                <p class="text-base sm:text-lg text-sf-600">How do you contribute to San Francisco's startup landscape?</p>
+                            </div>
+                            
+                            <div class="space-y-3 sm:space-y-4">
+                                <!-- Founder Option -->
+                                <div class="step-option border-2 border-sf-200 rounded-xl p-4 sm:p-6" data-value="founder">
+                                    <input type="radio" name="user_type" id="founder" value="founder" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 sm:space-x-4">
+                                            <div class="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex-shrink-0"></div>
+                                            <div>
+                                                <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">Founder / Entrepreneur</h3>
+                                                <p class="text-sm sm:text-base text-sf-600">Building or scaling a startup in San Francisco</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-5 h-5 sm:w-6 sm:h-6 border-2 border-sf-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <div class="radio-indicator w-2 h-2 sm:w-3 sm:h-3 bg-tech-purple rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Investor Option -->
+                                <div class="step-option border-2 border-sf-200 rounded-xl p-4 sm:p-6" data-value="investor">
+                                    <input type="radio" name="user_type" id="investor" value="investor" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 sm:space-x-4">
+                                            <div class="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-emerald-500 to-green-600 rounded-full flex-shrink-0"></div>
+                                            <div>
+                                                <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">Investor / VC</h3>
+                                                <p class="text-sm sm:text-base text-sf-600">Funding innovation in the Bay Area</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-5 h-5 sm:w-6 sm:h-6 border-2 border-sf-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <div class="radio-indicator w-2 h-2 sm:w-3 sm:h-3 bg-tech-purple rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Advisor Option -->
+                                <div class="step-option border-2 border-sf-200 rounded-xl p-4 sm:p-6" data-value="advisor">
+                                    <input type="radio" name="user_type" id="advisor" value="advisor" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 sm:space-x-4">
+                                            <div class="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex-shrink-0"></div>
+                                            <div>
+                                                <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">Strategic Advisor</h3>
+                                                <p class="text-sm sm:text-base text-sf-600">Mentoring startups with domain expertise</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-5 h-5 sm:w-6 sm:h-6 border-2 border-sf-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <div class="radio-indicator w-2 h-2 sm:w-3 sm:h-3 bg-tech-purple rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Ecosystem Option -->
+                                <div class="step-option border-2 border-sf-200 rounded-xl p-4 sm:p-6" data-value="ecosystem">
+                                    <input type="radio" name="user_type" id="ecosystem" value="ecosystem" class="hidden" required>
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3 sm:space-x-4">
+                                            <div class="w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-full flex-shrink-0"></div>
+                                            <div>
+                                                <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">Ecosystem Partner</h3>
+                                                <p class="text-sm sm:text-base text-sf-600">Service provider or ecosystem contributor</p>
+                                            </div>
+                                        </div>
+                                        <div class="w-5 h-5 sm:w-6 sm:h-6 border-2 border-sf-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                            <div class="radio-indicator w-2 h-2 sm:w-3 sm:h-3 bg-tech-purple rounded-full opacity-0 transition-opacity duration-300"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 2: Profile -->
+                        <div id="step2" class="form-step hidden">
+                            <!-- User Profile Preview -->
+                            <div id="userProfilePreview" class="user-profile-card rounded-xl p-4 sm:p-6 mb-6 lg:mb-8">
+                                <div class="flex items-center space-x-4">
+                                    <div class="profile-avatar w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl">
+                                        <span id="profileInitials">U</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">
+                                            Creating your <span id="profileRoleText">Professional</span> profile
+                                        </h3>
+                                        <p class="text-sm sm:text-base text-sf-600" id="profileDescription">
+                                            Building your presence in the SF startup ecosystem
+                                        </p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-orange-500 rounded-full mr-2"></div>
+                                            <span class="text-xs sm:text-sm text-orange-700 font-medium">San Francisco Network Member</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mb-6 lg:mb-10">
+                                <h2 class="text-2xl sm:text-3xl font-bold text-sf-900 mb-3 lg:mb-4">Professional Profile</h2>
+                                <p class="text-base sm:text-lg text-sf-600">Share your professional details</p>
+                            </div>
+                            
+                            <div class="space-y-4 sm:space-y-6">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                                    <div>
+                                        <label for="first_name" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">First Name *</label>
+                                        <input type="text" name="first_name" id="first_name" required
+                                               class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
+                                               placeholder="John">
+                                    </div>
+                                    <div>
+                                        <label for="last_name" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Last Name *</label>
+                                        <input type="text" name="last_name" id="last_name" required
+                                               class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
+                                               placeholder="Smith">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="email" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Professional Email *</label>
+                                    <input type="email" name="email" id="email" required
+                                           class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
+                                           placeholder="john@yourcompany.com">
+                                    <p class="mt-2 text-xs sm:text-sm text-sf-500">Your professional email address in SF</p>
+                                    <div id="emailValidation" class="hidden mt-2">
+                                        <p class="text-xs text-red-600">Please enter a valid email address</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: Account -->
+                        <div id="step3" class="form-step hidden">
+                            <!-- User Profile Preview -->
+                            <div id="userProfilePreview3" class="user-profile-card rounded-xl p-4 sm:p-6 mb-6 lg:mb-8">
+                                <div class="flex items-center space-x-4">
+                                    <div class="profile-avatar w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center text-white font-bold text-lg sm:text-xl">
+                                        <span id="profileInitials3">U</span>
+                                    </div>
+                                    <div class="flex-1">
+                                        <h3 class="text-lg sm:text-xl font-bold text-sf-900 mb-1">
+                                            <span id="profileFullName">Your Name</span> · <span id="profileRoleText3">Professional</span>
+                                        </h3>
+                                        <p class="text-sm sm:text-base text-sf-600" id="profileEmail3">your@email.com</p>
+                                        <div class="flex items-center mt-2">
+                                            <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                                            <span class="text-xs sm:text-sm text-green-700 font-medium">Almost ready to join SF Network</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="text-center mb-6 lg:mb-10">
+                                <h2 class="text-2xl sm:text-3xl font-bold text-sf-900 mb-3 lg:mb-4">Secure Your Account</h2>
+                                <p class="text-base sm:text-lg text-sf-600">Create your login credentials</p>
+                            </div>
+                            
+                            <div class="space-y-4 sm:space-y-6">
+                                <div>
+                                    <label for="username" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Username *</label>
+                                    <input type="text" name="username" id="username" required
+                                           class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
+                                           placeholder="Choose a unique username">
+                                </div>
+
+                                <div>
+                                    <label for="password1" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Password *</label>
+                                    <input type="password" name="password1" id="password1" required
+                                           class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
+                                           placeholder="Create a secure password">
+                                    <p class="mt-2 text-xs sm:text-sm text-sf-500">Minimum 8 characters with letters and numbers</p>
+                                </div>
+
+                                <div>
+                                    <label for="password2" class="block text-xs sm:text-sm font-bold text-sf-700 mb-2 sm:mb-3 uppercase tracking-wide">Confirm Password *</label>
+                                    <input type="password" name="password2" id="password2" required
+                                           class="professional-input w-full px-3 sm:px-4 py-3 sm:py-4 border-2 border-sf-200 rounded-xl focus:border-tech-purple transition-all duration-300 text-sm sm:text-base"
+                                           placeholder="Confirm your password">
+                                    <div id="passwordValidation" class="hidden mt-2">
+                                        <p class="text-xs text-red-600">Passwords do not match</p>
+                                    </div>
+                                </div>
+
+                                <div class="bg-sf-50 rounded-xl p-4 sm:p-6 border border-sf-200">
+                                    <label class="flex items-start space-x-3 sm:space-x-4 cursor-pointer">
+                                        <input type="checkbox" name="terms" id="terms" required
+                                               class="mt-1 h-4 w-4 sm:h-5 sm:w-5 text-tech-purple border-sf-300 rounded">
+                                        <span class="text-xs sm:text-sm text-sf-700">
+                                            I agree to the Terms of Service and Privacy Policy for the San Francisco Startup Network. I confirm that I am affiliated with a San Francisco-based startup or organization.
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mt-8 lg:mt-12 pt-6 lg:pt-8 border-t border-sf-200 space-y-4 sm:space-y-0">
+                            <button type="button" id="prevBtn" 
+                                    class="hidden order-2 sm:order-1 px-4 sm:px-6 py-3 text-sf-600 hover:text-sf-800 font-semibold rounded-xl transition-all duration-300 hover:bg-sf-50 text-sm sm:text-base">
+                                Previous
+                            </button>
+                            
+                            <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 order-1 sm:order-2 sm:ml-auto">
+                                <button type="button" id="nextBtn" 
+                                        class="professional-button button-disabled w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-white font-bold rounded-xl shadow-xl text-sm uppercase tracking-wide" disabled>
+                                    Continue
+                                </button>
+                                
+                                <button type="submit" id="submitBtn" 
+                                        class="hidden professional-button button-disabled w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 text-white font-bold rounded-xl shadow-xl text-sm uppercase tracking-wide" disabled>
+                                    Join SF Network
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Login Link -->
+                <div class="mt-6 lg:mt-10 text-center">
+                    <div class="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 rounded-xl bg-sf-50 border border-sf-200">
+                        <span class="text-sm sm:text-base text-sf-600 mr-2">Already a member?</span>
+                        <a href="{% url 'core:login' %}" class="font-bold text-tech-purple hover:text-tech-blue transition-colors text-sm sm:text-base">
+                            Sign In
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('SF Registration Form loaded');
+            
+            let currentStep = 1;
+            const totalSteps = 3;
+            let selectedRole = '';
+            let isEmailValid = false;
+            
+            // Role configuration
+            const roleConfig = {
+                'founder': {
+                    title: 'Founder',
+                    description: 'Building innovative startups in San Francisco',
+                    initials: 'FN',
+                    color: 'from-orange-500 to-red-600'
+                },
+                'investor': {
+                    title: 'Investor',
+                    description: 'Funding the next generation of SF startups',
+                    initials: 'IN',
+                    color: 'from-emerald-500 to-green-600'
+                },
+                'advisor': {
+                    title: 'Advisor',
+                    description: 'Mentoring startups with strategic expertise',
+                    initials: 'AD',
+                    color: 'from-purple-500 to-indigo-600'
+                },
+                'ecosystem': {
+                    title: 'Partner',
+                    description: 'Supporting the SF startup ecosystem',
+                    initials: 'EP',
+                    color: 'from-blue-500 to-cyan-600'
+                }
+            };
+            
+            // Get all step options
+            const stepOptions = document.querySelectorAll('.step-option');
+            console.log('Found step options:', stepOptions.length);
+            
+            // Add click handlers to role options
+            stepOptions.forEach((option) => {
+                option.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const roleValue = option.dataset.value;
+                    console.log('Option clicked:', roleValue);
+                    
+                    // Clear all selections
+                    stepOptions.forEach(opt => {
+                        opt.classList.remove('selected');
+                        const radio = opt.querySelector('input[type="radio"]');
+                        if (radio) radio.checked = false;
+                    });
+                    
+                    // Select current option
+                    option.classList.add('selected');
+                    const radio = option.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+                        selectedRole = roleValue;
+                        updateUserProfile();
+                        enableContinueButton();
+                        console.log('Radio checked:', radio.value);
+                    }
+                    
+                    // Auto-advance after selection
+                    setTimeout(() => {
+                        if (currentStep === 1) {
+                            goToStep(2);
+                        }
+                    }, 800);
+                });
+            });
+            
+            // Email validation
+            function validateEmail(email) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+            
+            // Update user profile display
+            function updateUserProfile() {
+                const config = roleConfig[selectedRole];
+                if (!config) return;
+                
+                // Update step 2 profile
+                const profileInitials = document.getElementById('profileInitials');
+                const profileRoleText = document.getElementById('profileRoleText');
+                const profileDescription = document.getElementById('profileDescription');
+                
+                if (profileInitials) profileInitials.textContent = config.initials;
+                if (profileRoleText) profileRoleText.textContent = config.title;
+                if (profileDescription) profileDescription.textContent = config.description;
+                
+                // Update step 3 profile
+                const profileInitials3 = document.getElementById('profileInitials3');
+                const profileRoleText3 = document.getElementById('profileRoleText3');
+                
+                if (profileInitials3) profileInitials3.textContent = config.initials;
+                if (profileRoleText3) profileRoleText3.textContent = config.title;
+            }
+            
+            // Enable/disable continue button
+            function enableContinueButton() {
+                const nextBtn = document.getElementById('nextBtn');
+                nextBtn.classList.remove('button-disabled');
+                nextBtn.disabled = false;
+            }
+            
+            // Real-time profile updates
+            document.getElementById('first_name').addEventListener('input', function() {
+                updateProfileName();
+                validateStep2();
+            });
+            
+            document.getElementById('last_name').addEventListener('input', function() {
+                updateProfileName();
+                validateStep2();
+            });
+            
+            document.getElementById('email').addEventListener('input', function() {
+                updateProfileEmail();
+                validateEmailField();
+                validateStep2();
+            });
+            
+            function updateProfileName() {
+                const firstName = document.getElementById('first_name').value;
+                const lastName = document.getElementById('last_name').value;
+                const fullName = `${firstName} ${lastName}`.trim();
+                
+                const profileFullName = document.getElementById('profileFullName');
+                if (profileFullName) {
+                    profileFullName.textContent = fullName || 'Your Name';
+                }
+                
+                // Update initials
+                if (firstName && lastName) {
+                    const initials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+                    const profileInitials3 = document.getElementById('profileInitials3');
+                    if (profileInitials3) profileInitials3.textContent = initials;
+                }
+            }
+            
+            function updateProfileEmail() {
+                const email = document.getElementById('email').value;
+                const profileEmail3 = document.getElementById('profileEmail3');
+                if (profileEmail3) {
+                    profileEmail3.textContent = email || 'your@email.com';
+                }
+            }
+            
+            function validateEmailField() {
+                const email = document.getElementById('email').value;
+                const emailInput = document.getElementById('email');
+                const emailValidation = document.getElementById('emailValidation');
+                
+                if (email.length > 0) {
+                    if (validateEmail(email)) {
+                        emailInput.classList.remove('field-invalid');
+                        emailInput.classList.add('field-valid');
+                        emailValidation.classList.add('hidden');
+                        isEmailValid = true;
+                    } else {
+                        emailInput.classList.remove('field-valid');
+                        emailInput.classList.add('field-invalid');
+                        emailValidation.classList.remove('hidden');
+                        isEmailValid = false;
+                    }
+                } else {
+                    emailInput.classList.remove('field-valid', 'field-invalid');
+                    emailValidation.classList.add('hidden');
+                    isEmailValid = false;
+                }
+            }
+            
+            // Step 2 validation
+            function validateStep2() {
+                const firstName = document.getElementById('first_name').value.trim();
+                const lastName = document.getElementById('last_name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                
+                const isValid = firstName.length > 0 && lastName.length > 0 && email.length > 0 && isEmailValid;
+                updateContinueButton(isValid);
+                return isValid;
+            }
+            
+            // Step 3 validation
+            function validateStep3() {
+                const username = document.getElementById('username').value.trim();
+                const password1 = document.getElementById('password1').value;
+                const password2 = document.getElementById('password2').value;
+                const terms = document.getElementById('terms').checked;
+                
+                const arePasswordsMatching = password1.length >= 8 && password1 === password2;
+                const isValid = username.length > 0 && arePasswordsMatching && terms;
+                
+                updateSubmitButton(isValid);
+                return isValid;
+            }
+            
+            // Password validation real-time
+            document.getElementById('password1').addEventListener('input', validateStep3);
+            document.getElementById('password2').addEventListener('input', function() {
+                validatePasswordMatch();
+                validateStep3();
+            });
+            document.getElementById('username').addEventListener('input', validateStep3);
+            document.getElementById('terms').addEventListener('change', validateStep3);
+            
+            function validatePasswordMatch() {
+                const password1 = document.getElementById('password1').value;
+                const password2 = document.getElementById('password2').value;
+                const passwordValidation = document.getElementById('passwordValidation');
+                const password2Input = document.getElementById('password2');
+                
+                if (password2.length > 0) {
+                    if (password1 === password2 && password1.length >= 8) {
+                        password2Input.classList.remove('field-invalid');
+                        password2Input.classList.add('field-valid');
+                        passwordValidation.classList.add('hidden');
+                    } else {
+                        password2Input.classList.remove('field-valid');
+                        password2Input.classList.add('field-invalid');
+                        passwordValidation.classList.remove('hidden');
+                    }
+                } else {
+                    password2Input.classList.remove('field-valid', 'field-invalid');
+                    passwordValidation.classList.add('hidden');
+                }
+            }
+            
+            function updateContinueButton(isValid) {
+                const nextBtn = document.getElementById('nextBtn');
+                if (isValid) {
+                    nextBtn.classList.remove('button-disabled');
+                    nextBtn.disabled = false;
+                } else {
+                    nextBtn.classList.add('button-disabled');
+                    nextBtn.disabled = true;
+                }
+            }
+            
+            function updateSubmitButton(isValid) {
+                const submitBtn = document.getElementById('submitBtn');
+                if (isValid) {
+                    submitBtn.classList.remove('button-disabled');
+                    submitBtn.disabled = false;
+                } else {
+                    submitBtn.classList.add('button-disabled');
+                    submitBtn.disabled = true;
+                }
+            }
+            
+            // Navigation functions
+            function goToStep(step) {
+                if (step < 1 || step > totalSteps) return;
+                
+                console.log('Going to step:', step);
+                
+                // Hide current step
+                document.getElementById(`step${currentStep}`).classList.add('hidden');
+                
+                // Show new step  
+                document.getElementById(`step${step}`).classList.remove('hidden');
+                
+                // Update indicators
+                updateStepIndicators(step);
+                
+                // Update buttons
+                updateButtons(step);
+                
+                // Validate current step
+                if (step === 2) {
+                    validateStep2();
+                } else if (step === 3) {
+                    validateStep3();
+                }
+                
+                currentStep = step;
+            }
+            
+            function updateStepIndicators(step) {
+                for (let i = 1; i <= totalSteps; i++) {
+                    const indicator = document.getElementById(`step${i}-indicator`);
+                    const label = document.getElementById(`step${i}-label`);
+                    
+                    if (i < step) {
+                        // Completed
+                        indicator.className = 'step-indicator completed w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base';
+                        indicator.innerHTML = '✓';
+                        label.className = 'text-xs sm:text-sm font-medium text-green-600';
+                    } else if (i === step) {
+                        // Active
+                        indicator.className = 'step-indicator active w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base';
+                        indicator.textContent = i;
+                        label.className = 'text-xs sm:text-sm font-medium text-tech-purple';
+                    } else {
+                        // Future
+                        indicator.className = 'step-indicator future w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm sm:text-base';
+                        indicator.textContent = i;
+                        label.className = 'text-xs sm:text-sm font-medium text-sf-500';
+                    }
+                }
+                
+                // Update progress bars
+                for (let i = 1; i < totalSteps; i++) {
+                    const progress = document.getElementById(`progress${i}`);
+                    if (progress) {
+                        if (i < step) {
+                            progress.style.width = '100%';
+                        } else {
+                            progress.style.width = '0%';
+                        }
+                    }
+                }
+            }
+            
+            function updateButtons(step) {
+                const nextBtn = document.getElementById('nextBtn');
+                const prevBtn = document.getElementById('prevBtn');
+                const submitBtn = document.getElementById('submitBtn');
+                
+                // Previous button
+                if (step === 1) {
+                    prevBtn.classList.add('hidden');
+                } else {
+                    prevBtn.classList.remove('hidden');
+                }
+                
+                // Next/Submit buttons
+                if (step === totalSteps) {
+                    nextBtn.classList.add('hidden');
+                    submitBtn.classList.remove('hidden');
+                } else {
+                    nextBtn.classList.remove('hidden');
+                    submitBtn.classList.add('hidden');
+                }
+            }
+            
+            // Button event listeners
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                console.log('Next button clicked');
+                if (currentStep === 2 && !validateStep2()) {
+                    return;
+                }
+                if (currentStep < totalSteps) {
+                    goToStep(currentStep + 1);
+                }
+            });
+            
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                console.log('Previous button clicked');
+                if (currentStep > 1) {
+                    goToStep(currentStep - 1);
+                }
+            });
+            
+            // Form submission
+            document.getElementById('registrationForm').addEventListener('submit', function(e) {
+                if (!validateStep3()) {
+                    e.preventDefault();
+                    console.log('Form validation failed');
+                    return false;
+                }
+                console.log('Form submitted');
+            });
+        });
+    </script>
+</body>
+</html>

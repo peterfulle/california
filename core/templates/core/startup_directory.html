@@ -1,0 +1,222 @@
+{% extends 'base.html' %}
+
+{% block title %}Chilean Startups Directory - Chile Conecta{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <!-- Hero Header -->
+        <div class="mb-12">
+            <div class="inline-flex items-center px-3 py-1.5 bg-gray-100 rounded-full mb-4">
+                <span class="w-5 h-3 mr-2 rounded overflow-hidden flex">
+                    <span class="w-2.5 h-full bg-blue-600"></span>
+                    <span class="w-2.5 h-full bg-red-600"></span>
+                </span>
+                <span class="text-gray-700 text-xs font-medium">Chilean Innovation</span>
+            </div>
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+                Chilean Startups
+            </h1>
+            <p class="text-lg text-gray-600 max-w-2xl">
+                Explore innovative Chilean companies ready for global expansion
+            </p>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="mb-8">
+            <form method="get" class="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                    <!-- Search Input -->
+                    <div class="lg:col-span-6">
+                        <input type="text" name="search" value="{{ search_query }}" 
+                               placeholder="Search startups..."
+                               class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all">
+                    </div>
+                    
+                    <!-- Sort By -->
+                    <div class="lg:col-span-3">
+                        <select name="sort" class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all">
+                            <option value="growth_score" {% if sort_by == 'growth_score' %}selected{% endif %}>Growth Score</option>
+                            <option value="heat_score" {% if sort_by == 'heat_score' %}selected{% endif %}>Heat Score</option>
+                            <option value="cb_rank" {% if sort_by == 'cb_rank' %}selected{% endif %}>CB Rank</option>
+                            <option value="funding" {% if sort_by == 'funding' %}selected{% endif %}>Funding</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Order -->
+                    <div class="lg:col-span-2">
+                        <select name="order" class="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900 transition-all">
+                            <option value="desc" {% if order == 'desc' %}selected{% endif %}>High to Low</option>
+                            <option value="asc" {% if order == 'asc' %}selected{% endif %}>Low to High</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Search Button -->
+                    <div class="lg:col-span-1">
+                        <button type="submit" 
+                                class="w-full px-6 py-2.5 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-all duration-200">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Stats Banner -->
+        {% if startups_with_scores %}
+        <div class="mb-8 bg-gray-50 border border-gray-200 rounded-xl p-5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="text-2xl font-bold text-gray-900">{{ startups_with_scores|length }}</div>
+                    <div class="text-sm text-gray-600">Chilean Startups</div>
+                </div>
+                <div class="text-sm text-gray-500">Ready for investment</div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Startups Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for item in startups_with_scores %}
+            <div class="group bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300">
+                <!-- Cover/Header -->
+                <div class="relative h-36 bg-gray-900 overflow-hidden">
+                    {% if item.startup.cover_image %}
+                        <img src="{{ item.startup.cover_image.url }}" alt="{{ item.startup.company_name }}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300">
+                    {% else %}
+                        <div class="w-full h-full bg-gray-800"></div>
+                    {% endif %}
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                    
+                    <!-- Chilean Flag Badge -->
+                    <div class="absolute top-3 left-3">
+                        <span class="w-5 h-3 rounded overflow-hidden flex shadow-sm">
+                            <span class="w-2.5 h-full bg-blue-600"></span>
+                            <span class="w-2.5 h-full bg-red-600"></span>
+                        </span>
+                    </div>
+                    
+                    <!-- CB Rank -->
+                    <div class="absolute top-3 right-3">
+                        <div class="bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1 shadow-sm">
+                            <div class="text-xs text-gray-500 font-medium">#{{ item.cb_rank|floatformat:0 }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Logo -->
+                    {% if item.startup.logo %}
+                        <div class="absolute bottom-3 right-3">
+                            <img src="{{ item.startup.logo.url }}" alt="{{ item.startup.company_name }} logo" 
+                                 class="w-10 h-10 rounded-lg object-cover border-2 border-white shadow-sm bg-white">
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Content -->
+                <div class="p-5">
+                    <!-- Company Name & Stage -->
+                    <div class="mb-4">
+                        <h3 class="text-lg font-bold text-gray-900 mb-1">
+                            {{ item.startup.company_name }}
+                        </h3>
+                        <div class="flex items-center space-x-2">
+                            {% if item.startup.industry %}
+                            <span class="text-xs text-gray-500">{{ item.startup.industry.name }}</span>
+                            <span class="text-xs text-gray-300">•</span>
+                            {% endif %}
+                            <span class="text-xs text-gray-500">{{ item.startup.get_stage_display }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Scores -->
+                    <div class="grid grid-cols-3 gap-2 mb-4">
+                        <div class="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
+                            <div class="text-xs text-gray-500 font-medium mb-1">Growth</div>
+                            <div class="font-bold text-base text-gray-900">{{ item.growth_score|floatformat:0 }}</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
+                            <div class="text-xs text-gray-500 font-medium mb-1">Heat</div>
+                            <div class="font-bold text-base text-gray-900">{{ item.heat_score|floatformat:0 }}</div>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-2 text-center border border-gray-100">
+                            <div class="text-xs text-gray-500 font-medium mb-1">Top</div>
+                            <div class="font-bold text-base text-gray-900">{{ item.ranking_percentile|floatformat:0 }}%</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <p class="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-2">
+                        {{ item.startup.tagline|default:item.startup.description|truncatechars:100 }}
+                    </p>
+                    
+                    <!-- Metrics -->
+                    <div class="flex flex-wrap gap-2 mb-4 text-xs">
+                        {% if item.startup.employees_count %}
+                        <span class="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md font-medium">
+                            {{ item.startup.employees_count }} team
+                        </span>
+                        {% endif %}
+                        {% if item.startup.total_funding_raised %}
+                        <span class="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-md font-medium">
+                            ${{ item.startup.total_funding_raised|floatformat:0 }}
+                        </span>
+                        {% endif %}
+                        {% if item.startup.is_fundraising %}
+                        <span class="px-2.5 py-1 bg-gray-900 text-white rounded-md font-medium">
+                            Fundraising
+                        </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- CTA Button -->
+                    <a href="{% url 'core:startup_profile' item.startup.id %}" 
+                       class="block w-full bg-gray-900 hover:bg-gray-800 text-white text-center py-2.5 rounded-lg font-medium transition-all duration-200">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-16">
+                <div class="max-w-md mx-auto">
+                    <div class="w-20 h-20 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-search text-2xl text-gray-400"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">No Startups Found</h3>
+                    <p class="text-gray-600 mb-6">
+                        {% if search_query %}
+                            Try adjusting your search criteria
+                        {% else %}
+                            No Chilean startups registered yet
+                        {% endif %}
+                    </p>
+                    {% if user.is_authenticated and user.profile.user_type == 'founder' %}
+                    <a href="{% url 'core:create_startup' %}" 
+                       class="inline-flex items-center px-6 py-3 bg-gray-900 hover:bg-gray-800 text-white rounded-lg font-medium transition-all duration-200">
+                        <i class="fas fa-plus mr-2"></i>
+                        Register Your Startup
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Call to Action for Founders -->
+        {% if user.is_authenticated and user.profile.user_type == 'founder' and startups_with_scores %}
+        <div class="mt-12">
+            <div class="bg-gray-900 rounded-xl p-8 sm:p-12 text-center">
+                <h3 class="text-2xl sm:text-3xl font-bold text-white mb-4">Ready to Join Chile Conecta?</h3>
+                <p class="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+                    Register your startup and connect with Silicon Valley investors
+                </p>
+                <a href="{% url 'core:create_startup' %}" 
+                   class="inline-flex items-center px-8 py-3 bg-white text-gray-900 rounded-lg font-bold hover:bg-gray-100 transition-all duration-200">
+                    <i class="fas fa-plus-circle mr-3"></i>
+                    Register Your Startup
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

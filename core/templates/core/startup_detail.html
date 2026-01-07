@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ startup.company_name }} - StartupConnect{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-8">
+        <a href="{% url 'core:startup_directory' %}" class="text-blue-400 hover:text-blue-300">
+            <i class="fas fa-arrow-left mr-2"></i> Volver al directorio
+        </a>
+    </nav>
+
+    <!-- Header -->
+    <div class="bg-gray-800 rounded-xl p-8 mb-8 border border-gray-700">
+        <div class="flex items-start gap-6">
+            {% if startup.logo %}
+                <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" 
+                     class="w-24 h-24 rounded-xl object-cover">
+            {% else %}
+                <div class="w-24 h-24 bg-blue-600 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-building text-white text-2xl"></i>
+                </div>
+            {% endif %}
+            
+            <div class="flex-1">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-2">{{ startup.company_name }}</h1>
+                        {% if startup.tagline %}
+                            <p class="text-xl text-gray-300 mb-2">{{ startup.tagline }}</p>
+                        {% endif %}
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm bg-blue-600/20 text-blue-400 px-3 py-1 rounded-full">
+                                {{ startup.get_stage_display }}
+                            </span>
+                            {% if startup.industry %}
+                                <span class="text-sm bg-purple-600/20 text-purple-400 px-3 py-1 rounded-full">
+                                    {{ startup.industry.name }}
+                                </span>
+                            {% endif %}
+                            {% if startup.is_fundraising %}
+                                <span class="text-sm bg-green-600/20 text-green-400 px-3 py-1 rounded-full">
+                                    <i class="fas fa-chart-line mr-1"></i> Fundraising
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if user.is_authenticated and user.profile.user_type == 'investor' %}
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition">
+                            <i class="fas fa-envelope mr-2"></i> Contactar
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if startup.description %}
+            <p class="text-gray-300 leading-relaxed">{{ startup.description }}</p>
+        {% endif %}
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Problem & Solution -->
+            {% if startup.problem_statement or startup.solution_description %}
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <h2 class="text-xl font-bold mb-4">Problema y Solución</h2>
+                    {% if startup.problem_statement %}
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-red-400 mb-2">Problema</h3>
+                            <p class="text-gray-300">{{ startup.problem_statement }}</p>
+                        </div>
+                    {% endif %}
+                    {% if startup.solution_description %}
+                        <div>
+                            <h3 class="text-lg font-semibold text-green-400 mb-2">Solución</h3>
+                            <p class="text-gray-300">{{ startup.solution_description }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <!-- Market & Business Model -->
+            {% if startup.target_market or startup.business_model %}
+                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                    <h2 class="text-xl font-bold mb-4">Mercado y Modelo de Negocio</h2>
+                    {% if startup.target_market %}
+                        <div class="mb-4">
+                            <h3 class="text-lg font-semibold text-blue-400 mb-2">Mercado Objetivo</h3>
+                            <p class="text-gray-300">{{ startup.target_market }}</p>
+                        </div>
+                    {% endif %}
+                    {% if startup.business_model %}
+                        <div>
+                            <h3 class="text-lg font-semibold text-purple-400 mb-2">Modelo de Negocio</h3>
+                            <p class="text-gray-300">{{ startup.business_model }}</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            <!-- Team -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 class="text-xl font-bold mb-4">Equipo Fundador</h2>
+                <div class="flex items-center">
+                    {% if startup.user.profile.profile_picture %}
+                        <img src="{{ startup.user.profile.profile_picture.url }}" 
+                             alt="{{ startup.user.get_full_name }}" 
+                             class="w-16 h-16 rounded-full mr-4 object-cover">
+                    {% else %}
+                        <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-user text-white text-xl"></i>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h3 class="font-bold text-lg">{{ startup.user.get_full_name }}</h3>
+                        <p class="text-gray-400">Fundador</p>
+                        {% if startup.user.profile.bio %}
+                            <p class="text-sm text-gray-300 mt-1">{{ startup.user.profile.bio|truncatechars:100 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="space-y-6">
+            <!-- Key Metrics -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 class="font-bold text-lg mb-4">Métricas Clave</h3>
+                <div class="space-y-3">
+                    {% if startup.funding_raised %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Financiación:</span>
+                            <span class="font-semibold">${{ startup.funding_raised|floatformat:0 }}k</span>
+                        </div>
+                    {% endif %}
+                    {% if startup.revenue %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Ingresos:</span>
+                            <span class="font-semibold">${{ startup.revenue|floatformat:0 }}k</span>
+                        </div>
+                    {% endif %}
+                    {% if startup.employees_count %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Empleados:</span>
+                            <span class="font-semibold">{{ startup.employees_count }}</span>
+                        </div>
+                    {% endif %}
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Fundada:</span>
+                        <span class="font-semibold">{{ startup.founded_date|date:"Y" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Info -->
+            <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h3 class="font-bold text-lg mb-4">Información de Contacto</h3>
+                <div class="space-y-3">
+                    {% if startup.website %}
+                        <a href="{{ startup.website }}" target="_blank" 
+                           class="flex items-center text-blue-400 hover:text-blue-300">
+                            <i class="fas fa-globe mr-2"></i> Sitio Web
+                        </a>
+                    {% endif %}
+                    {% if startup.location %}
+                        <div class="flex items-center text-gray-300">
+                            <i class="fas fa-map-marker-alt mr-2"></i> {{ startup.location }}
+                        </div>
+                    {% endif %}
+                    <div class="flex items-center text-gray-300">
+                        <i class="fas fa-calendar mr-2"></i> 
+                        Miembro desde {{ startup.created_at|date:"M Y" }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fundraising -->
+            {% if startup.is_fundraising %}
+                <div class="bg-green-600/20 border border-green-500/30 rounded-xl p-6">
+                    <h3 class="font-bold text-lg mb-4 text-green-400">
+                        <i class="fas fa-chart-line mr-2"></i> Recaudando Fondos
+                    </h3>
+                    {% if startup.funding_goal %}
+                        <p class="text-gray-300 mb-3">
+                            Objetivo: <span class="font-semibold">${{ startup.funding_goal|floatformat:0 }}k</span>
+                        </p>
+                    {% endif %}
+                    {% if user.is_authenticated and user.profile.user_type == 'investor' %}
+                        <button class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition">
+                            Solicitar Información
+                        </button>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

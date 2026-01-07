@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/modern-forms.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center">Editar Evento</h1>
+
+        <form method="post" class="space-y-6" x-data="eventForm()" x-on:submit.prevent="submitForm()">
+            {% csrf_token %}
+            
+            <!-- Título -->
+            <div class="form-group">
+                <label for="title" class="block text-sm font-medium text-gray-700">Título del Evento</label>
+                <input type="text" id="title" name="title" required
+                    value="{{ event.title }}"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- Descripción -->
+            <div class="form-group">
+                <label for="description" class="block text-sm font-medium text-gray-700">Descripción</label>
+                <textarea id="description" name="description" rows="4" required
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">{{ event.description }}</textarea>
+            </div>
+
+            <!-- Fecha y Hora -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="form-group">
+                    <label for="date" class="block text-sm font-medium text-gray-700">Fecha</label>
+                    <input type="date" id="date" name="date" required
+                        value="{{ event.date|date:'Y-m-d' }}"
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="form-group">
+                    <label for="time" class="block text-sm font-medium text-gray-700">Hora</label>
+                    <input type="time" id="time" name="time" required
+                        value="{{ event.time|time:'H:i' }}"
+                        class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="form-group">
+                <label for="location" class="block text-sm font-medium text-gray-700">Ubicación</label>
+                <input type="text" id="location" name="location" required
+                    value="{{ event.location }}"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            </div>
+
+            <!-- Tipo de Evento -->
+            <div class="form-group">
+                <label for="event_type" class="block text-sm font-medium text-gray-700">Tipo de Evento</label>
+                <select id="event_type" name="event_type" required
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                    {% for type_id, type_name in event_types %}
+                    <option value="{{ type_id }}" {% if event.event_type == type_id %}selected{% endif %}>
+                        {{ type_name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Tema -->
+            <div class="form-group">
+                <label for="theme" class="block text-sm font-medium text-gray-700">Tema del Evento</label>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-2">
+                    {% for theme_id, theme_name in themes %}
+                    <div class="theme-option cursor-pointer" x-on:click="selectTheme('{{ theme_id }}')">
+                        <div class="relative aspect-video rounded-lg overflow-hidden border-2" 
+                             :class="{'border-indigo-500': selectedTheme === '{{ theme_id }}', 'border-transparent': selectedTheme !== '{{ theme_id }}'}">
+                            <img src="{% static 'img/themes/'|add:theme_id|add:'.jpg' %}" 
+                                 alt="{{ theme_name }}"
+                                 class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                <span class="text-white text-sm font-medium">{{ theme_name }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <input type="hidden" name="theme" x-model="selectedTheme" value="{{ event.theme }}" required>
+            </div>
+
+            <!-- Capacidad -->
+            <div class="form-group">
+                <label for="capacity" class="block text-sm font-medium text-gray-700">Capacidad Máxima</label>
+                <input type="number" id="capacity" name="capacity" min="1"
+                    value="{{ event.capacity|default:'' }}"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+                <p class="text-sm text-gray-500 mt-1">Deja en blanco para capacidad ilimitada</p>
+            </div>
+
+            <!-- Privacidad -->
+            <div class="form-group">
+                <label class="inline-flex items-center">
+                    <input type="checkbox" name="is_private"
+                           {% if event.is_private %}checked{% endif %}
+                           class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                    <span class="ml-2">Evento Privado</span>
+                </label>
+            </div>
+
+            <!-- Botones -->
+            <div class="flex justify-end space-x-4">
+                <button type="button" class="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        onclick="window.history.back()">
+                    Cancelar
+                </button>
+                <button type="submit"
+                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Guardar Cambios
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function eventForm() {
+        return {
+            selectedTheme: '{{ event.theme }}',
+            selectTheme(themeId) {
+                this.selectedTheme = themeId;
+            },
+            submitForm() {
+                if (this.selectedTheme) {
+                    this.$el.submit();
+                } else {
+                    alert('Por favor selecciona un tema para el evento');
+                }
+            }
+        }
+    }
+</script>
+{% endblock %}

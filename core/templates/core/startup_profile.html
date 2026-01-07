@@ -1,0 +1,582 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ startup.company_name }} - Perfil de Startup{% endblock %}
+
+{% block page_title %}{{ startup.company_name }}{% endblock %}
+{% block page_subtitle %}Perfil completo de la startup{% endblock %}
+
+{% block dashboard_content %}
+<div class="max-w-7xl mx-auto space-y-8">
+    <!-- Hero Section - Estilo Minimalista -->
+    <div class="relative">
+        <!-- Cover Image - Blanco/Gris limpio -->
+        <div class="h-48 lg:h-64 relative overflow-hidden rounded-xl bg-gray-50 border border-gray-100">
+            {% if startup.cover_image %}
+                <img src="{{ startup.cover_image.url }}" alt="{{ startup.company_name }} Cover" 
+                     class="w-full h-full object-cover opacity-90">
+            {% else %}
+                <div class="w-full h-full bg-white"></div>
+            {% endif %}
+        </div>
+        
+        <!-- Profile Card - Estilo Minimalista -->
+        <div class="mt-6">
+            <div class="bg-white rounded-xl border border-gray-200 p-6 lg:p-8">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between space-y-6 lg:space-y-0">
+                    <!-- Company Info -->
+                    <div class="flex items-start space-x-4 lg:space-x-6">
+                        <!-- Logo -->
+                        <div class="flex-shrink-0">
+                            {% if startup.logo %}
+                                <img class="w-16 h-16 lg:w-20 lg:h-20 rounded-lg object-cover border border-gray-200" 
+                                     src="{{ startup.logo.url }}" alt="{{ startup.company_name }}">
+                            {% else %}
+                                <div class="w-16 h-16 lg:w-20 lg:h-20 bg-black rounded-lg flex items-center justify-center border border-gray-200">
+                                    <span class="text-white text-2xl font-bold">{{ startup.company_name|first }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Company Details -->
+                        <div class="flex-1 min-w-0">
+                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-1">{{ startup.company_name }}</h1>
+                            <p class="text-base lg:text-lg text-gray-600 mb-3">{{ startup.tagline|default:"Innovando el futuro" }}</p>
+                            
+                            <!-- Key Metrics - Estilo minimalista -->
+                            <div class="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+                                {% if startup.founded_date %}
+                                <div class="flex items-center">
+                                    <span class="mr-1">📅</span>
+                                    Fundada {{ startup.founded_date|date:"Y" }}
+                                </div>
+                                {% endif %}
+                                
+                                {% if startup.stage %}
+                                <div class="flex items-center">
+                                    <span class="px-2.5 py-1 bg-gray-100 text-gray-800 rounded-md text-xs font-medium border border-gray-200">
+                                        {{ startup.get_stage_display }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="flex items-center">
+                                    <span class="mr-1">👥</span>
+                                    {{ startup.employees_count|default:"1-10" }} empleados
+                                </div>
+                                
+                                {% if startup.website %}
+                                <div class="flex items-center">
+                                    <a href="{{ startup.website }}" target="_blank" 
+                                       class="text-gray-900 hover:text-gray-600 transition-colors font-medium">
+                                        🔗 Website
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Industry Tags - Estilo minimalista -->
+                            {% if startup.industry %}
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <span class="px-2.5 py-1 bg-gray-900 text-white rounded-md text-xs font-medium">
+                                    {{ startup.industry.name }}
+                                </span>
+                                {% if startup.sub_industry %}
+                                <span class="px-2.5 py-1 bg-gray-700 text-white rounded-md text-xs font-medium">
+                                    {{ startup.sub_industry }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Action Buttons - Estilo minimalista -->
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <button class="px-5 py-2.5 bg-white text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-medium text-sm">
+                            Seguir
+                        </button>
+                        <button class="px-5 py-2.5 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm">
+                            Contactar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Tab Navigation - Estilo Minimalista -->
+    <div class="">
+        <div class="border-b border-gray-200 bg-white rounded-t-xl">
+            <nav class="flex space-x-1 px-6" id="tab-navigation">
+                <button class="px-4 py-3 text-sm font-medium border-b-2 border-gray-900 text-gray-900 transition-colors" data-tab="overview">
+                    Overview
+                </button>
+                <button class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-colors" data-tab="metrics">
+                    Métricas
+                </button>
+                <button class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-colors" data-tab="financials">
+                    Financiero
+                </button>
+                <button class="px-4 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-900 hover:border-gray-300 transition-colors" data-tab="team">
+                    Equipo
+                </button>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- Content Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Tab Content: Overview -->
+            <div id="tab-overview" class="tab-content active">
+                <!-- Company Description -->
+                {% if startup.description %}
+                <div class="bg-white rounded-xl border border-gray-200 p-6 lg:p-8">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Acerca de {{ startup.company_name }}</h2>
+                    <div class="prose max-w-none text-gray-700 leading-relaxed">
+                        {{ startup.description|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Problem & Solution - Estilo Minimalista -->
+                {% if startup.problem_statement or startup.solution_description %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% if startup.problem_statement %}
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-start mb-3">
+                            <span class="text-2xl mr-3">⚠️</span>
+                            <h3 class="text-lg font-semibold text-gray-900">Problema</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-sm">{{ startup.problem_statement }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if startup.solution_description %}
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-start mb-3">
+                            <span class="text-2xl mr-3">💡</span>
+                            <h3 class="text-lg font-semibold text-gray-900">Solución</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-sm">{{ startup.solution_description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Business Model & Market - Estilo Minimalista -->
+                {% if startup.business_model or startup.market_size %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {% if startup.business_model %}
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-start mb-3">
+                            <span class="text-2xl mr-3">🏢</span>
+                            <h3 class="text-lg font-semibold text-gray-900">Modelo de Negocio</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-sm">{{ startup.business_model }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if startup.market_size %}
+                    <div class="bg-white rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-start mb-3">
+                            <span class="text-2xl mr-3">🌍</span>
+                            <h3 class="text-lg font-semibold text-gray-900">Tamaño de Mercado</h3>
+                        </div>
+                        <p class="text-gray-600 leading-relaxed text-sm">{{ startup.market_size }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                
+                <!-- Competitive Advantage - Estilo Minimalista -->
+                {% if startup.competitive_advantage %}
+                <div class="bg-white rounded-xl border border-gray-200 p-6 lg:p-8">
+                    <div class="flex items-start mb-4">
+                        <span class="text-2xl mr-3">✨</span>
+                        <h2 class="text-xl font-bold text-gray-900">Ventaja Competitiva</h2>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">{{ startup.competitive_advantage }}</p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Tab Content: Metrics - Estilo Minimalista -->
+            <div id="tab-metrics" class="tab-content hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- User Metrics -->
+                    {% if startup.monthly_users %}
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Usuarios Mensuales</p>
+                                <p class="text-3xl font-bold text-gray-900">{{ startup.monthly_users|floatformat:0 }}</p>
+                            </div>
+                            <span class="text-3xl">👥</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Revenue Metrics -->
+                    {% if startup.monthly_revenue %}
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600 mb-1">Ingresos Mensuales</p>
+                                <p class="text-3xl font-bold text-gray-900">${{ startup.monthly_revenue|floatformat:0 }}</p>
+                            </div>
+                            <span class="text-3xl">💰</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Growth Metrics -->
+                    <div class="bg-gray-50 rounded-xl border border-gray-200 p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Growth Score</p>
+                                <p class="text-3xl font-bold text-gray-900">{{ growth_score|default:"85" }}</p>
+                                <p class="text-sm text-green-600 font-medium">Top 10% en {{ startup.industry.name|default:"Tech" }}</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Heat Score -->
+                    <div class="stat-card p-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm font-medium text-gray-600">Heat Score</p>
+                                <p class="text-3xl font-bold text-gray-900">{{ heat_score|default:"92" }}</p>
+                                <p class="text-sm text-orange-600 font-medium">Trending en el mercado</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Financials -->
+            <div id="tab-financials" class="tab-content hidden">
+                <div class="space-y-6">
+                    <!-- Funding Overview -->
+                    <div class="card-modern p-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Información Financiera</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="text-center p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-medium text-green-600 mb-2">Total Recaudado</p>
+                                <p class="text-2xl font-bold text-green-900">${{ startup.total_funding_raised|floatformat:0|default:"0" }}</p>
+                            </div>
+                            
+                            <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl border border-blue-200">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-medium text-blue-600 mb-2">Valoración</p>
+                                <p class="text-2xl font-bold text-blue-900">${{ startup.valuation|floatformat:0|default:"TBD" }}</p>
+                            </div>
+                            
+                            <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                                <p class="text-sm font-medium text-purple-600 mb-2">Etapa</p>
+                                <p class="text-2xl font-bold text-purple-900">{{ startup.get_stage_display|default:"Early" }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Current Fundraising -->
+                    {% if startup.is_fundraising %}
+                    <div class="card-modern p-8 border-l-4 border-orange-500">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">🔥 Actualmente Recaudando Fondos</h4>
+                                <p class="text-gray-600 mb-4">{{ startup.company_name }} está buscando activamente inversionistas para acelerar su crecimiento.</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600">Objetivo</p>
+                                        <p class="text-2xl font-bold text-orange-600">${{ startup.seeking_amount|floatformat:0 }}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-gray-600">Tipo de Ronda</p>
+                                        <p class="text-lg font-semibold text-gray-900">{{ startup.get_stage_display }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Tab Content: Team -->
+            <div id="tab-team" class="tab-content hidden">
+                <div class="space-y-6">
+                    <!-- Founder Section -->
+                    <div class="card-modern p-8">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6">Equipo Fundador</h3>
+                        
+                        <div class="bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 rounded-2xl p-8 border border-blue-200">
+                            <div class="flex items-center space-x-6">
+                                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                                    <span class="text-white text-2xl font-bold">
+                                        {% if startup.founder %}
+                                            {{ startup.founder.user.first_name|first }}{{ startup.founder.user.last_name|first }}
+                                        {% else %}
+                                            {{ startup.company_name|first }}
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <div>
+                                    <h4 class="text-2xl font-bold text-gray-900">
+                                        {% if startup.founder %}
+                                            {{ startup.founder.user.first_name }} {{ startup.founder.user.last_name }}
+                                        {% else %}
+                                            Equipo {{ startup.company_name }}
+                                        {% endif %}
+                                    </h4>
+                                    <p class="text-lg text-blue-600 font-semibold">Fundador & CEO</p>
+                                    {% if startup.founder %}
+                                        <p class="text-gray-600">{{ startup.founder.user.email }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Team Stats -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="stat-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Total Empleados</p>
+                                    <p class="text-3xl font-bold text-gray-900">{{ startup.employees_count|default:"1-10" }}</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Fundada</p>
+                                    <p class="text-3xl font-bold text-gray-900">{{ startup.founded_date|date:"Y"|default:"2025" }}</p>
+                                </div>
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card p-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600">Ubicación</p>
+                                    <p class="text-xl font-bold text-gray-900">Global</p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar - Estilo Minimalista -->
+        <div class="space-y-4">
+            <!-- Quick Stats -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Estadísticas</h3>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Growth Score</span>
+                        <span class="text-base font-bold text-gray-900">{{ growth_score|default:"85" }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span class="text-sm text-gray-600">Heat Score</span>
+                        <span class="text-base font-bold text-gray-900">{{ heat_score|default:"92" }}</span>
+                    </div>
+                    <div class="flex justify-between items-center py-2">
+                        <span class="text-sm text-gray-600">CB Rank</span>
+                        <span class="text-base font-bold text-gray-900">#{{ cb_rank|default:"1,250" }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Contacto</h3>
+                
+                <div class="space-y-3">
+                    {% if startup.website %}
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg">🔗</span>
+                        <a href="{{ startup.website }}" target="_blank" class="text-gray-900 hover:text-gray-600 transition-colors text-sm">
+                            {{ startup.website|slice:"8:" }}
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if startup.pitch_deck_url %}
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg">📊</span>
+                        <a href="{{ startup.pitch_deck_url }}" target="_blank" class="text-gray-900 hover:text-gray-600 transition-colors text-sm">
+                            Pitch Deck
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if is_owner %}
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg">✨</span>
+                        <a href="{% url 'core:pitch_deck_generator' startup.id %}" class="text-gray-900 hover:text-gray-600 transition-colors font-medium text-sm">
+                            Generate Pitch Deck with AI
+                        </a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if startup.demo_url %}
+                    <div class="flex items-center space-x-2">
+                        <span class="text-lg">🎮</span>
+                        <a href="{{ startup.demo_url }}" target="_blank" class="text-gray-900 hover:text-gray-600 transition-colors text-sm">
+                            Demo Live
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Industry & Market - Estilo Minimalista -->
+            <div class="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Industria</h3>
+                
+                <div class="space-y-3">
+                    {% if startup.industry %}
+                    <div>
+                        <p class="text-xs text-gray-500 mb-2">Industria Principal</p>
+                        <span class="px-2.5 py-1 bg-gray-900 text-white rounded-md text-xs font-medium">
+                            {{ startup.industry.name }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    {% if startup.sub_industry %}
+                    <div>
+                        <p class="text-xs text-gray-500 mb-2">Especialización</p>
+                        <span class="px-2.5 py-1 bg-gray-700 text-white rounded-md text-xs font-medium">
+                            {{ startup.sub_industry }}
+                        </span>
+                    </div>
+                    {% endif %}
+                    
+                    <div>
+                        <p class="text-xs text-gray-500 mb-2">Etapa de Negocio</p>
+                        <span class="px-2.5 py-1 bg-gray-600 text-white rounded-md text-xs font-medium">
+                            {{ startup.get_stage_display|default:"Early Stage" }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modern Forms CSS -->
+<link rel="stylesheet" href="{% static 'css/modern-forms.css' %}">
+
+<!-- Tab Styles Minimalistas -->
+<style>
+    .tab-content {
+        display: none;
+    }
+    
+    .tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<!-- Tab JavaScript -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const tabButtons = document.querySelectorAll('[data-tab]');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const targetTab = this.getAttribute('data-tab');
+            
+            // Remove active state from all tabs
+            tabButtons.forEach(btn => {
+                btn.classList.remove('border-gray-900', 'text-gray-900');
+                btn.classList.add('border-transparent', 'text-gray-500');
+            });
+            
+            // Add active state to clicked tab
+            this.classList.remove('border-transparent', 'text-gray-500');
+            this.classList.add('border-gray-900', 'text-gray-900');
+            
+            // Hide all tab contents
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Show target tab content
+            const targetContent = document.getElementById(`tab-${targetTab}`);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Your Startup - Create Profile</title>
+    
+    <!-- Tailwind CSS - Production Build -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/heroicons@1.0.6/outline/index.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .step-indicator.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .step-indicator.completed {
+            background: #10b981;
+            color: white;
+        }
+        
+        .input-group {
+            position: relative;
+        }
+        
+        .floating-label {
+            position: absolute;
+            left: 12px;
+            top: 16px;
+            transition: all 0.2s ease;
+            pointer-events: none;
+            color: #6b7280;
+            font-size: 14px;
+        }
+        
+        .input-group input:focus + .floating-label,
+        .input-group input:not(:placeholder-shown) + .floating-label,
+        .input-group textarea:focus + .floating-label,
+        .input-group textarea:not(:placeholder-shown) + .floating-label,
+        .input-group select:focus + .floating-label,
+        .input-group select:not([value=""]) + .floating-label {
+            transform: translateY(-28px) scale(0.85);
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .step-content {
+            min-height: 400px;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-indigo-50 via-white to-purple-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 mb-3">
+                Register Your <span class="bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent">Startup</span>
+            </h1>
+            <p class="text-gray-600 text-lg">Create an amazing profile and connect with investors and the ecosystem</p>
+        </div>
+
+        <!-- Form Container -->
+        <div class="glass-card rounded-2xl shadow-xl p-8" 
+             x-data="startupForm()" 
+             x-init="initForm()">
+            
+            <!-- Progress -->
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h3 class="font-semibold text-gray-900">Progress</h3>
+                        <p class="text-sm text-gray-500" x-text="`${Math.round((currentStep / totalSteps) * 100)}% completed`"></p>
+                    </div>
+                    <span class="text-sm font-medium text-indigo-600" x-text="`Step ${currentStep} of ${totalSteps}`"></span>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+                    <div class="gradient-bg h-2 rounded-full transition-all duration-500" 
+                         :style="`width: ${(currentStep / totalSteps) * 100}%`"></div>
+                </div>
+                
+                <!-- Step Indicators -->
+                <div class="flex justify-between">
+                    <template x-for="step in totalSteps" :key="step">
+                        <div class="flex items-center">
+                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold step-indicator"
+                                 :class="{
+                                     'active': step === currentStep,
+                                     'completed': step < currentStep,
+                                     'bg-gray-200 text-gray-400': step > currentStep
+                                 }">
+                                <span x-text="step"></span>
+                            </div>
+                            <div x-show="step < totalSteps" class="w-16 h-1 bg-gray-200 ml-2"
+                                 :class="{ 'gradient-bg': step < currentStep }"></div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Form -->
+            <form method="post" enctype="multipart/form-data" @submit.prevent="handleSubmit">
+                {% csrf_token %}
+                
+                <!-- Step 1: Basic Info -->
+                <div x-show="currentStep === 1" x-transition class="step-content">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Basic Information
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Company Name -->
+                        <div class="md:col-span-2">
+                            <div class="input-group">
+                                <input type="text" name="company_name" id="company_name" placeholder=" " required
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="company_name" class="floating-label">Company Name *</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Tagline -->
+                        <div class="md:col-span-2">
+                            <div class="input-group">
+                                <input type="text" name="tagline" id="tagline" placeholder=" " required
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="tagline" class="floating-label">Tagline *</label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">One-line description of what you do</p>
+                        </div>
+                        
+                        <!-- Description -->
+                        <div class="md:col-span-2">
+                            <div class="input-group">
+                                <textarea name="description" id="description" placeholder=" " rows="3" required
+                                          class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors resize-none"></textarea>
+                                <label for="description" class="floating-label">Description *</label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Complete description of your startup</p>
+                        </div>
+                        
+                        <!-- Founded Date -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Founded Date</label>
+                            <input type="date" name="founded_date" id="founded_date"
+                                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                        </div>
+                        
+                        <!-- Website -->
+                        <div>
+                            <div class="input-group">
+                                <input type="url" name="website" id="website" placeholder=" "
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="website" class="floating-label">Website</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Business -->
+                <div x-show="currentStep === 2" x-transition class="step-content">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        Business Model
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Industry -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Industry *</label>
+                            <select name="industry" id="industry" required
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors bg-white">
+                                <option value="">Select Industry</option>
+                                {% for industry in industries %}
+                                    <option value="{{ industry.id }}">{{ industry.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <!-- Stage -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Stage *</label>
+                            <select name="stage" id="stage" required
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors bg-white">
+                                <option value="">Select Stage</option>
+                                <option value="idea">Idea</option>
+                                <option value="prototype">Prototype</option>
+                                <option value="mvp">MVP</option>
+                                <option value="early_traction">Early Traction</option>
+                                <option value="growth">Growth</option>
+                                <option value="scale">Scale</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Business Model -->
+                        <div class="md:col-span-2">
+                            <div class="input-group">
+                                <textarea name="business_model" id="business_model" placeholder=" " rows="3"
+                                          class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors resize-none"></textarea>
+                                <label for="business_model" class="floating-label">Business Model</label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">How do you make money?</p>
+                        </div>
+                        
+                        <!-- Problem Statement -->
+                        <div class="md:col-span-2">
+                            <div class="input-group">
+                                <textarea name="problem_statement" id="problem_statement" placeholder=" " rows="3"
+                                          class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors resize-none"></textarea>
+                                <label for="problem_statement" class="floating-label">Problem Statement</label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">What problem are you solving?</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Metrics -->
+                <div x-show="currentStep === 3" x-transition class="step-content">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Metrics & Funding
+                    </h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Employees -->
+                        <div>
+                            <div class="input-group">
+                                <input type="number" name="employees_count" id="employees_count" placeholder=" " min="1"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="employees_count" class="floating-label">Team Size</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Monthly Revenue -->
+                        <div>
+                            <div class="input-group">
+                                <input type="number" name="monthly_revenue" id="monthly_revenue" placeholder=" " min="0" step="0.01"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="monthly_revenue" class="floating-label">Monthly Revenue ($)</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Total Funding -->
+                        <div>
+                            <div class="input-group">
+                                <input type="number" name="total_funding_raised" id="total_funding_raised" placeholder=" " min="0" step="0.01"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="total_funding_raised" class="floating-label">Total Funding Raised ($)</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Seeking Amount -->
+                        <div>
+                            <div class="input-group">
+                                <input type="number" name="seeking_amount" id="seeking_amount" placeholder=" " min="0" step="0.01"
+                                       class="w-full px-4 py-4 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                <label for="seeking_amount" class="floating-label">Seeking Amount ($)</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Files -->
+                        <div class="md:col-span-2">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <!-- Logo -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Logo</label>
+                                    <input type="file" name="logo" id="logo" accept="image/*"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                </div>
+                                
+                                <!-- Cover -->
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Cover Image</label>
+                                    <input type="file" name="cover_image" id="cover_image" accept="image/*"
+                                           class="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-indigo-500 focus:outline-none transition-colors">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Checkboxes -->
+                        <div class="md:col-span-2">
+                            <div class="space-y-3">
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="is_public" id="is_public" checked
+                                           class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-700">Make profile public</span>
+                                </label>
+                                
+                                <label class="flex items-center">
+                                    <input type="checkbox" name="is_fundraising" id="is_fundraising"
+                                           class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                    <span class="ml-2 text-sm text-gray-700">Currently fundraising</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                    <button type="button" x-show="currentStep > 1" @click="prevStep()"
+                            class="px-6 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                        Previous
+                    </button>
+                    
+                    <button type="button" x-show="currentStep < totalSteps" @click="nextStep()"
+                            class="px-8 py-3 btn-primary text-white rounded-lg font-medium">
+                        Next Step
+                    </button>
+                    
+                    <button type="submit" x-show="currentStep === totalSteps"
+                            class="px-8 py-3 btn-primary text-white rounded-lg font-bold">
+                        🚀 Create Startup
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function startupForm() {
+            return {
+                currentStep: 1,
+                totalSteps: 3,
+                
+                initForm() {
+                    // Initialize form
+                },
+                
+                nextStep() {
+                    if (this.validateStep(this.currentStep)) {
+                        if (this.currentStep < this.totalSteps) {
+                            this.currentStep++;
+                        }
+                    }
+                },
+                
+                prevStep() {
+                    if (this.currentStep > 1) {
+                        this.currentStep--;
+                    }
+                },
+                
+                validateStep(step) {
+                    const form = document.querySelector('form');
+                    const currentStepElement = document.querySelector(`[x-show="currentStep === ${step}"]`);
+                    const requiredFields = currentStepElement.querySelectorAll('[required]');
+                    
+                    let isValid = true;
+                    requiredFields.forEach(field => {
+                        if (!field.value.trim()) {
+                            field.classList.add('border-red-500');
+                            isValid = false;
+                        } else {
+                            field.classList.remove('border-red-500');
+                        }
+                    });
+                    
+                    return isValid;
+                },
+                
+                handleSubmit(event) {
+                    if (this.validateStep(this.currentStep)) {
+                        // Let the form submit naturally
+                        event.target.submit();
+                    } else {
+                        event.preventDefault();
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

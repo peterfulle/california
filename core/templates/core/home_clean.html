@@ -1,0 +1,253 @@
+{% extends 'base.html' %}
+
+{% block title %}Chile Conecta - CORFO & ProChile Initiative{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-white">
+    
+    <!-- Hero Section -->
+    <div class="relative border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
+            <div class="text-center">
+                <!-- Chilean Flag Badge -->
+                <div class="inline-flex items-center px-3 py-1.5 bg-gray-100 rounded-full mb-8">
+                    <span class="w-5 h-3 mr-2 rounded overflow-hidden flex">
+                        <span class="w-2.5 h-full bg-blue-600"></span>
+                        <span class="w-2.5 h-full bg-red-600"></span>
+                    </span>
+                    <span class="text-gray-700 text-xs font-medium">CORFO & ProChile Initiative</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6 tracking-tight">
+                    Chile Conecta
+                </h1>
+                
+                <p class="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
+                    Connecting Chilean innovation with Silicon Valley investors
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <a href="{% url 'core:startup_directory' %}" 
+                       class="px-8 py-3.5 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200">
+                        Explore Startups
+                    </a>
+                    <a href="{% url 'account_signup' %}" 
+                       class="px-8 py-3.5 bg-white text-gray-900 rounded-lg font-semibold border border-gray-300 hover:border-gray-900 transition-colors duration-200">
+                        Join Platform
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mission Statement -->
+    <div class="bg-gray-50 py-20 border-b border-gray-100">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                The Challenge
+            </h2>
+            <p class="text-lg text-gray-600 leading-relaxed">
+                Chilean startups face a critical challenge: lack of visibility and credibility when seeking 
+                international investment. Chile Conecta provides standardized metrics and transparent validation.
+            </p>
+        </div>
+    </div>
+
+    <!-- Stats/Capabilities -->
+    <div class="bg-white py-20 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <!-- Validated -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-check-double text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Validated</h3>
+                    <p class="text-gray-600 text-sm">Government-backed validation through CORFO programs</p>
+                </div>
+
+                <!-- Traceable -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Traceable</h3>
+                    <p class="text-gray-600 text-sm">Real-time Growth & Heat scores for transparent assessment</p>
+                </div>
+
+                <!-- Global -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-globe text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Global</h3>
+                    <p class="text-gray-600 text-sm">ProChile support for international market access</p>
+                </div>
+
+                <!-- AI-Powered -->
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-brain text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">AI-Powered</h3>
+                    <p class="text-gray-600 text-sm">Intelligent matching between startups and investors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features - Three Columns -->
+    <div class="bg-gray-50 py-20 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    Built for the Chilean Ecosystem
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- For Chilean Startups -->
+                <div class="bg-white p-8 rounded-xl border border-gray-200">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-rocket text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">For Chilean Startups</h3>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Showcase validated Growth & Heat scores</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Access Silicon Valley investors</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Get guidance from experienced advisors</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Monitor progress with real-time analytics</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- For Global Investors -->
+                <div class="bg-white p-8 rounded-xl border border-gray-200">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-chart-line text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">For Global Investors</h3>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Evaluate using standardized metrics</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>CORFO-backed startups with proven records</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Connect directly with vetted founders</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Access comprehensive startup data</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- For Strategic Advisors -->
+                <div class="bg-white p-8 rounded-xl border border-gray-200">
+                    <div class="w-12 h-12 bg-gray-900 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-white text-lg"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">For Strategic Advisors</h3>
+                    <ul class="space-y-3 text-gray-600 text-sm">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Help shape Chile's innovation landscape</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Connect with high-potential startups</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Provide strategic guidance</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-gray-400 mr-3 mt-1 text-xs"></i>
+                            <span>Monitor impact of your contributions</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strategic Benefits -->
+    <div class="bg-white py-20 border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                    Strategic Value
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Standardized Metrics</h3>
+                    <p class="text-gray-600 text-sm">Growth & Heat scores validated by CORFO standards</p>
+                </div>
+                
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Transparent Validation</h3>
+                    <p class="text-gray-600 text-sm">Government-backed credibility for investor confidence</p>
+                </div>
+                
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Market Access</h3>
+                    <p class="text-gray-600 text-sm">ProChile network for international expansion</p>
+                </div>
+                
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Data-Driven Matching</h3>
+                    <p class="text-gray-600 text-sm">AI-powered connections between startups and investors</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final CTA -->
+    <div class="bg-white py-20">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">
+                Ready to Connect?
+            </h2>
+            <p class="text-lg text-gray-600 mb-8">
+                Join Chile Conecta and access the Chilean innovation ecosystem
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'account_signup' %}" 
+                   class="px-8 py-3.5 bg-gray-900 text-white rounded-lg font-semibold hover:bg-gray-800 transition-colors duration-200">
+                    Get Started
+                </a>
+                <a href="{% url 'core:startup_directory' %}" 
+                   class="px-8 py-3.5 bg-white text-gray-900 rounded-lg font-semibold border border-gray-300 hover:border-gray-900 transition-colors duration-200">
+                    Explore Platform
+                </a>
+            </div>
+            
+            <!-- Institutional Logos -->
+            <div class="flex flex-wrap justify-center items-center gap-8 mt-12 pt-8 border-t border-gray-100">
+                <div class="text-sm text-gray-500 font-medium">Powered by</div>
+                <div class="text-sm text-gray-700 font-bold">CORFO</div>
+                <div class="text-sm text-gray-700 font-bold">ProChile</div>
+                <div class="text-sm text-gray-700 font-bold">GoGlobal</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

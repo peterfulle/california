@@ -1,0 +1,233 @@
+<!-- Dashboard específico para Fundadores - Diseño Minimalista -->
+{% if startup %}
+<div class="space-y-8">
+    <!-- Header de la Startup - Minimalista -->
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-8">
+            <div class="flex items-start justify-between mb-8">
+                <div class="flex items-center gap-4">
+                    {% if startup.logo %}
+                        <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-200">
+                    {% else %}
+                        <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
+                            <span class="text-gray-600 font-semibold text-xl">{{ startup.name|first }}</span>
+                        </div>
+                    {% endif %}
+                    <div>
+                        <h2 class="text-2xl font-semibold text-gray-900">{{ startup.name }}</h2>
+                        <p class="text-gray-500 mt-1">{{ startup.tagline|default:"Your startup tagline" }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    {% if startup.industry %}
+                    <span class="px-3 py-1.5 bg-gray-50 text-gray-700 text-sm font-medium rounded-md border border-gray-200">
+                        {{ startup.industry.name }}
+                    </span>
+                    {% endif %}
+                    <span class="px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-md">
+                        {{ startup.stage|default:"Early Stage" }}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Métricas Clave - Grid Limpio -->
+            <div class="grid grid-cols-4 gap-6">
+                <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Total Funding</p>
+                    <p class="text-3xl font-semibold text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}K</p>
+                </div>
+                
+                <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Team Size</p>
+                    <p class="text-3xl font-semibold text-gray-900">{{ startup.employees_count|default:1 }}</p>
+                </div>
+                
+                <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Years Active</p>
+                    <p class="text-3xl font-semibold text-gray-900">
+                        {% if startup.founded_date %}
+                            {{ startup_metrics.years_since_founded }}
+                        {% else %}
+                            <1
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Status</p>
+                    <p class="text-lg font-medium text-gray-900 mt-2">
+                        {% if startup.is_fundraising %}
+                            <span class="inline-flex items-center text-green-700">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                Fundraising
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center text-blue-700">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+                                Operating
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido principal en 2 columnas -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Columna principal (2/3) -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Fundraising Progress si está activo -->
+            {% if startup.is_fundraising %}
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Fundraising Round</h3>
+                </div>
+                <div class="p-6">
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium text-gray-700">Progress</span>
+                            <span class="text-sm font-semibold text-gray-900">{{ startup_metrics.funding_progress|floatformat:1 }}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-gray-900 h-2 rounded-full transition-all duration-500" style="width: {{ startup_metrics.funding_progress|floatformat:1 }}%"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Raised</p>
+                            <p class="text-2xl font-semibold text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}K</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 mb-1">Target</p>
+                            <p class="text-2xl font-semibold text-gray-900">${{ startup.seeking_amount|default:0|floatformat:0 }}K</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Company Information -->
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Company Information</h3>
+                </div>
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Website</p>
+                            <p class="text-sm text-gray-900">
+                                {% if startup.website %}
+                                    <a href="{{ startup.website }}" target="_blank" class="text-gray-900 hover:text-gray-600 underline">{{ startup.website }}</a>
+                                {% else %}
+                                    <span class="text-gray-400">Not set</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Location</p>
+                            <p class="text-sm text-gray-900">{{ startup.location|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Business Model</p>
+                            <p class="text-sm text-gray-900">{{ startup.business_model|default:"Not specified" }}</p>
+                        </div>
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Revenue Model</p>
+                            <p class="text-sm text-gray-900">{{ startup.revenue_model|default:"Not specified" }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna lateral (1/3) -->
+        <div class="space-y-6">
+            <!-- Actions -->
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Actions</h3>
+                </div>
+                <div class="p-6 space-y-3">
+                    <a href="{% url 'core:startup_profile' startup.id %}" class="block w-full bg-gray-900 text-white text-center py-2.5 px-4 rounded-md hover:bg-gray-800 transition-colors font-medium text-sm">
+                        Edit Profile
+                    </a>
+                    <a href="{% url 'core:startup_profile' startup.id %}" target="_blank" class="block w-full bg-white text-gray-900 text-center py-2.5 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors font-medium text-sm">
+                        View Public Page
+                    </a>
+                    <button class="block w-full bg-white text-gray-900 text-center py-2.5 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors font-medium text-sm">
+                        Share
+                    </button>
+                </div>
+            </div>
+
+            <!-- Performance -->
+            <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Performance</h3>
+                </div>
+                <div class="p-6">
+                    <div class="space-y-4">
+                        <div class="pb-4 border-b border-gray-100">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="text-sm text-gray-600">Industry Rank</span>
+                                <span class="text-lg font-semibold text-gray-900">#{{ startup_metrics.industry_rank|default:"—" }}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="pb-4 border-b border-gray-100">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-600">Funding vs. Avg</span>
+                                <span class="text-sm font-semibold text-gray-900">+45%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-gray-900 h-1.5 rounded-full" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-gray-600">Team Growth</span>
+                                <span class="text-sm font-semibold text-gray-900">+20%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="bg-gray-900 h-1.5 rounded-full" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% elif needs_startup %}
+<!-- Panel para crear startup - Diseño minimalista -->
+<div class="max-w-2xl mx-auto">
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+        <div class="p-12 text-center">
+            <div class="mx-auto w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center mb-6">
+                <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                </svg>
+            </div>
+            
+            <h2 class="text-2xl font-semibold text-gray-900 mb-3">
+                Create Your Startup Profile
+            </h2>
+            <p class="text-gray-600 mb-8 max-w-md mx-auto">
+                Set up your startup profile to connect with investors and showcase your company to the ecosystem.
+            </p>
+
+            <a href="{% url 'core:create_startup' %}" class="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors">
+                Get Started
+            </a>
+            
+            <p class="text-sm text-gray-500 mt-6">
+                Takes about 5 minutes
+            </p>
+        </div>
+    </div>
+</div>
+{% endif %}

@@ -1,0 +1,940 @@
+{% extends 'base.html' %}
+
+{% block title %}Chat con {{ other_user.get_full_name }} - StartupConnect{% endblock %}
+
+{% block dashboard_content %}
+{% block public_content %}
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-6">
+    <!-- Header del chat con estado online/offline -->
+    <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <a href="{% url 'core:messages_inbox' %}" 
+                   class="text-gray-600 hover:text-gray-900 transition-all hover:scale-110">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </a>
+                
+                <!-- Avatar con indicador de estado -->
+                <div class="relative">
+                    {% if other_user.profile.profile_image %}
+                        <img src="{{ other_user.profile.profile_image.url }}" 
+                             alt="{{ other_user.get_full_name }}"
+                             class="w-14 h-14 rounded-full object-cover border-2 border-gray-200">
+                    {% else %}
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border-2 border-gray-200">
+                            <i class="fas fa-user text-white text-xl"></i>
+                        </div>
+                    {% endif %}
+                    <!-- Indicador de estado online/offline -->
+                    <div id="onlineIndicator" class="absolute bottom-0 right-0 w-4 h-4 bg-gray-400 rounded-full border-2 border-white transition-all"></div>
+                </div>
+                
+                <div>
+                    <h2 class="font-bold text-xl text-gray-900">{{ other_user.get_full_name }}</h2>
+                    <div class="flex items-center gap-2">
+                        <p class="text-sm text-gray-600">
+                            {% if other_user.profile.user_type == 'founder' %}
+                                <i class="fas fa-rocket mr-1"></i> Founder
+                            {% elif other_user.profile.user_type == 'investor' %}
+                                <i class="fas fa-user-tie mr-1"></i> Investor
+                            {% else %}
+                                {{ other_user.profile.get_user_type_display }}
+                            {% endif %}
+                        </p>
+                        <!-- Indicador de "está escribiendo..." -->
+                        <span id="typingIndicator" class="text-xs text-blue-600 font-medium hidden">
+                            <i class="fas fa-circle-notch fa-spin mr-1"></i> escribiendo...
+                        </span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- Google Meet Controls -->
+                <div class="flex items-center gap-2">
+                    <!-- Toggle Meet ON/OFF -->
+                    <button onclick="toggleMeet()" 
+                            id="meetToggleBtn"
+                            class="px-4 py-2 rounded-xl transition-all text-sm font-medium {% if conversation.meet_enabled %}bg-green-100 text-green-700 hover:bg-green-200{% else %}bg-gray-100 text-gray-600 hover:bg-gray-200{% endif %}">
+                        <i class="fas fa-video mr-2"></i>
+                        <span id="meetToggleText">{% if conversation.meet_enabled %}Meet ON{% else %}Meet OFF{% endif %}</span>
+                    </button>
+                    
+                    <!-- Botón de acciones de Meet (visible solo si está enabled) -->
+                    {% if conversation.meet_enabled %}
+                        {% if not conversation.meet_link %}
+                            <!-- Si no hay reunión, botón para crear -->
+                            <button onclick="createMeet()" 
+                                    class="px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-xl transition-all hover:scale-105 shadow-lg text-sm font-medium flex items-center gap-2">
+                                <i class="fas fa-plus-circle"></i>
+                                <span>Iniciar videollamada</span>
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                <a href="{% if other_user.profile.user_type == 'investor' %}{% url 'core:investor_detail' other_user.investorprofile.id %}{% else %}{% url 'core:startup_directory' %}{% endif %}" 
+                   class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all hover:scale-105 text-sm font-medium">
+                    <i class="fas fa-external-link-alt mr-2"></i> Ver perfil
+                </a>
+            </div>
+        </div>
+
+    <!-- Grid: Videollamada (si está activa) + Chat -->
+    <div class="{% if conversation.meet_link %}grid grid-cols-1 lg:grid-cols-2 gap-6{% endif %}">
+        
+        <!-- Panel de Videollamada Google Meet (solo visible si hay meet_link) -->
+        {% if conversation.meet_link %}
+                <!-- Panel de Videollamada Google Meet (solo visible si hay meet_link) -->
+        {% if conversation.meet_link %}
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
+                <div class="flex items-center gap-3 text-white">
+                    <div class="w-3 h-3 bg-white rounded-full animate-pulse"></div>
+                    <h3 class="font-bold">Videollamada Activa</h3>
+                </div>
+                <button onclick="endMeet()" 
+                        class="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg transition-all text-sm font-medium backdrop-blur-sm">
+                    <i class="fas fa-phone-slash mr-2"></i> Finalizar
+                </button>
+            </div>
+            
+            <!-- Contenido del panel de Meet -->
+            <div class="p-8 text-center space-y-6">
+                <!-- Icono grande -->
+                <div class="bg-gradient-to-br from-purple-100 to-pink-100 w-32 h-32 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                    <i class="fas fa-video text-6xl text-purple-600"></i>
+                </div>
+                
+                <!-- Información -->
+                <div>
+                    <h4 class="text-xl font-bold text-gray-900 mb-2">Reunión de Google Meet</h4>
+                    <p class="text-gray-600 mb-4">
+                        Iniciada por {{ conversation.meet_created_by.get_full_name }}
+                        <br>
+                        <span class="text-sm">hace {{ conversation.meet_created_at|timesince }}</span>
+                    </p>
+                </div>
+                
+                <!-- Botón principal para unirse -->
+                <div class="space-y-3">
+                    <a href="{{ conversation.meet_link }}" 
+                       target="_blank"
+                       class="block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-xl transition-all shadow-lg hover:shadow-xl text-lg font-bold">
+                        <i class="fas fa-external-link-alt mr-2"></i>
+                        Abrir Google Meet
+                    </a>
+                    
+                    <!-- Enlace para compartir -->
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                        <label class="text-xs font-medium text-gray-600 block mb-2">Enlace de la reunión:</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" 
+                                   value="{{ conversation.meet_link }}" 
+                                   id="meetLinkInput"
+                                   readonly
+                                   class="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm font-mono text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <button onclick="copyMeetLink()" 
+                                    class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm font-medium">
+                                <i class="fas fa-copy mr-1"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Instrucciones -->
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-left">
+                    <p class="text-sm text-blue-900">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        <strong>Nota:</strong> El enlace se abrirá en una nueva pestaña. 
+                        Asegúrate de permitir ventanas emergentes en tu navegador.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        <!-- Área de mensajes con diseño mejorado -->
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div id="messagesContainer" class="p-6 space-y-4 overflow-y-auto" style="height: 550px; scroll-behavior: smooth;">
+            {% if messages %}
+                {% for msg in messages %}
+                    <div class="flex {% if msg.sender == user %}justify-end{% else %}justify-start{% endif %} animate-fadeIn message-item" data-message-id="{{ msg.id }}">
+                        <div class="max-w-xs lg:max-w-md">
+                            {% if msg.sender != user %}
+                                <div class="flex items-start gap-2 mb-2">
+                                    {% if msg.sender.profile.profile_image %}
+                                        <img src="{{ msg.sender.profile.profile_image.url }}" 
+                                             class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                    {% else %}
+                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border border-gray-200">
+                                            <i class="fas fa-user text-white text-xs"></i>
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <p class="text-xs font-medium text-gray-700">{{ msg.sender.get_full_name }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="{% if msg.sender == user %}bg-gradient-to-br from-blue-600 to-blue-700{% else %}bg-gray-100{% endif %} rounded-2xl p-4 border {% if msg.sender == user %}border-blue-600 shadow-lg{% else %}border-gray-200{% endif %} transition-all hover:shadow-xl">
+                                <p class="{% if msg.sender == user %}text-white{% else %}text-gray-900{% endif %} whitespace-pre-line leading-relaxed">{{ msg.content }}</p>
+                                <div class="flex items-center justify-between mt-3">
+                                    <p class="text-xs {% if msg.sender == user %}text-blue-100{% else %}text-gray-500{% endif %} font-medium">
+                                        {{ msg.created_at|date:"H:i" }}
+                                    </p>
+                                    {% if msg.sender == user %}
+                                        <span class="text-xs text-blue-100">
+                                            {% if msg.is_read %}
+                                                <i class="fas fa-check-double"></i> Leído
+                                            {% else %}
+                                                <i class="fas fa-check"></i> Enviado
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-16" id="emptyState">
+                    <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-comment-dots text-5xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">No hay mensajes aún</h3>
+                    <p class="text-gray-600">¡Inicia la conversación y empieza a conectar!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Formulario de envío mejorado -->
+        <div class="border-t border-gray-200 p-6 bg-gray-50">
+            <form id="chatForm" class="flex gap-4">
+                {% csrf_token %}
+                <div class="flex-1">
+                    <textarea id="messageInput" 
+                              rows="2" 
+                              placeholder="Escribe tu mensaje... (Enter para enviar, Shift+Enter para nueva línea)"
+                              class="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all"></textarea>
+                    <div class="flex items-center justify-between mt-2">
+                        <div class="flex items-center gap-2 text-xs text-gray-500">
+                            <span id="charCount">0 caracteres</span>
+                            <span class="mx-1">•</span>
+                            <span id="connectionStatus" class="flex items-center gap-1">
+                                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                                Conectado
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" 
+                        id="sendButton"
+                        class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl transition-all hover:scale-105 shadow-lg hover:shadow-xl self-start font-medium">
+                    <i class="fas fa-paper-plane mr-2"></i> Enviar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Estilos personalizados -->
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(50px);
+        }
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .animate-slideIn {
+        animation: slideIn 0.4s ease-out;
+    }
+
+    #messagesContainer::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    #messagesContainer::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    #messagesContainer::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    #messagesContainer::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+</style>
+
+<!-- WebSocket JavaScript -->
+<script>
+    // ⛔ BLOQUEAR COMPLETAMENTE LAS NOTIFICACIONES PUSH DEL NAVEGADOR
+    if ('Notification' in window) {
+        // Sobrescribir el constructor de Notification para que no haga nada
+        window.Notification = function() {
+            console.log('🚫 Notificaciones push bloqueadas - Usando sistema interno');
+            return {
+                close: function() {},
+                addEventListener: function() {}
+            };
+        };
+        // Bloquear el método estático requestPermission
+        window.Notification.requestPermission = function() {
+            console.log('🚫 Permisos de notificación bloqueados - Usando sistema interno');
+            return Promise.resolve('denied');
+        };
+        window.Notification.permission = 'denied';
+        
+        console.log('✅ Sistema de notificaciones internas activo');
+    }
+    
+    const conversationId = {{ conversation.id }};
+    const currentUserId = {{ user.id }};
+    const otherUserId = {{ other_user.id }};
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const wsUrl = `${wsProtocol}//${window.location.host}/ws/chat/${conversationId}/`;
+    
+    let chatSocket = null;
+    let typingTimeout = null;
+    let isTyping = false;
+    
+    // Conectar al WebSocket
+    function connectWebSocket() {
+        chatSocket = new WebSocket(wsUrl);
+        
+        chatSocket.onopen = function(e) {
+            console.log('✅ WebSocket conectado');
+            updateConnectionStatus(true);
+        };
+        
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            
+            if (data.type === 'chat_message') {
+                if (data.sender_id !== currentUserId) {
+                    addMessageToChat(data);
+                    // Notificación interna se crea automáticamente en el backend
+                }
+            } else if (data.type === 'typing') {
+                showTypingIndicator(data.is_typing);
+            } else if (data.type === 'user_status') {
+                updateOnlineStatus(data.status);
+            } else if (data.type === 'meet_started') {
+                // Notificación de videollamada iniciada
+                if (data.creator_id !== currentUserId) {
+                    showNotification(`📹 ${data.creator_name} ha iniciado una videollamada`, 'info');
+                    // Recargar para mostrar el panel de Meet
+                    setTimeout(() => location.reload(), 1500);
+                }
+            } else if (data.type === 'meet_request_sent') {
+                // NUEVO: Solicitud de videollamada enviada
+                if (data.receiver_id === currentUserId) {
+                    // Soy el receptor - mostrar solicitud
+                    showMeetRequest(data.request_id, data.requester_name);
+                } else {
+                    // Soy el solicitante - mostrar confirmación
+                    showNotification(`⏳ Solicitud de videollamada enviada a ${data.receiver_id}`, 'info');
+                }
+            } else if (data.type === 'meet_request_accepted') {
+                // NUEVO: Solicitud aceptada
+                if (data.requester_id === currentUserId) {
+                    // Soy el solicitante - la aceptaron mi solicitud
+                    showNotification(`✅ ${data.acceptor_name} aceptó tu solicitud de videollamada`, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    // Soy el aceptador - acabo de aceptar
+                    showNotification(`✅ Videollamada creada exitosamente`, 'success');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            } else if (data.type === 'meet_request_rejected') {
+                // NUEVO: Solicitud rechazada
+                if (data.requester_id === currentUserId) {
+                    // Soy el solicitante - rechazaron mi solicitud
+                    showNotification(`❌ ${data.rejecter_name} rechazó tu solicitud de videollamada`, 'error');
+                    // Ocultar cualquier UI de solicitud pendiente
+                    removeMeetRequestUI(data.request_id);
+                }
+            }
+        };
+        
+        chatSocket.onclose = function(e) {
+            console.log('❌ WebSocket desconectado');
+            updateConnectionStatus(false);
+            // Intentar reconectar después de 3 segundos
+            setTimeout(connectWebSocket, 3000);
+        };
+        
+        chatSocket.onerror = function(e) {
+            console.error('Error en WebSocket:', e);
+            updateConnectionStatus(false);
+        };
+    }
+    
+    // Enviar mensaje
+    document.getElementById('chatForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const messageInput = document.getElementById('messageInput');
+        const message = messageInput.value.trim();
+        
+        if (message && chatSocket.readyState === WebSocket.OPEN) {
+            // Enviar por WebSocket
+            chatSocket.send(JSON.stringify({
+                'type': 'chat_message',
+                'message': message
+            }));
+            
+            // Agregar mensaje propio al chat
+            addOwnMessage(message);
+            
+            // Limpiar input
+            messageInput.value = '';
+            updateCharCount();
+            
+            // Detener indicador de escritura
+            if (isTyping) {
+                sendTypingIndicator(false);
+            }
+        }
+    });
+    
+    // Detectar Enter para enviar
+    document.getElementById('messageInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+        }
+    });
+    
+    // Detectar cuando el usuario está escribiendo
+    document.getElementById('messageInput').addEventListener('input', function() {
+        updateCharCount();
+        
+        if (!isTyping) {
+            isTyping = true;
+            sendTypingIndicator(true);
+        }
+        
+        // Resetear timeout
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+            isTyping = false;
+            sendTypingIndicator(false);
+        }, 2000);
+    });
+    
+    // Enviar indicador de escritura
+    function sendTypingIndicator(typing) {
+        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({
+                'type': 'typing',
+                'is_typing': typing
+            }));
+        }
+    }
+    
+    // Mostrar indicador de escritura
+    function showTypingIndicator(isTyping) {
+        const indicator = document.getElementById('typingIndicator');
+        if (isTyping) {
+            indicator.classList.remove('hidden');
+        } else {
+            indicator.classList.add('hidden');
+        }
+    }
+    
+    // Actualizar estado de conexión
+    function updateConnectionStatus(connected) {
+        const status = document.getElementById('connectionStatus');
+        if (connected) {
+            status.innerHTML = '<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Conectado';
+        } else {
+            status.innerHTML = '<span class="w-2 h-2 bg-red-500 rounded-full"></span> Desconectado';
+        }
+    }
+    
+    // Actualizar estado online/offline
+    function updateOnlineStatus(status) {
+        const indicator = document.getElementById('onlineIndicator');
+        if (status === 'online') {
+            indicator.classList.remove('bg-gray-400');
+            indicator.classList.add('bg-green-500');
+        } else {
+            indicator.classList.remove('bg-green-500');
+            indicator.classList.add('bg-gray-400');
+        }
+    }
+    
+    // Agregar mensaje al chat
+    function addMessageToChat(data) {
+        const container = document.getElementById('messagesContainer');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        const messageHtml = `
+            <div class="flex justify-start animate-slideIn message-item" data-message-id="${data.message_id}">
+                <div class="max-w-xs lg:max-w-md">
+                    <div class="flex items-start gap-2 mb-2">
+                        ${data.avatar_url ? 
+                            `<img src="${data.avatar_url}" class="w-8 h-8 rounded-full object-cover border border-gray-200">` :
+                            `<div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center border border-gray-200">
+                                <i class="fas fa-user text-white text-xs"></i>
+                            </div>`
+                        }
+                        <div>
+                            <p class="text-xs font-medium text-gray-700">${data.sender_name}</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 rounded-2xl p-4 border border-gray-200 transition-all hover:shadow-xl">
+                        <p class="text-gray-900 whitespace-pre-line leading-relaxed">${data.message}</p>
+                        <p class="text-xs text-gray-500 font-medium mt-3">${data.timestamp}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', messageHtml);
+        scrollToBottom();
+    }
+    
+    // Agregar mensaje propio
+    function addOwnMessage(message) {
+        const container = document.getElementById('messagesContainer');
+        const emptyState = document.getElementById('emptyState');
+        
+        if (emptyState) {
+            emptyState.remove();
+        }
+        
+        const now = new Date();
+        const timestamp = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        
+        const messageHtml = `
+            <div class="flex justify-end animate-fadeIn message-item">
+                <div class="max-w-xs lg:max-w-md">
+                    <div class="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-4 border border-blue-600 shadow-lg transition-all hover:shadow-xl">
+                        <p class="text-white whitespace-pre-line leading-relaxed">${message}</p>
+                        <div class="flex items-center justify-between mt-3">
+                            <p class="text-xs text-blue-100 font-medium">${timestamp}</p>
+                            <span class="text-xs text-blue-100">
+                                <i class="fas fa-check"></i> Enviado
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', messageHtml);
+        scrollToBottom();
+    }
+    
+    // Scroll al final
+    function scrollToBottom() {
+        const container = document.getElementById('messagesContainer');
+        container.scrollTop = container.scrollHeight;
+    }
+    
+    // Contador de caracteres
+    function updateCharCount() {
+        const input = document.getElementById('messageInput');
+        const count = document.getElementById('charCount');
+        count.textContent = `${input.value.length} caracteres`;
+    }
+    
+    // ===========================================
+    // FUNCIONES DE GOOGLE MEET
+    // ===========================================
+    
+    // Toggle Meet ON/OFF
+    function toggleMeet() {
+        fetch(`/messages/{{ conversation.id }}/meet/toggle/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                // Actualizar UI
+                const btn = document.getElementById('meetToggleBtn');
+                const text = document.getElementById('meetToggleText');
+                
+                if (data.meet_enabled) {
+                    btn.classList.remove('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                    btn.classList.add('bg-green-100', 'text-green-700', 'hover:bg-green-200');
+                    text.textContent = 'Meet ON';
+                    
+                    // Mostrar notificación
+                    showNotification('✅ Videollamadas habilitadas', 'success');
+                    
+                    // Recargar para mostrar botón de crear reunión
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    btn.classList.remove('bg-green-100', 'text-green-700', 'hover:bg-green-200');
+                    btn.classList.add('bg-gray-100', 'text-gray-600', 'hover:bg-gray-200');
+                    text.textContent = 'Meet OFF';
+                    
+                    showNotification('❌ Videollamadas deshabilitadas', 'info');
+                    setTimeout(() => location.reload(), 1000);
+                }
+            }
+        })
+        .catch(err => {
+            console.error('Error al toggle Meet:', err);
+            showNotification('Error al cambiar configuración', 'error');
+        });
+    }
+    
+    // NUEVO: Crear SOLICITUD de videollamada (no crea el enlace inmediatamente)
+    function createMeet() {
+        showNotification('⏳ Enviando solicitud de videollamada...', 'info');
+        
+        fetch(`/messages/{{ conversation.id }}/meet/create/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => {
+            console.log('Response status:', res.status);
+            return res.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            
+            if (data.success) {
+                showNotification('✅ Solicitud enviada - Esperando aprobación...', 'success');
+                // NO recargar - esperar respuesta por WebSocket
+            } else if (data.error === 'meet_disabled_requester') {
+                // El otro usuario tiene Meet OFF
+                showNotification(`⚠️ Necesitas activar Meet primero`, 'warning');
+                if (confirm(`Para enviar solicitudes de videollamada, primero debes activar la opción "Meet" (toggle arriba).\n\n¿Deseas activarla ahora?`)) {
+                    // Activar Meet automáticamente
+                    toggleMeet();
+                }
+            } else if (data.error === 'request_pending') {
+                showNotification('⏳ Ya tienes una solicitud pendiente', 'info');
+            } else if (data.error === 'oauth_required') {
+                showNotification('🔐 Conecta tu cuenta de Google primero', 'info');
+                
+                if (confirm('Para crear videollamadas de Google Meet, necesitas conectar tu cuenta de Google.\n\n¿Deseas conectarla ahora?')) {
+                    window.location.href = '/google/authorize/';
+                }
+            } else if (data.error === 'oauth_expired') {
+                showNotification('⚠️ Tu sesión de Google expiró', 'error');
+                
+                if (confirm('Tu sesión de Google ha expirado.\n\n¿Deseas volver a conectar?')) {
+                    window.location.href = '/google/authorize/';
+                }
+            } else {
+                // Mostrar error genérico con detalles
+                console.error('Error del servidor:', data);
+                showNotification('❌ ' + (data.message || data.error || 'Error desconocido'), 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Error al crear solicitud:', err);
+            showNotification('❌ Error de red al enviar solicitud', 'error');
+        });
+    }
+    
+    // NUEVO: Mostrar solicitud de videollamada en el chat
+    function showMeetRequest(requestId, requesterName) {
+        const messagesContainer = document.getElementById('messagesContainer');
+        
+        const requestHTML = `
+            <div id="meet-request-${requestId}" class="meet-request-notification" style="
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 12px;
+                margin: 15px 0;
+                box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);
+                animation: slideInRight 0.3s ease-out;
+            ">
+                <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                    <svg style="width: 24px; height: 24px; margin-right: 10px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    <strong style="font-size: 16px;">Solicitud de Videollamada</strong>
+                </div>
+                
+                <p style="margin: 10px 0; font-size: 14px; opacity: 0.95;">
+                    📹 <strong>${requesterName}</strong> quiere iniciar una videollamada de <strong>Google Meet</strong> segura y encriptada.
+                </p>
+                
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button onclick="acceptMeetRequest(${requestId})" style="
+                        flex: 1;
+                        background: #10b981;
+                        color: white;
+                        border: none;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(16, 185, 129, 0.4)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        ✅ Aceptar
+                    </button>
+                    
+                    <button onclick="rejectMeetRequest(${requestId})" style="
+                        flex: 1;
+                        background: #ef4444;
+                        color: white;
+                        border: none;
+                        padding: 12px 20px;
+                        border-radius: 8px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-size: 14px;
+                        transition: all 0.3s;
+                    " onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 12px rgba(239, 68, 68, 0.4)'" 
+                       onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                        ❌ Rechazar
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        messagesContainer.insertAdjacentHTML('beforeend', requestHTML);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        // Notificación de sonido/sistema
+        showNotification(`📹 ${requesterName} solicita una videollamada`, 'info');
+    }
+    
+    // NUEVO: Aceptar solicitud de videollamada
+    function acceptMeetRequest(requestId) {
+        showNotification('⏳ Aceptando solicitud...', 'info');
+        
+        fetch(`/meet-request/${requestId}/accept/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('✅ Videollamada creada - Abriendo Google Meet...', 'success');
+                
+                // Abrir Meet en nueva pestaña
+                window.open(data.meet_link, '_blank');
+                
+                // Recargar para mostrar panel de Meet
+                setTimeout(() => location.reload(), 1000);
+            } else if (data.error === 'oauth_required') {
+                showNotification('🔐 Necesitas conectar tu cuenta de Google primero', 'warning');
+                
+                if (confirm('Para aceptar videollamadas, necesitas conectar tu cuenta de Google.\n\n¿Deseas conectarla ahora?')) {
+                    window.location.href = '/google/authorize/';
+                }
+            } else if (data.error === 'oauth_expired') {
+                showNotification('⚠️ Tu sesión de Google expiró', 'error');
+                
+                if (confirm('Tu sesión de Google ha expirado.\n\n¿Deseas volver a conectar?')) {
+                    window.location.href = '/google/authorize/';
+                }
+            } else {
+                showNotification('❌ ' + (data.message || data.error), 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Error al aceptar solicitud:', err);
+            showNotification('❌ Error al aceptar solicitud', 'error');
+        });
+    }
+    
+    // NUEVO: Rechazar solicitud de videollamada
+    function rejectMeetRequest(requestId) {
+        showNotification('⏳ Rechazando solicitud...', 'info');
+        
+        fetch(`/meet-request/${requestId}/reject/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('✅ Solicitud rechazada', 'success');
+                removeMeetRequestUI(requestId);
+            } else {
+                showNotification('❌ Error al rechazar solicitud', 'error');
+            }
+        })
+        .catch(err => {
+            console.error('Error al rechazar solicitud:', err);
+            showNotification('❌ Error al rechazar solicitud', 'error');
+        });
+    }
+    
+    // NUEVO: Remover UI de solicitud
+    function removeMeetRequestUI(requestId) {
+        const requestElement = document.getElementById(`meet-request-${requestId}`);
+        if (requestElement) {
+            requestElement.style.animation = 'slideOutRight 0.3s ease-out';
+            setTimeout(() => requestElement.remove(), 300);
+        }
+    }
+    
+    // Copiar enlace de Meet
+    function copyMeetLink() {
+        const input = document.getElementById('meetLinkInput');
+        input.select();
+        document.execCommand('copy');
+        showNotification('✅ Enlace copiado al portapapeles', 'success');
+    }
+    
+    // Finalizar Meet
+    function endMeet() {
+        if (!confirm('¿Estás seguro de que deseas finalizar la videollamada para todos?')) {
+            return;
+        }
+        
+        fetch(`/messages/{{ conversation.id }}/meet/end/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('✅ Videollamada finalizada', 'success');
+                setTimeout(() => location.reload(), 1000);
+            }
+        })
+        .catch(err => {
+            console.error('Error al finalizar Meet:', err);
+            showNotification('Error al finalizar videollamada', 'error');
+        });
+    }
+    
+    // Mostrar notificaciones toast
+    function showNotification(message, type = 'info') {
+        // Crear elemento de notificación
+        const notification = document.createElement('div');
+        notification.className = `fixed top-4 right-4 px-6 py-4 rounded-xl shadow-2xl z-50 transform transition-all duration-300 translate-x-0 ${
+            type === 'success' ? 'bg-green-500 text-white' :
+            type === 'error' ? 'bg-red-500 text-white' :
+            'bg-blue-500 text-white'
+        }`;
+        notification.innerHTML = `
+            <div class="flex items-center gap-3">
+                <i class="fas ${
+                    type === 'success' ? 'fa-check-circle' :
+                    type === 'error' ? 'fa-exclamation-circle' :
+                    'fa-info-circle'
+                } text-xl"></i>
+                <p class="font-medium">${message}</p>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Animar entrada
+        setTimeout(() => {
+            notification.style.transform = 'translateX(0)';
+        }, 100);
+        
+        // Auto-eliminar después de 3 segundos
+        setTimeout(() => {
+            notification.style.transform = 'translateX(400px)';
+            setTimeout(() => notification.remove(), 300);
+        }, 3000);
+    }
+    
+    // NUEVO: Mostrar solicitudes pendientes al cargar la página
+    function loadPendingMeetRequests() {
+        console.log('🔍 Cargando solicitudes pendientes...');
+        
+        // Esperar a que el DOM esté completamente listo
+        const messagesContainer = document.getElementById('messagesContainer');
+        if (!messagesContainer) {
+            console.error('❌ Error: elemento messagesContainer no encontrado');
+            return;
+        }
+        
+        {% for request in pending_meet_requests %}
+        console.log('📋 Solicitud encontrada: ID={{ request.id }}, De: {{ request.requester.get_full_name|escapejs }}');
+        showMeetRequest({{ request.id }}, '{{ request.requester.get_full_name|escapejs }}');
+        {% empty %}
+        console.log('✅ No hay solicitudes pendientes');
+        {% endfor %}
+    }
+    
+    // Inicializar al cargar la página - usar DOMContentLoaded para asegurar que DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('🔧 DOM completamente cargado');
+        scrollToBottom();
+        connectWebSocket();
+        
+        // NUEVO: Cargar solicitudes pendientes después de que DOM esté listo
+        setTimeout(loadPendingMeetRequests, 100); // Pequeño delay para asegurar que todo esté renderizado
+    });
+</script>
+{% endblock %}
+{% endblock %}
+{% endblock %}

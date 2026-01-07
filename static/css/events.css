@@ -1,0 +1,93 @@
+.theme-preview {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+}
+
+.theme-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+}
+
+.theme-card {
+    @apply relative overflow-hidden rounded-xl;
+    aspect-ratio: 4/5;
+}
+
+.theme-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.8) 100%);
+    z-index: 1;
+}
+
+.theme-modern {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+.theme-starry {
+    background: linear-gradient(135deg, #1e293b 0%, #3b82f6 100%);
+}
+
+.theme-aurora {
+    background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+}
+
+.theme-sunset {
+    background: linear-gradient(135deg, #f97316 0%, #ec4899 100%);
+}
+
+.theme-minimal {
+    background: linear-gradient(135deg, #18181b 0%, #27272a 100%);
+}
+
+.theme-neon {
+    background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+}
+
+/* Animaciones */
+.hover-scale {
+    transition: transform 0.2s ease-in-out;
+}
+
+.hover-scale:hover {
+    transform: scale(1.02);
+}
+
+/* Estilos para el modal de evento */
+.event-modal {
+    @apply fixed inset-0 z-50 overflow-y-auto;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+}
+
+.event-modal-content {
+    @apply relative bg-gray-900 rounded-2xl overflow-hidden shadow-xl;
+    max-width: 90vw;
+    max-height: 90vh;
+    width: 100%;
+    margin: 2.5vh auto;
+}
+
+.event-modal-header {
+    @apply sticky top-0 z-10;
+    background: rgba(17, 24, 39, 0.8);
+    backdrop-filter: blur(8px);
+}
+
+/* Estilos para las pestañas */
+.event-tab {
+    @apply px-4 py-2 text-sm font-medium text-gray-400 hover:text-white transition-colors cursor-pointer;
+}
+
+.event-tab.active {
+    @apply text-white border-b-2 border-primary-500;
+}
+
+/* Estilos para el formulario de RSVP */
+.rsvp-form {
+    @apply space-y-4 p-6 bg-gray-800 rounded-xl;
+}
