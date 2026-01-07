@@ -555,13 +555,12 @@ def investor_create(request):
         portfolio_companies_count = request.POST.get('portfolio_companies_count')
         investments_per_year = request.POST.get('investments_per_year')
         notable_investments = request.POST.get('notable_investments', '')
-        is_active = request.POST.get('is_active', 'on') == 'on'
-        is_accepting_pitches = request.POST.get('is_accepting_pitches', 'on') == 'on'
         
         # Get investment stages as list
         investment_stages = request.POST.getlist('investment_stages')
         
         # Create investor profile with correct field names
+        # Siempre activo y aceptando pitches por defecto cuando se crea el perfil
         investor_profile = InvestorProfile.objects.create(
             user=request.user,
             fund_name=fund_name if fund_name else f"{request.user.get_full_name()} Fund",
@@ -577,8 +576,8 @@ def investor_create(request):
             investments_per_year=int(investments_per_year) if investments_per_year else None,
             notable_investments=notable_investments,
             investment_stages=investment_stages if investment_stages else [],
-            is_active=is_active,
-            is_accepting_pitches=is_accepting_pitches
+            is_active=True,  # Siempre activo al crear perfil
+            is_accepting_pitches=True  # Siempre aceptando pitches al crear perfil
         )
         
         return redirect('core:dashboard')
