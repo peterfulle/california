@@ -722,7 +722,8 @@ def startup_directory(request):
 
 def investor_directory(request):
     """Directorio público de inversores"""
-    investors = InvestorProfile.objects.filter(is_active=True).order_by('-created_at')
+    # Mostrar todos los inversores con perfil completado
+    investors = InvestorProfile.objects.all().order_by('-created_at')
     print(f"DEBUG: Total inversores encontrados: {investors.count()}")
     for inv in investors:
         print(f"  - {inv.fund_name} (activo: {inv.is_active})")
