@@ -26,6 +26,8 @@ if RENDER_EXTERNAL_HOSTNAME:
 CSRF_TRUSTED_ORIGINS = [
     'https://california-jhkj.onrender.com',
     'https://*.onrender.com',
+    'https://startupconnect.aplifly.com',
+    'https://*.aplifly.com',
 ]
 
 # Application definition
