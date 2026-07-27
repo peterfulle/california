@@ -1,257 +1,333 @@
 {% extends 'base.html' %}
+{% load humanize %}
 
-{% block title %}Chile Conecta - CORFO & ProChile Initiative{% endblock %}
+{% block title %}StartupConnect — El ecosistema startup de California{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-white">
-    
-    <!-- Hero Section -->
-    <div class="relative border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-32 lg:py-40">
-            <div class="text-center space-y-8">
-                <!-- Chilean Flag Badge -->
-                <div class="flex justify-center">
-                    <div class="flex items-center space-x-2 px-3 py-1.5 bg-gray-100 rounded-full">
-                        <div class="flex h-3 w-5 rounded-sm overflow-hidden">
-                            <div class="w-1/2 bg-blue-600"></div>
-                            <div class="w-1/2 bg-red-600"></div>
-                        </div>
-                        <span class="text-sm text-gray-900 font-medium">Chilean Innovation</span>
-                    </div>
-                </div>
+<div class="bg-white">
 
-                <div class="space-y-4">
-                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold text-gray-900 tracking-tight">
-                        Chile Conecta
+    <!-- ============ HERO ============ -->
+    <section class="relative overflow-hidden border-b border-gray-100">
+        <div class="absolute inset-0 -z-10" style="background: radial-gradient(circle at 15% 20%, rgba(0,0,0,0.05), transparent 45%), radial-gradient(circle at 85% 0%, rgba(0,0,0,0.04), transparent 40%);"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 lg:pt-28 lg:pb-24">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+                <!-- Copy -->
+                <div class="space-y-8">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                        <span class="text-xs font-medium text-gray-700">Live · {{ total_startups }}+ startups activas en California</span>
+                    </div>
+
+                    <h1 class="text-5xl sm:text-6xl font-bold text-gray-900 tracking-tight leading-[1.05]">
+                        Donde founders e inversores<br class="hidden sm:block"> construyen el futuro.
                     </h1>
-                    <p class="max-w-3xl mx-auto text-xl text-gray-600">
-                        A CORFO & ProChile Initiative to Bridge Chilean Startups with Global Investors
+
+                    <p class="text-xl text-gray-500 leading-relaxed max-w-lg">
+                        StartupConnect conecta a los mejores founders de California con inversores y advisors que ya validaron cientos de operaciones. Un solo lugar para levantar capital, hacer deal flow y crecer tu red.
                     </p>
+
+                    <div class="flex flex-wrap gap-4">
+                        <a href="{% url 'core:register' %}" class="px-7 py-3.5 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition shadow-sm">
+                            Comenzar gratis
+                        </a>
+                        <a href="{% url 'core:startup_directory' %}" class="px-7 py-3.5 bg-white text-gray-900 border border-gray-200 rounded-xl font-medium hover:bg-gray-50 transition inline-flex items-center gap-2">
+                            Explorar startups
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                        </a>
+                    </div>
+
+                    <div class="flex items-center gap-8 pt-2">
+                        <div>
+                            <div class="text-2xl font-bold text-gray-900">{{ total_startups }}+</div>
+                            <div class="text-sm text-gray-500">Startups</div>
+                        </div>
+                        <div class="w-px h-10 bg-gray-200"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-gray-900">{{ total_investors }}+</div>
+                            <div class="text-sm text-gray-500">Inversores</div>
+                        </div>
+                        <div class="w-px h-10 bg-gray-200"></div>
+                        <div>
+                            <div class="text-2xl font-bold text-gray-900">${{ total_funding }}</div>
+                            <div class="text-sm text-gray-500">Capital conectado</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <a href="{% url 'core:startup_directory' %}" class="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-base font-medium">
-                        Explore Startups
-                    </a>
-                    <a href="{% url 'core:register' %}" class="px-8 py-3 bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-base font-medium">
-                        Join Platform
-                    </a>
+                <!-- Product mockup -->
+                <div class="relative hidden lg:block">
+                    <div class="absolute -top-8 -right-8 w-72 h-72 bg-gray-50 rounded-full blur-3xl"></div>
+                    <div class="relative bg-white border border-gray-100 rounded-2xl shadow-2xl shadow-gray-200/60 p-6 space-y-5">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-white font-semibold text-sm">NX</div>
+                                <div>
+                                    <div class="text-sm font-semibold text-gray-900">Nexus Robotics</div>
+                                    <div class="text-xs text-gray-400">Series A · DeepTech</div>
+                                </div>
+                            </div>
+                            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 text-xs font-medium rounded-full">Fundraising</span>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-400 mb-1">MRR</div>
+                                <div class="text-sm font-bold text-gray-900">$182K</div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-400 mb-1">Growth</div>
+                                <div class="text-sm font-bold text-gray-900">+34%</div>
+                            </div>
+                            <div class="bg-gray-50 rounded-xl p-3">
+                                <div class="text-xs text-gray-400 mb-1">Runway</div>
+                                <div class="text-sm font-bold text-gray-900">18 mo</div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-end gap-1.5 h-20">
+                            <div class="flex-1 bg-gray-200 rounded-md" style="height: 35%"></div>
+                            <div class="flex-1 bg-gray-200 rounded-md" style="height: 55%"></div>
+                            <div class="flex-1 bg-gray-200 rounded-md" style="height: 40%"></div>
+                            <div class="flex-1 bg-gray-300 rounded-md" style="height: 65%"></div>
+                            <div class="flex-1 bg-gray-800 rounded-md" style="height: 85%"></div>
+                            <div class="flex-1 bg-black rounded-md" style="height: 100%"></div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                            <div class="flex -space-x-2">
+                                <div class="w-7 h-7 rounded-full bg-gray-300 border-2 border-white"></div>
+                                <div class="w-7 h-7 rounded-full bg-gray-400 border-2 border-white"></div>
+                                <div class="w-7 h-7 rounded-full bg-gray-500 border-2 border-white flex items-center justify-center text-[10px] text-white font-medium">+6</div>
+                            </div>
+                            <span class="text-xs text-gray-400">Interés de 6 inversores</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute -bottom-6 -left-10 bg-white border border-gray-100 rounded-xl shadow-xl p-4 w-52">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-4 h-4 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                            <span class="text-xs font-medium text-gray-900">Match con inversor</span>
+                        </div>
+                        <p class="text-xs text-gray-500">Sequoia Scout revisó tu perfil hace 2 min</p>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Mission Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-        <div class="max-w-3xl mx-auto text-center space-y-6">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">
-                The Challenge
-            </h2>
-            <p class="text-lg text-gray-600 leading-relaxed">
-                Chilean startups possess exceptional potential but often struggle with visibility and credibility 
-                in international markets. Investors lack reliable metrics and standardized evaluation frameworks 
-                to assess emerging Latin American ventures.
-            </p>
-            <p class="text-lg text-gray-600 leading-relaxed">
-                Chile Conecta provides validated, transparent, and actionable intelligence that bridges this gap.
-            </p>
+    <!-- ============ FOR WHOM ============ -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+        <div class="max-w-2xl mb-14">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Una plataforma, tres roles.</h2>
+            <p class="mt-4 text-lg text-gray-500">Cada perfil tiene herramientas hechas a medida para lo que necesita lograr.</p>
         </div>
-    </div>
 
-    <!-- Stats Section -->
-    <div class="bg-gray-50 border-y border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                <div class="text-center space-y-3">
-                    <div class="flex justify-center">
-                        <div class="p-3 bg-gray-900 rounded-lg">
-                            <i class="fas fa-check-circle text-2xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <h3 class="text-2xl font-bold text-gray-900">Validated</h3>
-                        <p class="text-sm text-gray-600">Government-backed verification</p>
-                    </div>
+        <div class="grid lg:grid-cols-3 gap-6">
+            <div class="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition space-y-5">
+                <div class="w-11 h-11 rounded-xl bg-black flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
                 </div>
-
-                <div class="text-center space-y-3">
-                    <div class="flex justify-center">
-                        <div class="p-3 bg-gray-900 rounded-lg">
-                            <i class="fas fa-chart-line text-2xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <h3 class="text-2xl font-bold text-gray-900">Traceable</h3>
-                        <p class="text-sm text-gray-600">CB Rank-powered insights</p>
-                    </div>
-                </div>
-
-                <div class="text-center space-y-3">
-                    <div class="flex justify-center">
-                        <div class="p-3 bg-gray-900 rounded-lg">
-                            <i class="fas fa-globe text-2xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <h3 class="text-2xl font-bold text-gray-900">Global</h3>
-                        <p class="text-sm text-gray-600">International standards</p>
-                    </div>
-                </div>
-
-                <div class="text-center space-y-3">
-                    <div class="flex justify-center">
-                        <div class="p-3 bg-gray-900 rounded-lg">
-                            <i class="fas fa-robot text-2xl text-white"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-1">
-                        <h3 class="text-2xl font-bold text-gray-900">AI-Powered</h3>
-                        <p class="text-sm text-gray-600">Smart matching algorithms</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Features Section -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-        <div class="grid lg:grid-cols-3 gap-12">
-            <div class="space-y-6">
-                <div class="space-y-3">
-                    <h3 class="text-2xl font-bold text-gray-900">For Chilean Startups</h3>
-                    <p class="text-gray-600">Gain international credibility and access</p>
-                </div>
-                <ul class="space-y-3">
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Verified profiles backed by CORFO</span>
+                <h3 class="text-xl font-bold text-gray-900">Founders</h3>
+                <p class="text-gray-500">Crea el perfil de tu startup, comparte métricas clave y llega a inversores activos en tu etapa.</p>
+                <ul class="space-y-2.5 pt-2">
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Perfil y cap table
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">CB Rank metrics for visibility</span>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Pitch deck generado con IA
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Direct investor connections</span>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Acceso a demo days
                     </li>
                 </ul>
             </div>
 
-            <div class="space-y-6">
-                <div class="space-y-3">
-                    <h3 class="text-2xl font-bold text-gray-900">For Global Investors</h3>
-                    <p class="text-gray-600">Discover vetted Latin American opportunities</p>
+            <div class="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition space-y-5">
+                <div class="w-11 h-11 rounded-xl bg-black flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
-                <ul class="space-y-3">
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Standardized evaluation metrics</span>
+                <h3 class="text-xl font-bold text-gray-900">Inversores</h3>
+                <p class="text-gray-500">Filtra deal flow por industria y etapa, y evalúa startups con métricas estandarizadas.</p>
+                <ul class="space-y-2.5 pt-2">
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Directorio filtrable de startups
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Transparent government validation</span>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Match con IA por tesis de inversión
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">AI-powered matching</span>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Acceso a información privada
                     </li>
                 </ul>
             </div>
 
-            <div class="space-y-6">
-                <div class="space-y-3">
-                    <h3 class="text-2xl font-bold text-gray-900">For Strategic Advisors</h3>
-                    <p class="text-gray-600">Support high-potential ventures</p>
+            <div class="p-8 rounded-2xl border border-gray-100 hover:border-gray-200 hover:shadow-lg transition space-y-5">
+                <div class="w-11 h-11 rounded-xl bg-black flex items-center justify-center">
+                    <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 </div>
-                <ul class="space-y-3">
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Data-driven insights</span>
+                <h3 class="text-xl font-bold text-gray-900">Advisors</h3>
+                <p class="text-gray-500">Suma tu experiencia a founders en etapa temprana y expande tu red profesional.</p>
+                <ul class="space-y-2.5 pt-2">
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Perfil público de reputación
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Track record visibility</span>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Networking en eventos curados
                     </li>
-                    <li class="flex items-start">
-                        <i class="fas fa-check text-gray-900 mt-1 mr-3"></i>
-                        <span class="text-gray-600">Network expansion opportunities</span>
+                    <li class="flex items-start gap-2.5 text-sm text-gray-600">
+                        <svg class="w-4 h-4 text-gray-900 mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+                        Mensajería directa con founders
                     </li>
                 </ul>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Strategic Benefits -->
-    <div class="bg-gray-50 border-y border-gray-100">
+    <!-- ============ FEATURED STARTUPS ============ -->
+    <section class="bg-gray-50 border-y border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-            <div class="space-y-12">
-                <div class="text-center space-y-4">
-                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">
-                        Why Chile Conecta?
-                    </h2>
-                    <p class="max-w-2xl mx-auto text-lg text-gray-600">
-                        A strategic platform built on transparency, validation, and data-driven decision making
-                    </p>
+            <div class="flex flex-wrap items-end justify-between gap-4 mb-12">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Startups destacadas</h2>
+                    <p class="mt-3 text-lg text-gray-500">Compañías que están construyendo el próximo capítulo de California.</p>
                 </div>
+                <a href="{% url 'core:startup_directory' %}" class="text-sm font-medium text-gray-900 hover:underline whitespace-nowrap">Ver todas →</a>
+            </div>
 
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="bg-white p-8 rounded-lg border border-gray-100 space-y-3">
-                        <h3 class="text-xl font-bold text-gray-900">Standardized Metrics</h3>
-                        <p class="text-gray-600">
-                            CB Rank integration provides universal comparability and objective evaluation frameworks
-                        </p>
+            {% if featured_startups %}
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for startup in featured_startups %}
+                <a href="{% url 'core:startup_profile' startup.id %}" class="block bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg hover:-translate-y-0.5 transition">
+                    <div class="flex items-center gap-3 mb-4">
+                        {% if startup.logo %}
+                        <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-11 h-11 rounded-xl object-cover">
+                        {% else %}
+                        <div class="w-11 h-11 rounded-xl bg-black text-white flex items-center justify-center font-semibold text-sm">{{ startup.company_name|slice:":2"|upper }}</div>
+                        {% endif %}
+                        <div class="min-w-0">
+                            <div class="font-semibold text-gray-900 truncate">{{ startup.company_name }}</div>
+                            <div class="text-xs text-gray-400">{{ startup.industry.name|default:"Startup" }}</div>
+                        </div>
                     </div>
-                    <div class="bg-white p-8 rounded-lg border border-gray-100 space-y-3">
-                        <h3 class="text-xl font-bold text-gray-900">Transparent Validation</h3>
-                        <p class="text-gray-600">
-                            CORFO and ProChile backing ensures credibility and reduces due diligence friction
-                        </p>
+                    <p class="text-sm text-gray-500 line-clamp-2">{{ startup.tagline }}</p>
+                    <div class="mt-4 flex items-center justify-between">
+                        <span class="text-xs px-2.5 py-1 bg-gray-100 rounded-full text-gray-600 font-medium">{{ startup.get_stage_display }}</span>
+                        {% if startup.is_fundraising %}
+                        <span class="text-xs px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-full font-medium">Fundraising</span>
+                        {% endif %}
                     </div>
-                    <div class="bg-white p-8 rounded-lg border border-gray-100 space-y-3">
-                        <h3 class="text-xl font-bold text-gray-900">Market Access</h3>
-                        <p class="text-gray-600">
-                            Direct connections to international investors actively seeking emerging market opportunities
-                        </p>
-                    </div>
-                    <div class="bg-white p-8 rounded-lg border border-gray-100 space-y-3">
-                        <h3 class="text-xl font-bold text-gray-900">Data-Driven Matching</h3>
-                        <p class="text-gray-600">
-                            AI algorithms analyze compatibility and surface the most relevant opportunities
-                        </p>
-                    </div>
-                </div>
+                </a>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="bg-white border border-dashed border-gray-200 rounded-2xl py-16 text-center">
+                <p class="text-gray-500">Aún no hay startups destacadas.</p>
+                <a href="{% url 'core:register' %}" class="mt-3 inline-block font-medium text-gray-900 hover:underline">Sé la primera en aparecer aquí →</a>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+        <div class="max-w-2xl mx-auto text-center mb-16">
+            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Cómo funciona</h2>
+            <p class="mt-4 text-lg text-gray-500">De perfil a conexión real, en tres pasos.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-10">
+            <div class="text-center space-y-4">
+                <div class="w-12 h-12 mx-auto rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold">1</div>
+                <h3 class="text-lg font-bold text-gray-900">Crea tu perfil</h3>
+                <p class="text-gray-500 text-sm max-w-xs mx-auto">Founder, inversor o advisor: completa tu perfil en minutos y define lo que buscas.</p>
+            </div>
+            <div class="text-center space-y-4">
+                <div class="w-12 h-12 mx-auto rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold">2</div>
+                <h3 class="text-lg font-bold text-gray-900">Sé descubierto</h3>
+                <p class="text-gray-500 text-sm max-w-xs mx-auto">Nuestro matching por IA y los directorios filtrables te ponen frente a las conexiones correctas.</p>
+            </div>
+            <div class="text-center space-y-4">
+                <div class="w-12 h-12 mx-auto rounded-full bg-gray-900 text-white flex items-center justify-center font-semibold">3</div>
+                <h3 class="text-lg font-bold text-gray-900">Conecta y cierra</h3>
+                <p class="text-gray-500 text-sm max-w-xs mx-auto">Mensajería directa, eventos y acceso a información privada para avanzar el deal.</p>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Final CTA -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
-        <div class="text-center space-y-8">
-            <h2 class="text-3xl sm:text-4xl font-bold text-gray-900">
-                Ready to Connect?
+    <!-- ============ UPCOMING EVENTS ============ -->
+    {% if upcoming_events %}
+    <section class="bg-gray-50 border-y border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-24">
+            <div class="flex flex-wrap items-end justify-between gap-4 mb-12">
+                <div>
+                    <h2 class="text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">Próximos eventos</h2>
+                    <p class="mt-3 text-lg text-gray-500">Demo days, pitch nights y networking en todo California.</p>
+                </div>
+                <a href="{% url 'core:events_list' %}" class="text-sm font-medium text-gray-900 hover:underline whitespace-nowrap">Ver calendario →</a>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for event in upcoming_events %}
+                <a href="{% url 'core:event_detail' event.id %}" class="block bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-lg transition">
+                    <span class="text-xs px-2.5 py-1 bg-gray-100 rounded-full text-gray-600 font-medium">{{ event.get_event_type_display }}</span>
+                    <h3 class="mt-4 font-semibold text-gray-900">{{ event.title }}</h3>
+                    <div class="mt-3 flex items-center gap-2 text-sm text-gray-500">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        {{ event.start_datetime|date:"d M, H:i" }}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- ============ FINAL CTA ============ -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+        <div class="bg-black rounded-3xl px-8 py-16 sm:px-16 text-center relative overflow-hidden">
+            <div class="absolute inset-0 opacity-40" style="background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.08), transparent 40%);"></div>
+            <h2 class="relative text-3xl sm:text-4xl font-bold text-white tracking-tight">
+                Tu próxima conexión está en StartupConnect.
             </h2>
-            <p class="max-w-2xl mx-auto text-lg text-gray-600">
-                Join the platform bridging Chilean innovation with global capital
+            <p class="relative mt-4 text-lg text-gray-400 max-w-xl mx-auto">
+                Únete al ecosistema de founders, inversores y advisors que ya están construyendo el futuro de California.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{% url 'core:register' %}" class="px-8 py-3 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition text-base font-medium">
-                    Get Started
+            <div class="relative mt-8 flex flex-wrap gap-4 justify-center">
+                <a href="{% url 'core:register' %}" class="px-7 py-3.5 bg-white text-black rounded-xl font-medium hover:bg-gray-100 transition">
+                    Crear cuenta gratis
                 </a>
-                <a href="{% url 'core:startup_directory' %}" class="px-8 py-3 bg-white text-gray-900 border border-gray-200 rounded-lg hover:bg-gray-50 transition text-base font-medium">
-                    Explore Platform
+                <a href="{% url 'core:login' %}" class="px-7 py-3.5 border border-gray-700 text-white rounded-xl font-medium hover:bg-white/5 transition">
+                    Iniciar sesión
                 </a>
             </div>
         </div>
-    </div>
+    </section>
 
-    <!-- Footer -->
-    <div class="border-t border-gray-100">
+    <!-- ============ FOOTER ============ -->
+    <footer class="border-t border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div class="text-center text-sm text-gray-600 space-y-2">
-                <p>Powered by <span class="font-semibold text-gray-900">CORFO</span> / <span class="font-semibold text-gray-900">ProChile</span> / <span class="font-semibold text-gray-900">GoGlobal</span></p>
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                        <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/></svg>
+                    </div>
+                    <span class="font-semibold text-gray-900">StartupConnect</span>
+                </div>
+                <p class="text-sm text-gray-400">© {% now "Y" %} StartupConnect. Construido para el ecosistema startup de California.</p>
             </div>
         </div>
-    </div>
+    </footer>
 
 </div>
 {% endblock %}

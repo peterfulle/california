@@ -2,20 +2,24 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse, StreamingHttpResponse, Http404
 from django.views.decorators.http import require_http_methods, require_POST
 from django.db.models import Q, Count, Sum, Avg
 from django.db import models
 from django.utils import timezone
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 import json
+import logging
 from .models import (
-    Contact, Industry, UserProfile, Startup, InvestorProfile, 
+    Contact, Industry, UserProfile, Startup, InvestorProfile,
     Event, EventRegistration, FounderProfile, EventComment, EventAttendance,
     ConnectionRequest, Conversation, Message, Notification
 )
 from .startup_forms import StartupForm
+
+logger = logging.getLogger('core')
 
 def home(request):
     """Homepage con estadísticas del ecosistema"""
@@ -254,72 +258,82 @@ def check_email_exists(request):
 
 def register(request):
     """Registro de nuevos usuarios con selección de tipo"""
+    context = {}
     if request.method == 'POST':
-        # Obtener datos del formulario
-        username = request.POST.get('username')
-        email = request.POST.get('email')
-        password1 = request.POST.get('password1')
-        password2 = request.POST.get('password2')
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        user_type = request.POST.get('user_type')
-        
-        # Validaciones básicas
+        email = request.POST.get('email', '').strip().lower()
+        password1 = request.POST.get('password1', '')
+        password2 = request.POST.get('password2', '')
+        first_name = request.POST.get('first_name', '').strip()
+        last_name = request.POST.get('last_name', '').strip()
+        user_type = request.POST.get('user_type', '')
+
+        # Repoblar el formulario si algo falla, para no perder lo ya escrito
+        context = {
+            'first_name': first_name,
+            'last_name': last_name,
+            'email': email,
+            'user_type': user_type,
+            'has_error': True,
+        }
+
+        valid_user_types = dict(UserProfile.USER_TYPES)
+        if not first_name or not last_name or not email or user_type not in valid_user_types:
+            messages.error(request, 'Completa todos los campos con un rol válido.')
+            return render(request, 'registration/register.html', context)
+
         if password1 != password2:
             messages.error(request, 'Las contraseñas no coinciden.')
-            return render(request, 'registration/register.html')
-        
-        if User.objects.filter(username=username).exists():
-            messages.error(request, 'El nombre de usuario ya existe.')
-            return render(request, 'registration/register.html')
-        
-        if User.objects.filter(email=email).exists():
+            return render(request, 'registration/register.html', context)
+
+        if User.objects.filter(email__iexact=email).exists():
             messages.error(request, 'El email ya está registrado.')
-            return render(request, 'registration/register.html')
-        
+            return render(request, 'registration/register.html', context)
+
         try:
-            # Crear usuario
+            validate_password(password1)
+        except ValidationError as e:
+            messages.error(request, ' '.join(e.messages))
+            return render(request, 'registration/register.html', context)
+
+        try:
             user = User.objects.create_user(
-                username=username,
+                username=email,
                 email=email,
                 password=password1,
                 first_name=first_name,
                 last_name=last_name
             )
-            
-            # Crear perfil de usuario
-            UserProfile.objects.create(
-                user=user,
-                user_type=user_type
-            )
-            
-            # Login automático
-            user = authenticate(username=username, password=password1)
-            login(request, user)
-            
+            UserProfile.objects.create(user=user, user_type=user_type)
+
+            login(request, authenticate(username=email, password=password1))
             messages.success(request, '¡Cuenta creada exitosamente! Completa tu perfil.')
             return redirect('core:dashboard')
-            
-        except Exception as e:
-            messages.error(request, f'Error al crear la cuenta: {str(e)}')
-    
-    return render(request, 'registration/register.html')
+
+        except Exception:
+            logger.exception('Error creando cuenta para %s', email)
+            messages.error(request, 'No pudimos crear tu cuenta. Intenta de nuevo.')
+            return render(request, 'registration/register.html', context)
+
+    return render(request, 'registration/register.html', context)
 
 def user_login(request):
     """Vista de login personalizada"""
+    error = None
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '').strip()
+        password = request.POST.get('password', '')
         user = authenticate(request, username=username, password=password)
-        
+
         if user is not None:
             login(request, user)
-            next_url = request.GET.get('next', 'core:dashboard')
+            if not request.POST.get('remember-me'):
+                request.session.set_expiry(0)
+            next_url = request.GET.get('next') or 'core:dashboard'
             return redirect(next_url)
         else:
-            messages.error(request, 'Usuario o contraseña incorrectos.')
-    
-    return render(request, 'registration/login.html')
+            error = 'Usuario o contraseña incorrectos.'
+
+    return render(request, 'registration/login.html', {'error': error})
 
 def user_logout(request):
     """Cerrar sesión"""
@@ -381,7 +395,9 @@ def dashboard(request):
             startup_count=Count('startup')
         ).order_by('-startup_count')[:5]
         logger.info(f"Trending industries count: {trending_industries.count()}")
-        
+
+        recent_investors = InvestorProfile.objects.filter(is_active=True).order_by('-created_at')[:6]
+
         context = {
             'profile': profile,
             'user_type': profile.user_type,
@@ -401,6 +417,7 @@ def dashboard(request):
             'recent_activity': {
                 'recent_startups': recent_startups,
                 'recent_funding': recent_funding,
+                'recent_investors': recent_investors,
                 'trending_industries': trending_industries,
                 'upcoming_events': Event.objects.filter(
                     status='published',
@@ -412,8 +429,12 @@ def dashboard(request):
         
         if profile.user_type == 'founder':
             # Dashboard específico para founders
-            try:
-                startup = Startup.objects.get(founder=profile)
+            # Un founder puede terminar con más de un Startup (datos de prueba, correcciones
+            # manuales, etc.); tomamos el más reciente en vez de asumir unicidad con .get().
+            startup = Startup.objects.filter(founder=profile).order_by('-created_at').first()
+            if startup is None:
+                context['needs_startup'] = True
+            else:
                 # Métricas del startup
                 context.update({
                     'startup': startup,
@@ -437,9 +458,7 @@ def dashboard(request):
                         is_public=True
                     ).exclude(id=startup.id)[:5] if startup.industry else []
                 })
-            except Startup.DoesNotExist:
-                context['needs_startup'] = True
-                
+
         elif profile.user_type == 'investor':
             # Dashboard específico para inversores
             try:
@@ -526,7 +545,9 @@ def dashboard(request):
                 'new_this_month': 3
             }
         }
-        return render(request, 'core/dashboard_new.html', context)@login_required
+        return render(request, 'core/dashboard_new.html', context)
+
+@login_required
 def investor_create(request):
     if not request.user.is_authenticated:
         return redirect('core:login')
@@ -984,9 +1005,12 @@ def create_startup(request):
             logger.error("Form is NOT valid")
             logger.error(f"Form errors: {form.errors}")
             
-            # Log cada error individualmente
+            # Log cada error individualmente. logo/cover_image ya muestran su propio
+            # error junto al dropzone correspondiente, así que no lo repetimos como toast.
             for field, errors in form.errors.items():
                 logger.error(f"Field '{field}' errors: {errors}")
+                if field in ('logo', 'cover_image'):
+                    continue
                 for error in errors:
                     messages.error(request, f'{field}: {error}')
     else:

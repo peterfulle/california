@@ -1,4 +1,5 @@
 <!-- Dashboard específico para Fundadores - Diseño Minimalista -->
+{% load humanize %}
 {% if startup %}
 <div class="space-y-8">
     <!-- Header de la Startup - Minimalista -->
@@ -7,15 +8,15 @@
             <div class="flex items-start justify-between mb-8">
                 <div class="flex items-center gap-4">
                     {% if startup.logo %}
-                        <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-200">
+                        <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-16 h-16 rounded-lg object-cover border border-gray-200">
                     {% else %}
                         <div class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border border-gray-200">
-                            <span class="text-gray-600 font-semibold text-xl">{{ startup.name|first }}</span>
+                            <span class="text-gray-600 font-semibold text-xl">{{ startup.company_name|first }}</span>
                         </div>
                     {% endif %}
                     <div>
-                        <h2 class="text-2xl font-semibold text-gray-900">{{ startup.name }}</h2>
-                        <p class="text-gray-500 mt-1">{{ startup.tagline|default:"Your startup tagline" }}</p>
+                        <h2 class="text-2xl font-semibold text-gray-900">{{ startup.company_name }}</h2>
+                        <p class="text-gray-500 mt-1">{{ startup.tagline|default:"Agrega el tagline de tu startup" }}</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
@@ -25,7 +26,7 @@
                     </span>
                     {% endif %}
                     <span class="px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-md">
-                        {{ startup.stage|default:"Early Stage" }}
+                        {{ startup.get_stage_display|default:"Etapa temprana" }}
                     </span>
                 </div>
             </div>
@@ -33,38 +34,38 @@
             <!-- Métricas Clave - Grid Limpio -->
             <div class="grid grid-cols-4 gap-6">
                 <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Total Funding</p>
-                    <p class="text-3xl font-semibold text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}K</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Financiamiento Total</p>
+                    <p class="text-3xl font-semibold text-gray-900">${% widthratio startup.total_funding_raised|default:0 1000 1 %}K</p>
                 </div>
-                
+
                 <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Team Size</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tamaño del Equipo</p>
                     <p class="text-3xl font-semibold text-gray-900">{{ startup.employees_count|default:1 }}</p>
                 </div>
-                
+
                 <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Years Active</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Años Activo</p>
                     <p class="text-3xl font-semibold text-gray-900">
                         {% if startup.founded_date %}
                             {{ startup_metrics.years_since_founded }}
                         {% else %}
-                            <1
+                            &lt;1
                         {% endif %}
                     </p>
                 </div>
-                
+
                 <div class="text-center p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Status</p>
+                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Estado</p>
                     <p class="text-lg font-medium text-gray-900 mt-2">
                         {% if startup.is_fundraising %}
-                            <span class="inline-flex items-center text-green-700">
-                                <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
-                                Fundraising
+                            <span class="inline-flex items-center text-emerald-700">
+                                <span class="w-2 h-2 bg-emerald-500 rounded-full mr-2"></span>
+                                Recaudando
                             </span>
                         {% else %}
-                            <span class="inline-flex items-center text-blue-700">
-                                <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
-                                Operating
+                            <span class="inline-flex items-center text-gray-600">
+                                <span class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                                Operando
                             </span>
                         {% endif %}
                     </p>
@@ -81,61 +82,61 @@
             {% if startup.is_fundraising %}
             <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                 <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Fundraising Round</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Ronda de Financiamiento</h3>
                 </div>
                 <div class="p-6">
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-medium text-gray-700">Progress</span>
+                            <span class="text-sm font-medium text-gray-700">Progreso</span>
                             <span class="text-sm font-semibold text-gray-900">{{ startup_metrics.funding_progress|floatformat:1 }}%</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
                             <div class="bg-gray-900 h-2 rounded-full transition-all duration-500" style="width: {{ startup_metrics.funding_progress|floatformat:1 }}%"></div>
                         </div>
                     </div>
-                    
+
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-sm text-gray-500 mb-1">Raised</p>
-                            <p class="text-2xl font-semibold text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0 }}K</p>
+                            <p class="text-sm text-gray-500 mb-1">Recaudado</p>
+                            <p class="text-2xl font-semibold text-gray-900">${% widthratio startup.total_funding_raised|default:0 1000 1 %}K</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500 mb-1">Target</p>
-                            <p class="text-2xl font-semibold text-gray-900">${{ startup.seeking_amount|default:0|floatformat:0 }}K</p>
+                            <p class="text-sm text-gray-500 mb-1">Meta</p>
+                            <p class="text-2xl font-semibold text-gray-900">${% widthratio startup.seeking_amount|default:0 1000 1 %}K</p>
                         </div>
                     </div>
                 </div>
             </div>
             {% endif %}
 
-            <!-- Company Information -->
+            <!-- Información de la empresa -->
             <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                 <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Company Information</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Información de la Empresa</h3>
                 </div>
                 <div class="p-6">
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Website</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Sitio Web</p>
                             <p class="text-sm text-gray-900">
                                 {% if startup.website %}
                                     <a href="{{ startup.website }}" target="_blank" class="text-gray-900 hover:text-gray-600 underline">{{ startup.website }}</a>
                                 {% else %}
-                                    <span class="text-gray-400">Not set</span>
+                                    <span class="text-gray-400">No definido</span>
                                 {% endif %}
                             </p>
                         </div>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Location</p>
-                            <p class="text-sm text-gray-900">{{ startup.location|default:"Not specified" }}</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Sub-industria</p>
+                            <p class="text-sm text-gray-900">{{ startup.sub_industry|default:"No especificado" }}</p>
                         </div>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Business Model</p>
-                            <p class="text-sm text-gray-900">{{ startup.business_model|default:"Not specified" }}</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Modelo de Negocio</p>
+                            <p class="text-sm text-gray-900">{{ startup.business_model|default:"No especificado" }}</p>
                         </div>
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Revenue Model</p>
-                            <p class="text-sm text-gray-900">{{ startup.revenue_model|default:"Not specified" }}</p>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Etapa de Ingresos</p>
+                            <p class="text-sm text-gray-900">{{ startup.get_revenue_stage_display|default:"No especificado" }}</p>
                         </div>
                     </div>
                 </div>
@@ -144,57 +145,30 @@
 
         <!-- Columna lateral (1/3) -->
         <div class="space-y-6">
-            <!-- Actions -->
+            <!-- Acciones -->
             <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                 <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Actions</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Acciones</h3>
                 </div>
                 <div class="p-6 space-y-3">
                     <a href="{% url 'core:startup_profile' startup.id %}" class="block w-full bg-gray-900 text-white text-center py-2.5 px-4 rounded-md hover:bg-gray-800 transition-colors font-medium text-sm">
-                        Edit Profile
+                        Editar Perfil
                     </a>
                     <a href="{% url 'core:startup_profile' startup.id %}" target="_blank" class="block w-full bg-white text-gray-900 text-center py-2.5 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors font-medium text-sm">
-                        View Public Page
+                        Ver Página Pública
                     </a>
-                    <button class="block w-full bg-white text-gray-900 text-center py-2.5 px-4 rounded-md border border-gray-300 hover:bg-gray-50 transition-colors font-medium text-sm">
-                        Share
-                    </button>
                 </div>
             </div>
 
-            <!-- Performance -->
+            <!-- Rendimiento -->
             <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
                 <div class="border-b border-gray-200 bg-gray-50 px-6 py-4">
-                    <h3 class="text-lg font-semibold text-gray-900">Performance</h3>
+                    <h3 class="text-lg font-semibold text-gray-900">Rendimiento</h3>
                 </div>
                 <div class="p-6">
-                    <div class="space-y-4">
-                        <div class="pb-4 border-b border-gray-100">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="text-sm text-gray-600">Industry Rank</span>
-                                <span class="text-lg font-semibold text-gray-900">#{{ startup_metrics.industry_rank|default:"—" }}</span>
-                            </div>
-                        </div>
-                        
-                        <div class="pb-4 border-b border-gray-100">
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-gray-600">Funding vs. Avg</span>
-                                <span class="text-sm font-semibold text-gray-900">+45%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                <div class="bg-gray-900 h-1.5 rounded-full" style="width: 75%"></div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex items-center justify-between mb-2">
-                                <span class="text-sm text-gray-600">Team Growth</span>
-                                <span class="text-sm font-semibold text-gray-900">+20%</span>
-                            </div>
-                            <div class="w-full bg-gray-100 rounded-full h-1.5">
-                                <div class="bg-gray-900 h-1.5 rounded-full" style="width: 60%"></div>
-                            </div>
-                        </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600">Ranking en la Industria</span>
+                        <span class="text-lg font-semibold text-gray-900">#{{ startup_metrics.industry_rank|default:"—" }}</span>
                     </div>
                 </div>
             </div>
@@ -212,20 +186,20 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                 </svg>
             </div>
-            
+
             <h2 class="text-2xl font-semibold text-gray-900 mb-3">
-                Create Your Startup Profile
+                Crea el Perfil de tu Startup
             </h2>
             <p class="text-gray-600 mb-8 max-w-md mx-auto">
-                Set up your startup profile to connect with investors and showcase your company to the ecosystem.
+                Configura el perfil de tu startup para conectar con inversores y mostrar tu empresa al ecosistema.
             </p>
 
             <a href="{% url 'core:create_startup' %}" class="inline-flex items-center px-6 py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition-colors">
-                Get Started
+                Comenzar
             </a>
-            
+
             <p class="text-sm text-gray-500 mt-6">
-                Takes about 5 minutes
+                Toma unos 5 minutos
             </p>
         </div>
     </div>

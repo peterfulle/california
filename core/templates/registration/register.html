@@ -82,31 +82,6 @@
             background: #f5f5f5;
         }
         
-        .progress-step {
-            transition: all 0.3s ease;
-        }
-        
-        .progress-step.active {
-            background: #000;
-            color: #fff;
-        }
-        
-        .progress-step.completed {
-            background: #000;
-            color: #fff;
-        }
-        
-        .progress-line {
-            transition: all 0.3s ease;
-        }
-        
-        .progress-line.active {
-            background: #000;
-        }
-        
-        .password-strength-bar {
-            transition: all 0.3s ease;
-        }
     </style>
 </head>
 
@@ -134,27 +109,30 @@
             
             <!-- Progress Indicator -->
             <div class="mb-12">
-                <div class="flex items-center justify-center space-x-3">
-                    <div id="step1-dot" class="progress-step active w-10 h-10 rounded-full border-2 border-black flex items-center justify-center text-sm font-semibold">1</div>
-                    <div id="line1" class="progress-line w-16 h-0.5 bg-gray-200"></div>
-                    <div id="step2-dot" class="progress-step w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-sm font-semibold text-gray-400">2</div>
-                    <div id="line2" class="progress-line w-16 h-0.5 bg-gray-200"></div>
-                    <div id="step3-dot" class="progress-step w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-sm font-semibold text-gray-400">3</div>
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-xs font-medium text-gray-400">Paso <span id="stepCounter" class="text-black font-semibold">1</span> de 3</span>
+                    <span id="stepLabel" class="text-xs font-medium text-black">Elige tu rol</span>
                 </div>
-                <div class="flex items-center justify-center mt-3 space-x-8">
-                    <span id="step1-text" class="text-xs font-medium text-black">Rol</span>
-                    <span id="step2-text" class="text-xs text-gray-400 ml-6">Perfil</span>
-                    <span id="step3-text" class="text-xs text-gray-400 ml-4">Cuenta</span>
+                <div class="flex gap-1.5">
+                    <div class="progress-seg h-1.5 flex-1 rounded-full bg-gray-100 overflow-hidden">
+                        <div id="seg1" class="h-full bg-black rounded-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                    <div class="progress-seg h-1.5 flex-1 rounded-full bg-gray-100 overflow-hidden">
+                        <div id="seg2" class="h-full bg-black rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-seg h-1.5 flex-1 rounded-full bg-gray-100 overflow-hidden">
+                        <div id="seg3" class="h-full bg-black rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
                 </div>
             </div>
 
             <!-- Error Messages -->
             {% if messages %}
-            <div class="mb-6">
+            <div class="mb-6 space-y-3">
                 {% for message in messages %}
-                <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-start space-x-3 {% if message.tags %}{{ message.tags }}{% endif %}">
-                    <i data-lucide="alert-circle" class="w-5 h-5 text-gray-500 mt-0.5 flex-shrink-0"></i>
-                    <div class="text-sm text-gray-600">{{ message }}</div>
+                <div class="rounded-xl p-4 flex items-start space-x-3 fade-in {% if message.tags == 'success' %}bg-emerald-50 border border-emerald-100{% elif message.tags == 'error' %}bg-red-50 border border-red-100{% else %}bg-gray-50 border border-gray-200{% endif %}">
+                    <i data-lucide="{% if message.tags == 'success' %}check-circle{% else %}alert-circle{% endif %}" class="w-5 h-5 mt-0.5 flex-shrink-0 {% if message.tags == 'success' %}text-emerald-500{% elif message.tags == 'error' %}text-red-500{% else %}text-gray-500{% endif %}"></i>
+                    <div class="text-sm {% if message.tags == 'success' %}text-emerald-700{% elif message.tags == 'error' %}text-red-600{% else %}text-gray-600{% endif %}">{{ message }}</div>
                 </div>
                 {% endfor %}
             </div>
@@ -171,81 +149,65 @@
                         <p class="text-gray-500">Selecciona cómo participas en el ecosistema</p>
                     </div>
                     
-                    <div class="space-y-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <!-- Founder -->
-                        <div class="step-option border border-gray-200 rounded-xl p-5 cursor-pointer" data-value="founder">
-                            <input type="radio" name="user_type" id="founder" value="founder" class="hidden" required>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="option-icon w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                                        <i data-lucide="rocket" class="w-5 h-5"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-lg">Fundador</h3>
-                                        <p class="text-sm text-gray-500">Estoy construyendo una startup</p>
-                                    </div>
+                        <div class="step-option border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5" data-value="founder">
+                            <input type="radio" name="user_type" id="founder" value="founder" class="hidden" required {% if user_type == 'founder' %}checked{% endif %}>
+                            <div class="flex items-start justify-between">
+                                <div class="option-icon w-11 h-11 bg-black text-white rounded-xl flex items-center justify-center">
+                                    <i data-lucide="rocket" class="w-5 h-5"></i>
                                 </div>
                                 <div class="option-check w-6 h-6 rounded-full bg-white border-2 border-current flex items-center justify-center opacity-0">
                                     <i data-lucide="check" class="w-3 h-3"></i>
                                 </div>
                             </div>
+                            <h3 class="font-semibold text-lg mt-4">Fundador</h3>
+                            <p class="text-sm text-gray-500 mt-1">Estoy construyendo una startup</p>
                         </div>
-                        
+
                         <!-- Investor -->
-                        <div class="step-option border border-gray-200 rounded-xl p-5 cursor-pointer" data-value="investor">
-                            <input type="radio" name="user_type" id="investor" value="investor" class="hidden" required>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="option-icon w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                                        <i data-lucide="trending-up" class="w-5 h-5"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-lg">Inversor</h3>
-                                        <p class="text-sm text-gray-500">Busco invertir en startups</p>
-                                    </div>
+                        <div class="step-option border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5" data-value="investor">
+                            <input type="radio" name="user_type" id="investor" value="investor" class="hidden" required {% if user_type == 'investor' %}checked{% endif %}>
+                            <div class="flex items-start justify-between">
+                                <div class="option-icon w-11 h-11 bg-black text-white rounded-xl flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5"></i>
                                 </div>
                                 <div class="option-check w-6 h-6 rounded-full bg-white border-2 border-current flex items-center justify-center opacity-0">
                                     <i data-lucide="check" class="w-3 h-3"></i>
                                 </div>
                             </div>
+                            <h3 class="font-semibold text-lg mt-4">Inversor</h3>
+                            <p class="text-sm text-gray-500 mt-1">Busco invertir en startups</p>
                         </div>
-                        
+
                         <!-- Advisor -->
-                        <div class="step-option border border-gray-200 rounded-xl p-5 cursor-pointer" data-value="advisor">
-                            <input type="radio" name="user_type" id="advisor" value="advisor" class="hidden" required>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="option-icon w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                                        <i data-lucide="lightbulb" class="w-5 h-5"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-lg">Mentor / Asesor</h3>
-                                        <p class="text-sm text-gray-500">Comparto mi experiencia</p>
-                                    </div>
+                        <div class="step-option border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5" data-value="advisor">
+                            <input type="radio" name="user_type" id="advisor" value="advisor" class="hidden" required {% if user_type == 'advisor' %}checked{% endif %}>
+                            <div class="flex items-start justify-between">
+                                <div class="option-icon w-11 h-11 bg-black text-white rounded-xl flex items-center justify-center">
+                                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
                                 </div>
                                 <div class="option-check w-6 h-6 rounded-full bg-white border-2 border-current flex items-center justify-center opacity-0">
                                     <i data-lucide="check" class="w-3 h-3"></i>
                                 </div>
                             </div>
+                            <h3 class="font-semibold text-lg mt-4">Mentor / Asesor</h3>
+                            <p class="text-sm text-gray-500 mt-1">Comparto mi experiencia</p>
                         </div>
-                        
+
                         <!-- Ecosystem -->
-                        <div class="step-option border border-gray-200 rounded-xl p-5 cursor-pointer" data-value="ecosystem">
-                            <input type="radio" name="user_type" id="ecosystem" value="ecosystem" class="hidden" required>
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
-                                    <div class="option-icon w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-                                        <i data-lucide="users" class="w-5 h-5"></i>
-                                    </div>
-                                    <div>
-                                        <h3 class="font-semibold text-lg">Partner</h3>
-                                        <p class="text-sm text-gray-500">Apoyo al ecosistema</p>
-                                    </div>
+                        <div class="step-option border border-gray-200 rounded-2xl p-5 cursor-pointer hover:shadow-md hover:-translate-y-0.5" data-value="community">
+                            <input type="radio" name="user_type" id="ecosystem" value="community" class="hidden" required {% if user_type == 'community' %}checked{% endif %}>
+                            <div class="flex items-start justify-between">
+                                <div class="option-icon w-11 h-11 bg-black text-white rounded-xl flex items-center justify-center">
+                                    <i data-lucide="users" class="w-5 h-5"></i>
                                 </div>
                                 <div class="option-check w-6 h-6 rounded-full bg-white border-2 border-current flex items-center justify-center opacity-0">
                                     <i data-lucide="check" class="w-3 h-3"></i>
                                 </div>
                             </div>
+                            <h3 class="font-semibold text-lg mt-4">Partner</h3>
+                            <p class="text-sm text-gray-500 mt-1">Apoyo al ecosistema</p>
                         </div>
                     </div>
                 </div>
@@ -261,24 +223,34 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label for="first_name" class="block text-sm font-medium text-black mb-2">Nombre</label>
-                                <input type="text" name="first_name" id="first_name" required
-                                       class="input-modern w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none"
-                                       placeholder="Juan">
+                                <div class="relative">
+                                    <i data-lucide="user" class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                                    <input type="text" name="first_name" id="first_name" required value="{{ first_name|default:'' }}"
+                                           class="input-modern w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none"
+                                           placeholder="Juan">
+                                </div>
                             </div>
                             <div>
                                 <label for="last_name" class="block text-sm font-medium text-black mb-2">Apellido</label>
-                                <input type="text" name="last_name" id="last_name" required
+                                <input type="text" name="last_name" id="last_name" required value="{{ last_name|default:'' }}"
                                        class="input-modern w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none"
                                        placeholder="García">
                             </div>
                         </div>
-                        
+
                         <div>
                             <label for="email" class="block text-sm font-medium text-black mb-2">Email</label>
-                            <input type="email" name="email" id="email" required
-                                   class="input-modern w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none"
-                                   placeholder="tu@email.com">
+                            <div class="relative">
+                                <i data-lucide="mail" class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                                <input type="email" name="email" id="email" required value="{{ email|default:'' }}"
+                                       class="input-modern w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none"
+                                       placeholder="tu@email.com">
+                            </div>
                             <p id="emailError" class="hidden mt-2 text-sm text-gray-500">Ingresa un email válido</p>
+                            <p class="mt-2 flex items-center gap-1.5 text-xs text-gray-400">
+                                <i data-lucide="lock" class="w-3 h-3"></i>
+                                Este será tu usuario para iniciar sesión. Nunca lo compartimos.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -292,15 +264,16 @@
                     
                     <div class="space-y-5 fade-in">
                         <!-- Profile Summary -->
-                        <div class="bg-gray-50 rounded-xl p-5 mb-6">
+                        <div class="bg-gray-50 border border-gray-100 rounded-2xl p-5 mb-6">
                             <div class="flex items-center space-x-4">
-                                <div class="w-14 h-14 bg-black rounded-full flex items-center justify-center text-white font-bold text-lg">
+                                <div class="w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg" style="background: linear-gradient(135deg, #000, #444);">
                                     <span id="profileInitials">JG</span>
                                 </div>
-                                <div>
-                                    <p class="font-semibold text-black" id="profileName">Juan García</p>
-                                    <p class="text-sm text-gray-500" id="profileEmail">tu@email.com</p>
+                                <div class="min-w-0">
+                                    <p class="font-semibold text-black truncate" id="profileName">Juan García</p>
+                                    <p class="text-sm text-gray-500 truncate" id="profileEmail">tu@email.com</p>
                                 </div>
+                                <i data-lucide="badge-check" class="w-5 h-5 text-black ml-auto flex-shrink-0"></i>
                             </div>
                         </div>
                         
@@ -322,15 +295,20 @@
                                     <i data-lucide="eye" class="w-5 h-5" id="eyeIcon"></i>
                                 </button>
                             </div>
-                            <!-- Password Strength -->
-                            <div id="passwordStrength" class="hidden mt-3">
-                                <div class="flex space-x-1">
-                                    <div id="str1" class="password-strength-bar h-1 flex-1 rounded-full bg-gray-200"></div>
-                                    <div id="str2" class="password-strength-bar h-1 flex-1 rounded-full bg-gray-200"></div>
-                                    <div id="str3" class="password-strength-bar h-1 flex-1 rounded-full bg-gray-200"></div>
-                                    <div id="str4" class="password-strength-bar h-1 flex-1 rounded-full bg-gray-200"></div>
-                                </div>
-                                <p id="strengthLabel" class="text-xs text-gray-400 mt-1"></p>
+                            <!-- Password Requirements -->
+                            <div id="passwordStrength" class="hidden mt-3 space-y-1.5">
+                                <p id="req-length" class="flex items-center gap-1.5 text-xs text-gray-400">
+                                    <i data-lucide="circle" class="w-3.5 h-3.5"></i>
+                                    Al menos 8 caracteres
+                                </p>
+                                <p id="req-numeric" class="flex items-center gap-1.5 text-xs text-gray-400">
+                                    <i data-lucide="circle" class="w-3.5 h-3.5"></i>
+                                    No puede ser solo números
+                                </p>
+                                <p id="req-mix" class="flex items-center gap-1.5 text-xs text-gray-400">
+                                    <i data-lucide="circle" class="w-3.5 h-3.5"></i>
+                                    Combina letras y números
+                                </p>
                             </div>
                         </div>
                         
@@ -415,12 +393,12 @@
     <script>
         // Initialize Lucide icons
         lucide.createIcons();
-        
+
         let currentStep = 1;
         const totalSteps = 3;
         let emailExists = false;
         let isCheckingEmail = false;
-        
+
         // Step option selection
         document.querySelectorAll('.step-option').forEach(option => {
             option.addEventListener('click', function() {
@@ -430,6 +408,18 @@
                 lucide.createIcons();
             });
         });
+
+        // Reflejar el rol pre-seleccionado (rellenado por el servidor tras un error)
+        const preCheckedOption = document.querySelector('.step-option input[type="radio"]:checked');
+        if (preCheckedOption) {
+            preCheckedOption.closest('.step-option').classList.add('selected');
+        }
+
+        // Si el servidor devolvió un error, no perder lo ya escrito: saltar al último paso
+        {% if has_error %}
+        currentStep = totalSteps;
+        showStep(currentStep);
+        {% endif %}
         
         // Navigation
         document.getElementById('nextBtn').addEventListener('click', async function() {
@@ -515,33 +505,27 @@
             }
         });
         
+        const stepLabels = { 1: 'Elige tu rol', 2: 'Cuéntanos de ti', 3: 'Crea tu cuenta' };
+
         function showStep(step) {
             // Hide all steps
             document.querySelectorAll('.form-step').forEach(s => s.classList.add('hidden'));
-            
-            // Show current step
+
+            // Show current step with a fresh fade/slide-in (retrigger the animation)
             const currentStepEl = document.getElementById('step' + step);
             currentStepEl.classList.remove('hidden');
-            
-            // Update progress dots
+            currentStepEl.classList.remove('fade-in');
+            void currentStepEl.offsetWidth; // reflow para reiniciar la animación
+            currentStepEl.classList.add('fade-in');
+
+            // Update progress bar segments + label
             for (let i = 1; i <= totalSteps; i++) {
-                const dot = document.getElementById('step' + i + '-dot');
-                const text = document.getElementById('step' + i + '-text');
-                const line = document.getElementById('line' + (i - 1));
-                
-                if (i < step) {
-                    dot.className = 'progress-step completed w-10 h-10 rounded-full border-2 border-black bg-black flex items-center justify-center text-sm font-semibold text-white';
-                    text.className = 'text-xs font-medium text-black';
-                    if (line) line.className = 'progress-line active w-16 h-0.5 bg-black';
-                } else if (i === step) {
-                    dot.className = 'progress-step active w-10 h-10 rounded-full border-2 border-black flex items-center justify-center text-sm font-semibold';
-                    text.className = 'text-xs font-medium text-black';
-                } else {
-                    dot.className = 'progress-step w-10 h-10 rounded-full border-2 border-gray-200 flex items-center justify-center text-sm font-semibold text-gray-400';
-                    text.className = 'text-xs text-gray-400';
-                }
+                const seg = document.getElementById('seg' + i);
+                seg.style.width = i <= step ? '100%' : '0%';
             }
-            
+            document.getElementById('stepCounter').textContent = step;
+            document.getElementById('stepLabel').textContent = stepLabels[step];
+
             // Update buttons
             document.getElementById('prevBtn').classList.toggle('hidden', step === 1);
             document.getElementById('nextBtn').classList.toggle('hidden', step === totalSteps);
@@ -610,29 +594,25 @@
             lucide.createIcons();
         });
         
-        // Password strength
+        // Password requirements checklist (refleja las validaciones reales del servidor)
+        function setRequirementMet(id, met) {
+            const el = document.getElementById(id);
+            const icon = el.querySelector('i');
+            el.classList.toggle('text-black', met);
+            el.classList.toggle('text-gray-400', !met);
+            icon.setAttribute('data-lucide', met ? 'check-circle-2' : 'circle');
+        }
+
         document.getElementById('password1').addEventListener('input', function() {
             const password = this.value;
             const strengthDiv = document.getElementById('passwordStrength');
-            const bars = [document.getElementById('str1'), document.getElementById('str2'), document.getElementById('str3'), document.getElementById('str4')];
-            const label = document.getElementById('strengthLabel');
-            
+
             if (password.length > 0) {
                 strengthDiv.classList.remove('hidden');
-                
-                let strength = 0;
-                if (password.length >= 8) strength++;
-                if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-                if (/\d/.test(password)) strength++;
-                if (/[^a-zA-Z\d]/.test(password)) strength++;
-                
-                const labels = ['Muy débil', 'Débil', 'Buena', 'Excelente'];
-                
-                bars.forEach((bar, i) => {
-                    bar.style.backgroundColor = i < strength ? '#000' : '#e5e5e5';
-                });
-                
-                label.textContent = labels[strength - 1] || '';
+                setRequirementMet('req-length', password.length >= 8);
+                setRequirementMet('req-numeric', !/^\d+$/.test(password));
+                setRequirementMet('req-mix', /[a-zA-Z]/.test(password) && /\d/.test(password));
+                lucide.createIcons();
             } else {
                 strengthDiv.classList.add('hidden');
             }

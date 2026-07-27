@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silicon Founder — Deck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+    :root {
+        --bg: #ffffff;
+        --ink: #0a0a0a;
+        --gray-500: #6b7280;
+        --gray-400: #9ca3af;
+        --gray-200: #e5e7eb;
+        --gray-100: #f5f5f5;
+        --gray-50: #fafafa;
+        --accent: #059669;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        background: var(--gray-100);
+        color: var(--ink);
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .deck {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .slide {
+        position: absolute;
+        inset: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 6vh 8vw;
+    }
+    .slide.active { display: flex; }
+
+    .slide-inner {
+        width: 100%;
+        max-width: 1180px;
+    }
+
+    /* Typography helpers */
+    .eyebrow {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--gray-500);
+        margin-bottom: 18px;
+    }
+    .eyebrow .dot {
+        display: inline-block;
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin-right: 8px;
+        vertical-align: middle;
+    }
+    h1.big {
+        font-size: clamp(48px, 8vw, 96px);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        line-height: 1.02;
+    }
+    h2.title {
+        font-size: clamp(32px, 5vw, 52px);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        line-height: 1.08;
+        margin-bottom: 28px;
+    }
+    p.lead {
+        font-size: clamp(18px, 2.2vw, 24px);
+        color: var(--gray-500);
+        line-height: 1.5;
+        max-width: 720px;
+    }
+
+    /* Grids & cards */
+    .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .card {
+        border: 1px solid var(--gray-200);
+        border-radius: 16px;
+        padding: 28px;
+        background: #fff;
+    }
+    .card h3 { font-size: 19px; font-weight: 700; margin-bottom: 10px; }
+    .card p { font-size: 14.5px; color: var(--gray-500); line-height: 1.55; }
+    .card ul { margin-top: 12px; padding-left: 0; list-style: none; }
+    .card li {
+        font-size: 14px; color: #374151; line-height: 1.6;
+        padding-left: 18px; position: relative; margin-bottom: 6px;
+    }
+    .card li::before {
+        content: "";
+        position: absolute; left: 0; top: 8px;
+        width: 6px; height: 6px; border-radius: 50%;
+        background: var(--ink);
+    }
+    .kicker-box {
+        width: 40px; height: 40px;
+        border-radius: 10px;
+        background: var(--ink);
+        margin-bottom: 16px;
+    }
+
+    /* Feature list rows */
+    .feat-row {
+        display: flex; align-items: flex-start; gap: 16px;
+        padding: 18px 0; border-bottom: 1px solid var(--gray-200);
+    }
+    .feat-row:last-child { border-bottom: none; }
+    .feat-num {
+        font-size: 13px; font-weight: 700; color: var(--gray-400);
+        width: 28px; flex-shrink: 0; padding-top: 3px;
+    }
+    .feat-row h4 { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+    .feat-row p { font-size: 14px; color: var(--gray-500); line-height: 1.5; }
+
+    /* Stack pills */
+    .stack-group { margin-bottom: 22px; }
+    .stack-group h4 {
+        font-size: 12px; font-weight: 700; text-transform: uppercase;
+        letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 10px;
+    }
+    .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+        font-size: 13.5px; font-weight: 500; padding: 7px 14px;
+        border-radius: 20px; background: var(--gray-100); border: 1px solid var(--gray-200);
+        color: #1f2937;
+    }
+    .pill.dark { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+    /* Architecture diagram */
+    .arch { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+    .arch-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .arch-box {
+        border: 1.5px solid var(--ink); border-radius: 12px;
+        padding: 14px 22px; font-size: 14px; font-weight: 600;
+        background: #fff; text-align: center; min-width: 150px;
+    }
+    .arch-box.filled { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .arch-box .sub { display: block; font-size: 11.5px; font-weight: 400; color: var(--gray-500); margin-top: 3px; }
+    .arch-box.filled .sub { color: #a3a3a3; }
+    .arch-arrow { font-size: 20px; color: var(--gray-400); align-self: center; }
+
+    /* Status list */
+    .status-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; font-size: 15px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.done { background: var(--accent); }
+    .status-dot.next { background: var(--gray-400); }
+
+    /* Nav UI */
+    .nav-ui {
+        position: fixed; bottom: 24px; left: 0; right: 0;
+        display: flex; align-items: center; justify-content: center; gap: 16px;
+        z-index: 50;
+    }
+    .nav-btn {
+        width: 40px; height: 40px; border-radius: 50%;
+        background: #fff; border: 1px solid var(--gray-200);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: all .15s ease;
+    }
+    .nav-btn:hover { background: var(--ink); border-color: var(--ink); }
+    .nav-btn:hover svg { stroke: #fff; }
+    .nav-btn svg { width: 18px; height: 18px; stroke: var(--ink); }
+    .nav-counter { font-size: 13px; color: var(--gray-500); font-weight: 500; min-width: 50px; text-align: center; }
+
+    .progress-track {
+        position: fixed; top: 0; left: 0; right: 0; height: 3px;
+        background: var(--gray-200); z-index: 50;
+    }
+    .progress-fill { height: 100%; background: var(--ink); transition: width .3s ease; }
+
+    .slide-footer {
+        position: absolute; bottom: 28px; left: 8vw; right: 8vw;
+        display: flex; justify-content: space-between;
+        font-size: 11px; color: var(--gray-400); letter-spacing: 0.04em;
+    }
+
+    /* Print: stack every slide as its own page */
+    @media print {
+        html, body { overflow: visible; background: #fff; height: auto; }
+        .nav-ui, .progress-track { display: none !important; }
+        .deck { height: auto; display: block; }
+        .slide {
+            position: relative; display: flex !important;
+            width: 100vw; height: 100vh;
+            page-break-after: always;
+        }
+    }
+
+    @media (max-width: 900px) {
+        .grid3 { grid-template-columns: 1fr; }
+        .grid2 { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="deck" id="deck">
+
+    <!-- Slide 1: Title -->
+    <section class="slide active">
+        <div class="slide-inner" style="text-align:center;">
+            <div class="eyebrow" style="justify-content:center; display:flex; align-items:center;"><span class="dot"></span>Deck de producto</div>
+            <h1 class="big">Silicon Founder</h1>
+            <p class="lead" style="margin:24px auto 0;">
+                El ecosistema donde founders, inversores y advisors construyen juntos el próximo capítulo de las startups.
+            </p>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>01 / 11</span></div>
+    </section>
+
+    <!-- Slide 2: Qué es -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Qué es</div>
+            <h2 class="title">Una plataforma, no solo un directorio.</h2>
+            <p class="lead">
+                Silicon Founder centraliza en un solo lugar lo que hoy vive disperso entre spreadsheets, emails y decks sueltos:
+                perfil de startup, deal flow, mensajería, eventos del ecosistema y herramientas de IA — para que founders e
+                inversores avancen una conexión real, no solo un contacto.
+            </p>
+            <div class="grid3" style="margin-top:40px;">
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Un perfil, no un PDF</h3>
+                    <p>La información de la startup vive en la plataforma: métricas, equipo, financiamiento — siempre actualizada.</p>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Acceso controlado</h3>
+                    <p>El founder decide qué inversor ve qué información sensible, y cuándo.</p>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Con IA integrada</h3>
+                    <p>Desde generar el pitch deck hasta encontrar el inversor correcto, sin salir de la plataforma.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>02 / 11</span></div>
+    </section>
+
+    <!-- Slide 3: Para quién -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Para quién</div>
+            <h2 class="title">Tres roles, una sola plataforma.</h2>
+            <div class="grid3">
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Founders</h3>
+                    <ul>
+                        <li>Perfil completo de la startup con métricas y scoring automático</li>
+                        <li>Data room privado con control de acceso por inversor</li>
+                        <li>Pitch deck generado con IA a partir de datos reales</li>
+                        <li>Acceso a demo days y eventos del ecosistema</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Inversores</h3>
+                    <ul>
+                        <li>Deal flow filtrado por industria, etapa y tesis de inversión</li>
+                        <li>Match con IA entre su tesis y las startups disponibles</li>
+                        <li>Solicitud de acceso a información privada de cada startup</li>
+                        <li>Mensajería directa y videollamadas integradas</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Advisors &amp; Community</h3>
+                    <ul>
+                        <li>Descubrimiento de startups destacadas y en crecimiento</li>
+                        <li>Red de inversores activos para hacer networking</li>
+                        <li>Participación en eventos de mentoría</li>
+                        <li>Perfil público de reputación en el ecosistema</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>03 / 11</span></div>
+    </section>
+
+    <!-- Slide 4: Alcance / funcionalidades -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Alcance</div>
+            <h2 class="title">Lo que ya está construido.</h2>
+            <div class="grid2">
+                <div>
+                    <div class="feat-row">
+                        <div class="feat-num">01</div>
+                        <div><h4>Perfiles de startup e inversor</h4><p>Datos estructurados: etapa, industria, métricas, tesis de inversión, ticket promedio.</p></div>
+                    </div>
+                    <div class="feat-row">
+                        <div class="feat-num">02</div>
+                        <div><h4>Directorios filtrables</h4><p>Startups e inversores navegables por industria, etapa y foco geográfico.</p></div>
+                    </div>
+                    <div class="feat-row">
+                        <div class="feat-num">03</div>
+                        <div><h4>Scoring automático</h4><p>Growth score, heat score y ranking calculados a partir de métricas reales de cada startup.</p></div>
+                    </div>
+                    <div class="feat-row">
+                        <div class="feat-num">04</div>
+                        <div><h4>Dashboard por rol</h4><p>Vista propia para founder, inversor y community — con analítica del ecosistema en tiempo real.</p></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="feat-row">
+                        <div class="feat-num">05</div>
+                        <div><h4>Conexiones y mensajería</h4><p>Solicitudes de conexión, conversaciones directas y notificaciones.</p></div>
+                    </div>
+                    <div class="feat-row">
+                        <div class="feat-num">06</div>
+                        <div><h4>Eventos del ecosistema</h4><p>Demo days, pitch nights, workshops — con RSVP, comentarios y asistencia.</p></div>
+                    </div>
+                    <div class="feat-row">
+                        <div class="feat-num">07</div>
+                        <div><h4>Videollamadas integradas</h4><p>Agenda de reuniones vía Google Meet directamente desde una conversación.</p></div>
+                    </div>
+                    <div class="feat-row">
+                        <div class="feat-num">08</div>
+                        <div><h4>Asistente de IA</h4><p>Chat conversacional con contexto del usuario para dudas, guía y generación de contenido.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>04 / 11</span></div>
+    </section>
+
+    <!-- Slide 5: Data room privado -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Diferenciador</div>
+            <h2 class="title">Un data room, no un PDF adjunto.</h2>
+            <p class="lead" style="margin-bottom:36px;">
+                La información sensible de una startup no debería viajar por email. Silicon Founder permite compartirla
+                dentro de la plataforma, con permisos explícitos y trazables.
+            </p>
+            <div class="grid2">
+                <div class="card">
+                    <h3>Secciones privadas por startup</h3>
+                    <ul>
+                        <li>Financials — métricas financieras detalladas</li>
+                        <li>People — equipo fundador y cap table</li>
+                        <li>Technology — stack y propiedad intelectual</li>
+                        <li>News — actualizaciones internas para inversores</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Control de acceso explícito</h3>
+                    <ul>
+                        <li>El inversor solicita acceso a una sección específica</li>
+                        <li>El founder aprueba o rechaza cada solicitud</li>
+                        <li>Queda registro de quién accedió y a qué</li>
+                        <li>El acceso se puede revocar en cualquier momento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>05 / 11</span></div>
+    </section>
+
+    <!-- Slide 6: IA -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Herramientas</div>
+            <h2 class="title">Inteligencia artificial aplicada, no decorativa.</h2>
+            <div class="grid2">
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Asistente conversacional</h3>
+                    <p>Chat con contexto del usuario y de la plataforma (Google Gemini), disponible en cualquier pantalla.</p>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Generador de pitch deck</h3>
+                    <p>Redacta el contenido de cada slide del pitch deck a partir de los datos reales ya cargados de la startup.</p>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Match inversor–startup</h3>
+                    <p>Cruza la tesis de inversión de cada fondo con las startups activas por etapa e industria.</p>
+                </div>
+                <div class="card">
+                    <div class="kicker-box"></div>
+                    <h3>Autocompletado de perfil</h3>
+                    <p>El founder describe su startup en lenguaje natural y la IA completa los campos estructurados del perfil.</p>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>06 / 11</span></div>
+    </section>
+
+    <!-- Slide 7: Networking en tiempo real -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Herramientas</div>
+            <h2 class="title">El networking sucede en la plataforma.</h2>
+            <div class="grid2">
+                <div class="card">
+                    <h3>Conexiones &amp; mensajería</h3>
+                    <ul>
+                        <li>Solicitudes de conexión entre founders, inversores y advisors</li>
+                        <li>Conversaciones directas con historial persistente</li>
+                        <li>Notificaciones de nuevos mensajes y solicitudes</li>
+                        <li>Actualizaciones en tiempo real vía WebSockets</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Eventos &amp; reuniones</h3>
+                    <ul>
+                        <li>Demo days, pitch nights, workshops y founders breakfasts</li>
+                        <li>Modalidad presencial o virtual, con RSVP y comentarios</li>
+                        <li>Videollamadas 1:1 agendadas vía Google Meet</li>
+                        <li>Seguimiento de asistencia por evento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>07 / 11</span></div>
+    </section>
+
+    <!-- Slide 8: Stack tecnológico -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Tecnología</div>
+            <h2 class="title">Stack tecnológico.</h2>
+            <div class="stack-group">
+                <h4>Backend</h4>
+                <div class="pills">
+                    <span class="pill dark">Django 4.2</span>
+                    <span class="pill">Python</span>
+                    <span class="pill">PostgreSQL</span>
+                    <span class="pill">Django REST Framework</span>
+                </div>
+            </div>
+            <div class="stack-group">
+                <h4>Tiempo real</h4>
+                <div class="pills">
+                    <span class="pill dark">Django Channels</span>
+                    <span class="pill">Redis</span>
+                    <span class="pill">WebSockets</span>
+                    <span class="pill">Daphne (ASGI)</span>
+                </div>
+            </div>
+            <div class="stack-group">
+                <h4>Inteligencia artificial</h4>
+                <div class="pills">
+                    <span class="pill dark">Google Gemini</span>
+                    <span class="pill">Generación de contenido</span>
+                    <span class="pill">Matching por tesis de inversión</span>
+                </div>
+            </div>
+            <div class="stack-group">
+                <h4>Frontend</h4>
+                <div class="pills">
+                    <span class="pill">TailwindCSS</span>
+                    <span class="pill">Alpine.js</span>
+                    <span class="pill">HTMX</span>
+                    <span class="pill">Chart.js</span>
+                </div>
+            </div>
+            <div class="stack-group">
+                <h4>Integraciones &amp; infraestructura</h4>
+                <div class="pills">
+                    <span class="pill">Google Meet API</span>
+                    <span class="pill">Render.com</span>
+                    <span class="pill">Gunicorn</span>
+                    <span class="pill">Whitenoise</span>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>08 / 11</span></div>
+    </section>
+
+    <!-- Slide 9: Arquitectura -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Tecnología</div>
+            <h2 class="title">Arquitectura de la plataforma.</h2>
+            <div class="arch">
+                <div class="arch-row">
+                    <div class="arch-box">Cliente web<span class="sub">Navegador · Tailwind · Alpine.js</span></div>
+                </div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-row">
+                    <div class="arch-box filled">Django app<span class="sub">Gunicorn (HTTP) + Daphne (WebSockets)</span></div>
+                </div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-row">
+                    <div class="arch-box">PostgreSQL<span class="sub">Datos de la plataforma</span></div>
+                    <div class="arch-box">Redis<span class="sub">Canales en tiempo real</span></div>
+                    <div class="arch-box">Google Gemini<span class="sub">IA generativa</span></div>
+                    <div class="arch-box">Google Meet<span class="sub">Videollamadas</span></div>
+                </div>
+                <div class="arch-arrow">↓</div>
+                <div class="arch-row">
+                    <div class="arch-box">Render.com<span class="sub">Hosting · Web service + DB + Redis</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>09 / 11</span></div>
+    </section>
+
+    <!-- Slide 10: Estado actual -->
+    <section class="slide">
+        <div class="slide-inner">
+            <div class="eyebrow"><span class="dot"></span>Estado actual</div>
+            <h2 class="title">Dónde estamos hoy.</h2>
+            <div class="grid2">
+                <div class="card">
+                    <h3>Construido</h3>
+                    <div class="status-item"><span class="status-dot done"></span>Modelo de datos completo (30+ entidades)</div>
+                    <div class="status-item"><span class="status-dot done"></span>Autenticación y perfiles por rol</div>
+                    <div class="status-item"><span class="status-dot done"></span>Dashboards por rol con datos reales</div>
+                    <div class="status-item"><span class="status-dot done"></span>IA integrada (chat, pitch deck, matching)</div>
+                    <div class="status-item"><span class="status-dot done"></span>Mensajería y WebSockets configurados</div>
+                    <div class="status-item"><span class="status-dot done"></span>UX rediseñada: home, login, registro, alta de startup, dashboard</div>
+                </div>
+                <div class="card">
+                    <h3>Próximos pasos</h3>
+                    <div class="status-item"><span class="status-dot next"></span>Pulir directorios y perfiles públicos</div>
+                    <div class="status-item"><span class="status-dot next"></span>Poblar datos reales del ecosistema</div>
+                    <div class="status-item"><span class="status-dot next"></span>Deploy a producción en Render</div>
+                    <div class="status-item"><span class="status-dot next"></span>Onboarding guiado para los tres roles</div>
+                </div>
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>10 / 11</span></div>
+    </section>
+
+    <!-- Slide 11: Cierre -->
+    <section class="slide">
+        <div class="slide-inner" style="text-align:center;">
+            <h1 class="big">Silicon Founder</h1>
+            <p class="lead" style="margin:24px auto 0;">
+                El ecosistema donde founders, inversores y advisors construyen juntos.
+            </p>
+            <div class="eyebrow" style="justify-content:center; display:flex; align-items:center; margin-top:40px;">
+                Contacto — plataforma@inspiratoria.org
+            </div>
+        </div>
+        <div class="slide-footer"><span>Silicon Founder</span><span>11 / 11</span></div>
+    </section>
+
+</div>
+
+<div class="nav-ui">
+    <div class="nav-btn" id="prevBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M15 19l-7-7 7-7"/></svg>
+    </div>
+    <div class="nav-counter"><span id="currentNum">1</span> / <span id="totalNum"></span></div>
+    <div class="nav-btn" id="nextBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+    </div>
+</div>
+
+<script>
+    const slides = document.querySelectorAll('.slide');
+    const total = slides.length;
+    let current = 0;
+    document.getElementById('totalNum').textContent = total;
+
+    function render() {
+        slides.forEach((s, i) => s.classList.toggle('active', i === current));
+        document.getElementById('currentNum').textContent = current + 1;
+        document.getElementById('progressFill').style.width = ((current + 1) / total * 100) + '%';
+    }
+
+    function go(delta) {
+        current = Math.min(total - 1, Math.max(0, current + delta));
+        render();
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => go(-1));
+    document.getElementById('nextBtn').addEventListener('click', () => go(1));
+
+    document.addEventListener('keydown', (e) => {
+        if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { go(1); e.preventDefault(); }
+        if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { go(-1); e.preventDefault(); }
+    });
+
+    let touchStartX = 0;
+    document.addEventListener('touchstart', (e) => touchStartX = e.touches[0].clientX);
+    document.addEventListener('touchend', (e) => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) go(diff > 0 ? 1 : -1);
+    });
+
+    render();
+</script>
+
+</body>
+</html>

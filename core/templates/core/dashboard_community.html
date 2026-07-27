@@ -1,4 +1,5 @@
 <!-- Dashboard para Community/Advisors -->
+{% load humanize %}
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
     <!-- Startups destacadas -->
     <div class="bg-white rounded-lg border border-gray-200 p-6">
@@ -8,29 +9,29 @@
         </div>
         <div class="space-y-4">
             {% for startup in discovery.featured_startups %}
-            <div class="flex items-center space-x-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
+            <a href="{% url 'core:startup_profile' startup.id %}" class="flex items-center space-x-4 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
                 {% if startup.logo %}
-                    <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-12 h-12 rounded-lg object-cover">
+                    <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-12 h-12 rounded-lg object-cover">
                 {% else %}
-                    <div class="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold">{{ startup.name|first }}</span>
+                    <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">{{ startup.company_name|first }}</span>
                     </div>
                 {% endif %}
                 <div class="flex-1">
-                    <h3 class="font-semibold text-gray-900">{{ startup.name }}</h3>
+                    <h3 class="font-semibold text-gray-900">{{ startup.company_name }}</h3>
                     <p class="text-sm text-gray-600">{{ startup.tagline|truncatechars:50 }}</p>
                     <div class="flex items-center space-x-2 mt-1">
-                        <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">{{ startup.stage|default:"Early" }}</span>
+                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{{ startup.get_stage_display|default:"Early" }}</span>
                         {% if startup.industry %}
-                        <span class="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded">{{ startup.industry.name }}</span>
+                        <span class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded">{{ startup.industry.name }}</span>
                         {% endif %}
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm font-semibold text-green-600">${{ startup.total_funding_raised|default:0|floatformat:0 }}</div>
+                    <div class="text-sm font-semibold text-gray-900">${{ startup.total_funding_raised|default:0|floatformat:0|intcomma }}</div>
                     <div class="text-xs text-gray-500">Recaudado</div>
                 </div>
-            </div>
+            </a>
             {% empty %}
             <div class="text-center py-6">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,25 +51,25 @@
         </div>
         <div class="space-y-4">
             {% for startup in discovery.top_funded %}
-            <div class="flex items-center justify-between">
+            <a href="{% url 'core:startup_profile' startup.id %}" class="flex items-center justify-between hover:bg-gray-50 -mx-2 px-2 py-1 rounded-lg transition-colors">
                 <div class="flex items-center space-x-3">
                     {% if startup.logo %}
-                        <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-10 h-10 rounded-lg object-cover">
+                        <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-10 h-10 rounded-lg object-cover">
                     {% else %}
-                        <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-semibold">{{ startup.name|first }}</span>
+                        <div class="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+                            <span class="text-white font-semibold">{{ startup.company_name|first }}</span>
                         </div>
                     {% endif %}
                     <div>
-                        <h3 class="font-semibold text-gray-900">{{ startup.name }}</h3>
-                        <p class="text-xs text-gray-500">{{ startup.stage|default:"Growth" }}</p>
+                        <h3 class="font-semibold text-gray-900">{{ startup.company_name }}</h3>
+                        <p class="text-xs text-gray-500">{{ startup.get_stage_display|default:"Growth" }}</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="font-bold text-green-600">${{ startup.total_funding_raised|floatformat:0 }}</div>
+                    <div class="font-bold text-gray-900">${{ startup.total_funding_raised|floatformat:0|intcomma }}</div>
                     <div class="text-xs text-gray-500">Total recaudado</div>
                 </div>
-            </div>
+            </a>
             {% empty %}
             <div class="text-center py-6">
                 <svg class="mx-auto h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -89,21 +90,21 @@
     </div>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for startup in discovery.recently_launched %}
-        <div class="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+        <a href="{% url 'core:startup_profile' startup.id %}" class="block border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
             <div class="flex items-center space-x-3 mb-4">
                 {% if startup.logo %}
-                    <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-12 h-12 rounded-lg object-cover">
+                    <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-12 h-12 rounded-lg object-cover">
                 {% else %}
-                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold">{{ startup.name|first }}</span>
+                    <div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold">{{ startup.company_name|first }}</span>
                     </div>
                 {% endif %}
                 <div class="flex-1">
-                    <h3 class="font-semibold text-gray-900">{{ startup.name }}</h3>
+                    <h3 class="font-semibold text-gray-900">{{ startup.company_name }}</h3>
                     <p class="text-sm text-gray-600">{{ startup.tagline|truncatechars:40 }}</p>
                 </div>
             </div>
-            
+
             <div class="space-y-2 mb-4">
                 {% if startup.industry %}
                 <div class="flex items-center text-sm text-gray-600">
@@ -123,19 +124,19 @@
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>
-                    {{ startup.created_at|timesince }} ago
+                    {{ startup.created_at|timesince }} atrás
                 </div>
             </div>
 
             <div class="flex justify-between items-center">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {{ startup.stage|default:"Early Stage" }}
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+                    {{ startup.get_stage_display|default:"Early Stage" }}
                 </span>
-                <button class="text-blue-600 text-sm font-medium hover:text-blue-700">
-                    Ver Más →
-                </button>
+                <span class="text-gray-900 text-sm font-medium">
+                    Ver más →
+                </span>
             </div>
-        </div>
+        </a>
         {% empty %}
         <div class="col-span-full text-center py-8">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,21 +159,21 @@
         </div>
         <div class="space-y-4">
             {% for investor in network_opportunities.active_investors %}
-            <div class="flex items-center justify-between">
+            <a href="{% url 'core:investor_detail' investor.id %}" class="flex items-center justify-between hover:bg-gray-50 -mx-2 px-2 py-1 rounded-lg transition-colors">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center">
                         <span class="text-white font-semibold text-sm">{{ investor.user.first_name|first|default:investor.user.username|first }}</span>
                     </div>
                     <div>
                         <h3 class="font-semibold text-gray-900">{{ investor.user.get_full_name|default:investor.user.username }}</h3>
-                        <p class="text-sm text-gray-600">{{ investor.firm_name|default:"Inversor Individual" }}</p>
+                        <p class="text-sm text-gray-600">{{ investor.fund_name|default:"Inversor Individual" }}</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm font-semibold text-green-600">${{ investor.fund_size|default:0|floatformat:0 }}</div>
+                    <div class="text-sm font-semibold text-gray-900">${{ investor.fund_size|default:0|floatformat:0|intcomma }}</div>
                     <div class="text-xs text-gray-500">Fondo</div>
                 </div>
-            </div>
+            </a>
             {% empty %}
             <p class="text-gray-500 text-sm">No hay inversores activos disponibles</p>
             {% endfor %}
@@ -187,25 +188,25 @@
         </div>
         <div class="space-y-4">
             {% for startup in network_opportunities.growing_startups %}
-            <div class="flex items-center justify-between">
+            <a href="{% url 'core:startup_profile' startup.id %}" class="flex items-center justify-between hover:bg-gray-50 -mx-2 px-2 py-1 rounded-lg transition-colors">
                 <div class="flex items-center space-x-3">
                     {% if startup.logo %}
-                        <img src="{{ startup.logo.url }}" alt="{{ startup.name }}" class="w-10 h-10 rounded-lg object-cover">
+                        <img src="{{ startup.logo.url }}" alt="{{ startup.company_name }}" class="w-10 h-10 rounded-lg object-cover">
                     {% else %}
-                        <div class="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
-                            <span class="text-white font-semibold">{{ startup.name|first }}</span>
+                        <div class="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
+                            <span class="text-white font-semibold">{{ startup.company_name|first }}</span>
                         </div>
                     {% endif %}
                     <div>
-                        <h3 class="font-semibold text-gray-900">{{ startup.name }}</h3>
-                        <p class="text-sm text-gray-600">{{ startup.stage|default:"Growth" }}</p>
+                        <h3 class="font-semibold text-gray-900">{{ startup.company_name }}</h3>
+                        <p class="text-sm text-gray-600">{{ startup.get_stage_display|default:"Growth" }}</p>
                     </div>
                 </div>
                 <div class="text-right">
-                    <div class="text-sm font-semibold text-blue-600">{{ startup.employees_count|default:1 }}</div>
+                    <div class="text-sm font-semibold text-gray-900">{{ startup.employees_count|default:1 }}</div>
                     <div class="text-xs text-gray-500">empleados</div>
                 </div>
-            </div>
+            </a>
             {% empty %}
             <p class="text-gray-500 text-sm">No hay startups en crecimiento disponibles</p>
             {% endfor %}
@@ -214,19 +215,19 @@
 </div>
 
 <!-- Call to action para unirse como advisor -->
-<div class="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-200">
+<div class="mt-8 bg-gray-50 rounded-lg p-6 border border-gray-200">
     <div class="flex items-center justify-between">
         <div>
             <h3 class="text-lg font-semibold text-gray-900 mb-2">¿Interesado en ser Advisor?</h3>
             <p class="text-gray-600 mb-4">
                 Conecta con startups prometedoras y ayuda a acelerar su crecimiento con tu experiencia y conocimiento.
             </p>
-            <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <a href="{% url 'core:startup_directory' %}" class="inline-block bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors">
                 Explorar Oportunidades de Mentoría
-            </button>
+            </a>
         </div>
         <div class="hidden lg:block">
-            <svg class="w-24 h-24 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-24 h-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
             </svg>
         </div>

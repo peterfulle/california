@@ -105,11 +105,13 @@ class StartupForm(forms.ModelForm):
             }),
             'logo': forms.FileInput(attrs={
                 'class': 'mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100',
-                'accept': 'image/*'
+                # image/* incluye SVG y HEIC, que el navegador deja elegir pero que
+                # ImageField (Pillow) no puede validar -> restringimos a formatos raster reales.
+                'accept': 'image/jpeg,image/png,image/webp,image/gif'
             }),
             'cover_image': forms.FileInput(attrs={
                 'class': 'mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100',
-                'accept': 'image/*'
+                'accept': 'image/jpeg,image/png,image/webp,image/gif'
             }),
         }
 
